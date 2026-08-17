@@ -26,8 +26,8 @@ index-state: 2026-05-24T20:48:15Z
 
 packages: ./plutarch.cabal
 
-benchmarks: true
-tests: true
+benchmarks: True
+tests: True
 test-show-details: direct
 
 -- Note (Koz, 15/08/2025): Added with the bump to `index-state` at
@@ -51,3 +51,6 @@ allow-newer:
   , turtle:optparse-applicative
 
 constraints: setup.optparse-applicative >=0.19.0.0
+
+package plutarch
+  ghc-options: -Werror

@@ -1,36 +1,26 @@
 {
   description = "plutarch";
-
   nixConfig.allow-import-from-derivation = "true";
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
-
     flake-parts.url = "github:hercules-ci/flake-parts";
-
     haskell-nix.url = "github:input-output-hk/haskell.nix";
     iohk-nix.url = "github:input-output-hk/iohk-nix";
     iohk-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs";
-
     CHaP = {
       url = "github:intersectmbo/cardano-haskell-packages?ref=repo";
       flake = false;
     };
-
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-
   };
-
   outputs = inputs@{ flake-parts, haskell-nix, iohk-nix, CHaP, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
-
       imports = [
         ./nix/pre-commit.nix
         ./nix/hercules-ci.nix
       ];
-
       perSystem = { config, pkgs, system, ... }:
         let
           project = pkgs.haskell-nix.cabalProject' {
@@ -42,7 +32,7 @@
                   relPath = pkgs.lib.removePrefix (toString ./. + "/") (toString path);
                 in
                 pkgs.lib.any (p: pkgs.lib.hasPrefix p relPath) [ "src" "app" "test" ]
-                || builtins.elem baseName [ "c2uplc.cabal" "cabal.project" "CHANGELOG.md" "README.md" "LICENSE" ];
+                || builtins.elem baseName [ "plutarch.cabal" "cabal.project" "CHANGELOG.md" "README.md" "LICENSE" ];
             };
             compiler-nix-name = "ghc984";
             index-state = "2026-05-24T20:48:15Z";
@@ -60,8 +50,6 @@
                 haskell-language-server = { };
                 hlint = { };
                 ormolu = { };
-                # hspec-discover = { };
-                # markdown-unlit = { };
               };
             };
           };
@@ -78,7 +66,6 @@
               ];
               inherit (haskell-nix) config;
             };
-
           inherit (flake) packages checks devShells;
         };
     };

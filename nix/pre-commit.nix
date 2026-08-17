@@ -2,7 +2,6 @@
   imports = [
     inputs.pre-commit-hooks.flakeModule
   ];
-
   perSystem = { config, ... }:
     {
       devShells.dev-pre-commit = config.pre-commit.devShell;
@@ -14,12 +13,7 @@
             statix.enable = true;
             deadnix.enable = true;
             cabal-fmt.enable = true;
-            ormolu = {
-              enable = true;
-            };
-            ormolu = {
-              settings.cabalDefaultExtensions = true;
-            };
+            ormolu.enable = true;
             hlint.enable = true;
           };
         };
