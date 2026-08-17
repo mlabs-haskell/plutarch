@@ -1,0 +1,39 @@
+cabal-version: 3.0
+name: plutarch
+version: 2.0.0
+synopsis: A Haskell eDSL for UPLC.
+description: Someday something will go here.
+homepage: https://github.com/mlabs-haskell/plutarch
+license: MIT
+license-file: LICENSE
+author: Koz Ross, Sean Hunter
+maintainer: koz@mlabs.city
+bug-reports: https://github.com/mlabs-haskell/mlabs-haskell/issues
+copyright: (C) MLabs 2026
+category: Plutarch
+tested-with: ghc ==9.8.4
+build-type: Simple
+extra-source-files:
+  CHANGELOG.md
+  README.md
+
+-- Common sections
+common lang
+  build-depends: base ^>=4.21
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wmissing-export-lists
+    -Wmissing-deriving-strategies
+    -Wredundant-bang-patterns
+
+  default-language: Haskell2010
+
+library
+  import: lang
+  exposed-modules: Plutarch.Backend.RawTerm
+  build-depends: plutus-core
+  hs-source-dirs: src
