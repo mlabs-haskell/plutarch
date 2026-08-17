@@ -30,34 +30,54 @@ common lang
     DeriveFunctor
     DerivingVia
     FlexibleContexts
+    FlexibleInstances
     ImportQualifiedPost
     KindSignatures
     LambdaCase
     NoStarIsType
     RankNTypes
+    RoleAnnotations
     ScopedTypeVariables
+    TupleSections
     TypeApplications
     TypeFamilies
+    TypeOperators
 
   default-language:   Haskell2010
 
 library
   import:          lang
   exposed-modules:
+    Plutarch.Backend.ANF
+    Plutarch.Backend.Arity
+    Plutarch.Backend.AST
+    Plutarch.Backend.Compile
+    Plutarch.Backend.Evaluate
     Plutarch.Backend.PosTree
     Plutarch.Backend.RawTerm
+    Plutarch.Backend.S
+    Plutarch.Backend.Term
     Plutarch.Backend.UPLC
+    Plutarch.Backend.VarMap
+    Plutarch.Helpers.Backend
+    Plutarch.Helpers.Compile
+    Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
+    Plutarch.Primitive.Function
 
   build-depends:
+    , bimap
     , bytestring
     , containers
+    , data-default
     , hashable
     , lens
     , mtl
+    , nonempty-containers
     , nonempty-vector
-    , plutus-core      ==1.64.0.0
+    , plutus-core          ==1.64.0.0
     , prettyprinter
+    , smash
     , text
     , these
     , vector

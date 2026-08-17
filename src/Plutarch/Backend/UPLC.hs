@@ -1,5 +1,3 @@
-{-# LANGUAGE NoPartialTypeSignatures #-}
-
 -- | Helpers for building up UPLC @Term@s.
 --
 -- @since wip
