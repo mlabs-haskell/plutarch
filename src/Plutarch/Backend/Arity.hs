@@ -132,6 +132,7 @@ getBuiltinArity =
     PLC.ValueData -> 1
     PLC.UnValueData -> 1
     PLC.ScaleValue -> 2
+    PLC.Policies -> 1
     -- Bool
     PLC.IfThenElse -> 3
     -- Unit
@@ -155,3 +156,4 @@ getBuiltinArity =
     PLC.LengthOfArray -> 1
     PLC.ListToArray -> 1
     PLC.IndexArray -> 2
+    PLC.MultiIndexArray -> 2
