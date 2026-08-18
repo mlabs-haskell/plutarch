@@ -30,27 +30,5 @@ benchmarks: True
 tests: True
 test-show-details: direct
 
--- Note (Koz, 15/08/2025): Added with the bump to `index-state` at
--- 2025-07-30T14:13:57Z. On next bump, we should try disabling all these 
--- and seeing if we still need them. 
-allow-newer:
-  -- https://github.com/tweag/HaskellR/pull/420
-  , inline-r:singletons-th
-  , inline-r:aeson
-  , inline-r:text
-  , inline-r:template-haskell
-  , inline-r:deepseq
-  , inline-r:bytestring
-  , inline-r:containers
-  , inline-r:primitive
-  -- https://github.com/phadej/vec/issues/121
-  , ral:QuickCheck
-  , fin:QuickCheck
-  , bin:QuickCheck
-  -- https://github.com/IntersectMBO/plutus/pull/7236
-  , turtle:optparse-applicative
-
-constraints: setup.optparse-applicative >=0.19.0.0
-
 package plutarch
   ghc-options: -Werror
