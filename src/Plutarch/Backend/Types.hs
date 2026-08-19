@@ -1,6 +1,8 @@
 {-# LANGUAGE TypeData #-}
 
-module Plutarch.Backend.S (S) where
+module Plutarch.Backend.Types (S, (:-->)) where
+
+import Data.Kind (Type)
 
 -- Note (Koz, 08/06/2026): `type data` is a particularly hideous GHCism used to
 -- define (effectively) a kind without forcing us to promote a type. Whenever
@@ -12,3 +14,12 @@ module Plutarch.Backend.S (S) where
 --
 -- @since wip
 type data S
+
+-- | The type of a Plutarch lambda.
+--
+-- @since wip
+data (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
+
+type role (:-->) nominal nominal nominal
+
+infixr 0 :-->

@@ -114,7 +114,7 @@ import Plutarch.Backend.RawTerm
       ),
     VarTag (Argument, LetBinding, Self),
   )
-import Plutarch.Backend.S (S)
+import Plutarch.Backend.Types (S, (:-->))
 import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Backend.VarMap
   ( VarMap,
@@ -138,7 +138,6 @@ import Plutarch.Helpers.Pretty
     letTemplate,
     prettyValueOf,
   )
-import Plutarch.Primitive.Function ((:-->))
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
 import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, group, viaShow, (<+>))

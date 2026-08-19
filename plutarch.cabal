@@ -55,15 +55,14 @@ library
     Plutarch.Backend.Evaluate
     Plutarch.Backend.PosTree
     Plutarch.Backend.RawTerm
-    Plutarch.Backend.S
     Plutarch.Backend.Term
+    Plutarch.Backend.Types
     Plutarch.Backend.UPLC
     Plutarch.Backend.VarMap
     Plutarch.Helpers.Backend
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
-    Plutarch.Primitive.Function
 
   build-depends:
     , bimap
