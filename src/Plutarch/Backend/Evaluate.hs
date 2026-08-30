@@ -1,3 +1,5 @@
+{-# LANGUAGE NoPartialTypeSignatures #-}
+
 module Plutarch.Backend.Evaluate
   ( EvalError (..),
     peval,

@@ -1,3 +1,5 @@
+{-# LANGUAGE NoPartialTypeSignatures #-}
+
 -- | A variable map, as described by the /Hashing Modulo Alpha-Equivalence/
 -- paper. This represents all the free variables in a given (sub)-expression,
 -- along with 'PosTrees' indicating where these free variables occur.

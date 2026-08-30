@@ -22,7 +22,7 @@ module Plutarch.Helpers.Pretty
   )
 where
 
-import Control.Lens.Plated (Plated, children)
+import Control.Lens.Plated
 import Data.ByteString ()
 import Data.Kind (Type)
 import Data.Text (Text)
@@ -32,27 +32,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
 import Data.Word (Word64)
-import PlutusCore.Default
-  ( DefaultUni
-      ( DefaultUniApply,
-        DefaultUniBLS12_381_G1_Element,
-        DefaultUniBLS12_381_G2_Element,
-        DefaultUniBLS12_381_MlResult,
-        DefaultUniBool,
-        DefaultUniByteString,
-        DefaultUniData,
-        DefaultUniInteger,
-        DefaultUniProtoArray,
-        DefaultUniProtoList,
-        DefaultUniProtoPair,
-        DefaultUniString,
-        DefaultUniUnit,
-        DefaultUniValue
-      ),
-    Esc,
-    Some (Some),
-    ValueOf (ValueOf),
-  )
+import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
 import Prettyprinter
   ( Doc,
     Pretty (pretty),
@@ -223,11 +203,11 @@ taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
 taggedNode lbl ann node = block' lbl "<" ">" node <> "@" <> ann
 
 prettyAnnotated ::
-  forall (f :: Type -> Type) (a :: Type) (ann :: Type).
+  forall f a ann.
   (Plated (f a), Pretty a) =>
   (f a -> a) ->
   (Doc ann -> Doc ann -> Doc ann) -> -- ann doc is first arg
-  (forall (x :: Type). f x -> [Doc ann] -> Doc ann) ->
+  (forall x. f x -> [Doc ann] -> Doc ann) ->
   f a ->
   Doc ann
 prettyAnnotated getAnn annHandler nodePrinter x = annHandler (pretty a) $ nodePrinter x childNodesPretty

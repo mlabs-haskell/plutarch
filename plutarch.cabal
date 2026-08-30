@@ -49,7 +49,6 @@ library
   import:          lang
   exposed-modules:
     Plutarch.Backend.ANF
-    Plutarch.Backend.Arity
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
     Plutarch.Backend.Evaluate
