@@ -9,7 +9,7 @@
 --
 -- - [The original paper](https://arxiv.org/pdf/2105.02856)
 --
--- @since wip
+-- @since 2.0.0
 module Plutarch.Backend.PosTree
   ( PosTree (..),
     isLinear,
@@ -31,18 +31,18 @@ import Data.Vector.NonEmpty qualified as NEVector
 
 -- | A position tree.
 --
--- @since wip
+-- @since 2.0.0
 data PosTree
   = -- | Marks the variable of interest.
     --
-    --    @since wip
+    --    @since 2.0.0
     PHere
   | -- | The variable of interest is in the tree of our direct descendant.
-    --    @since wip
+    --    @since 2.0.0
     POne PosTree
   | -- | The variable of interest is in one, or both, of our subtrees.
     --
-    --    @since wip
+    --    @since 2.0.0
     PTwo (These PosTree PosTree)
   | -- | The variable of interest is in at least one of our subtrees. A
     --    higher-than-2 variant of 'PTwo'.
@@ -54,7 +54,7 @@ data PosTree
     --    over 'PosTree' maintain this invariant, but if you build these yourself,
     --    ensure you also maintain it.
     --
-    --    @since wip
+    --    @since 2.0.0
     PMany (Vector (Maybe PosTree))
   | -- | The variable of interest occurs in a @case@,
     --    in either the scrutinee subtree, one or more of the handler subtrees, or
@@ -71,7 +71,7 @@ data PosTree
     --    All operations we provide over 'PosTree' maintain this invariant, but if
     --    you build these yourself, ensure you also maintain it.
     --
-    --    @since wip
+    --    @since 2.0.0
     PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
   | -- | The variable of interest occurs in a composition.
     --
@@ -85,18 +85,18 @@ data PosTree
     --    All operations we provide over 'PosTree' maintain this invariant, but if
     --    you build these yourself, ensure you also maintain these.
     --
-    --    @since wip
+    --    @since 2.0.0
     PCompose (NonEmptyVector (Maybe PosTree))
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show,
-      -- | @since wip
+      -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Ord
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Hashable PosTree where
   {-# INLINEABLE hashWithSalt #-}
   hashWithSalt = defaultHashWithSalt
@@ -113,7 +113,7 @@ instance Hashable PosTree where
 -- of variables, checks whether the variable's use is linear (no more than
 -- once).
 --
--- @since wip
+-- @since 2.0.0
 isLinear :: PosTree -> Bool
 isLinear = \case
   PHere -> True

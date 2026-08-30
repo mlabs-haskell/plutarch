@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- | Miscellaneous helpers for the various pretty printers.
+--
+-- @since 2.0.0
 module Plutarch.Helpers.Pretty
   ( prettyValueOf,
     compactReadableVar,

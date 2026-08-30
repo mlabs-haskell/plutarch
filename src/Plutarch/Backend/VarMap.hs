@@ -1,5 +1,3 @@
-{-# LANGUAGE NoPartialTypeSignatures #-}
-
 -- | A variable map, as described by the /Hashing Modulo Alpha-Equivalence/
 -- paper. This represents all the free variables in a given (sub)-expression,
 -- along with 'PosTrees' indicating where these free variables occur.
@@ -11,7 +9,7 @@
 --
 -- - [The original paper](https://arxiv.org/pdf/2105.02856)
 --
--- @since wip
+-- @since 2.0.0
 module Plutarch.Backend.VarMap
   ( VarMap,
     vmEmpty,
@@ -36,23 +34,23 @@ import Plutarch.Backend.PosTree (PosTree)
 
 -- A variable map.
 --
--- @since wip
+-- @since 2.0.0
 newtype VarMap = VarMap (Map Word64 PosTree)
   deriving
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Hashable
     )
     via (Map Word64 PosTree)
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show
     )
 
 -- | An empty variable map.
 --
--- @since wip
+-- @since 2.0.0
 vmEmpty :: VarMap
 vmEmpty = VarMap Map.empty
 
@@ -60,28 +58,28 @@ vmEmpty = VarMap Map.empty
 --
 -- Will error if given the empty 'VarMap'.
 --
--- @since wip
+-- @since 2.0.0
 vmFirst :: VarMap -> (Word64, PosTree)
 vmFirst (VarMap vm) = Map.findMin vm
 
 -- | Produce a variable map mapping a single unique identifier to a position
 -- tree.
 --
--- @since wip
+-- @since 2.0.0
 vmSingleton :: Word64 -> PosTree -> VarMap
 vmSingleton k = VarMap . Map.singleton k
 
 -- | Given a variable identifier, remove it from the variable map if it exists,
 -- and return it, along with whatever is left in the variable map.
 --
--- @since wip
+-- @since 2.0.0
 vmDelete :: Word64 -> VarMap -> (Maybe PosTree, VarMap)
 vmDelete k (VarMap m) = (Map.lookup k m, VarMap . Map.delete k $ m)
 
 -- | Given a transformation on position trees, apply this transformation to
 -- every position tree in the variable map.
 --
--- @since wip
+-- @since 2.0.0
 vmMap :: (PosTree -> PosTree) -> VarMap -> VarMap
 vmMap f (VarMap m) = VarMap . fmap f $ m
 
@@ -90,7 +88,7 @@ vmMap f (VarMap m) = VarMap . fmap f $ m
 -- an identifier exists in both maps; otherwise, the pair of identifier-tree
 -- will be added as-is.
 --
--- @since wip
+-- @since 2.0.0
 vmMerge :: (PosTree -> PosTree -> PosTree) -> VarMap -> VarMap -> VarMap
 vmMerge f (VarMap m1) (VarMap m2) = VarMap . Map.unionWith f m1 $ m2
 
@@ -98,7 +96,7 @@ vmMerge f (VarMap m1) (VarMap m2) = VarMap . Map.unionWith f m1 $ m2
 -- variable map. If this identifier is already associated to a position tree,
 -- 'vmExtend' will overwrite it.
 --
--- @since wip
+-- @since 2.0.0
 vmExtend :: Word64 -> PosTree -> VarMap -> VarMap
 vmExtend k v (VarMap m) = VarMap . Map.insert k v $ m
 
@@ -106,7 +104,7 @@ vmExtend k v (VarMap m) = VarMap . Map.insert k v $ m
 -- @Data.Map@ to resolve cases where the same identifier exists in both
 -- 'VarMap's.
 --
--- @since wip
+-- @since 2.0.0
 vmMergeM ::
   forall (f :: Type -> Type).
   (Applicative f) =>
@@ -116,7 +114,7 @@ vmMergeM f (VarMap m1) (VarMap m2) =
 
 -- | A fold-with-key over a variable map.
 --
--- @since wip
+-- @since 2.0.0
 vmFold ::
   forall (a :: Type).
   (a -> Word64 -> PosTree -> a) ->

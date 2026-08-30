@@ -20,7 +20,7 @@ import Plutarch.Backend.Term
   )
 import Plutarch.Backend.UPLC (UPLCTerm)
 
--- | @since wip
+-- | @since 2.0.0
 compileTerm ::
   forall (a :: S -> Type).
   TermEnv ->
@@ -28,7 +28,7 @@ compileTerm ::
   Either TermError (RawTerm ())
 compileTerm env (Term comp) = (\(x, _, _) -> fmap snd x) . runRWS (runExceptT comp) env $ 0
 
--- | @since wip
+-- | @since 2.0.0
 termToUPLC ::
   forall (a :: S -> Type).
   TermEnv ->

@@ -3,7 +3,7 @@
 
 -- | Generates 'UPLCTerm' from an 'ANF'.
 --
--- @since wip
+-- @since 2.0.0
 module Plutarch.Backend.Compile
   ( toUPLCTerm,
   )
@@ -94,7 +94,7 @@ import UntypedPlutusCore qualified as UPLC
 -- @let@-bindings of any unique (up to alpha-equivalence) computation that is
 -- used more than once.
 --
--- @since wip
+-- @since 2.0.0
 toUPLCTerm :: Bool -> ANF Demand -> UPLCTerm
 toUPLCTerm runExternalOpts (ANF _ binds) =
   -- We use the hashes of any variable as its `Unique`. To ensure we don't

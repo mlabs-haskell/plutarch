@@ -20,7 +20,7 @@
 -- Threads_](https://www.microsoft.com/en-us/research/wp-content/uploads/1994/06/lazy-functional-state-threads.pdf),
 -- which describes the \'@ST@ trick\'
 --
--- @since wip
+-- @since 2.0.0
 module Plutarch.Backend.Term
   ( TracingMode (..),
     OptimizationMode (..),
@@ -146,15 +146,15 @@ import Universe (Some (Some), ValueOf (ValueOf))
 
 -- | What level of tracing to use in a compiled result.
 --
--- @since wip
+-- @since 2.0.0
 data TracingMode
   = NoTracing
   | ErrorTracing
   | DebugTracing
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Show
     )
 
@@ -167,23 +167,23 @@ data TracingMode
 --
 -- These are labelled as \'external\' as Plutarch does not control them.
 --
--- @since wip
+-- @since 2.0.0
 data OptimizationMode = OnlyInternal | InternalExternal
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Show
     )
 
 -- | A configuration environment for 'Term's and their compilation.
 --
--- @since wip
+-- @since 2.0.0
 data TermEnv = TermEnv TracingMode OptimizationMode
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Show
     )
 
@@ -192,7 +192,7 @@ data TermEnv = TermEnv TracingMode OptimizationMode
 -- * Tracing enabled at the most verbose level ('DebugTracing'); and
 -- * External optimizations disabled ('OnlyInternal).
 --
--- @since wip
+-- @since 2.0.0
 debugTermEnv :: TermEnv
 debugTermEnv = TermEnv DebugTracing OnlyInternal
 
@@ -202,52 +202,52 @@ debugTermEnv = TermEnv DebugTracing OnlyInternal
 -- * Tracing turned off ('NoTracing'); and
 -- * External optimizations enabled ('InternalExternal').
 --
--- @since wip
+-- @since 2.0.0
 releaseTermEnv :: TermEnv
 releaseTermEnv = TermEnv NoTracing InternalExternal
 
 -- | Various errors that can arise during 'Term' construction.
 --
--- @since wip
+-- @since 2.0.0
 data TermError
   = -- | A functional's @self@ argument went unused. This means no fixed point
     --    will be found, and is definitely a mistake.
     --
-    --    @since wip
+    --    @since 2.0.0
     UnusedSelfArgument
   | -- | A general space for any user-specific errors.
     --
-    --    @since wip
+    --    @since 2.0.0
     UserSpecified CallStack Text
   | -- | A @let@ binding construction caused a bad position tree merge. This is
     --    something that should not happen normally and is /definitely/ a bug!
     --
-    --    @since wip
+    --    @since 2.0.0
     BadMergeLet Word64 PosTree PosTree
   | -- | An @apply@ construction caused a bad position tree merge. This is
     --    something that should not happen normally, and is /definitely/ a bug!
     --
-    --    @since wip
+    --    @since 2.0.0
     BadMergeApply Word64 PosTree PosTree
   | -- | An @apply@ or @case@ construction caused a bad position tree merge.
     --    This is something that should not happen normally, and is /definitely/
     --    a bug!
     --
-    --    @since wip
+    --    @since 2.0.0
     BadMergeCase Word64 PosTree PosTree
   | -- | A @constr@ construction caused a bad position tree merge. This is
     --    something that should not happen normally, and is /definitely/ a bug!
     --
-    --    @since wip
+    --    @since 2.0.0
     BadMergeConstr Word64 PosTree PosTree
   | -- | A composition construction caused a bad position tree merge. This
     --    is something that should not happen normally, and is /definitely/ a
     --    bug!
     --
-    --    @since wip
+    --    @since 2.0.0
     BadMergeCompose Word64 PosTree PosTree
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show
     )
 
@@ -257,7 +257,7 @@ data TermError
 -- variable dependencies, specifically to ensure that we never attempt to
 -- compile a 'Term' with free variables.
 --
--- @since wip
+-- @since 2.0.0
 newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
@@ -457,13 +457,13 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
 -- 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of
 -- heterogenous types to be used in both.
 --
--- @since wip
+-- @since 2.0.0
 data SomeTerm (s :: S) where
   SomeTerm :: Term s a -> SomeTerm s
 
 -- | \'Forgets\' the result of a computation represented by a 'Term'.
 --
--- @since wip
+-- @since 2.0.0
 toSomeTerm ::
   forall (a :: S -> Type) (s :: S).
   Term s a -> SomeTerm s
@@ -473,13 +473,13 @@ toSomeTerm = SomeTerm
 -- \'suspended\'. This tag can be removed by using 'pforce', and added by using
 -- 'pdelay'.
 --
--- @since wip
+-- @since 2.0.0
 data PDelayed (a :: S -> Type) (s :: S)
 
 -- | Given a code transformation from argument to result, construct the
 -- equivalent function's code.
 --
--- @since wip
+-- @since 2.0.0
 plam' ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (Term s a -> Term s b) -> Term s (a :--> b)
@@ -500,7 +500,7 @@ plam' f = Term $ do
 -- (modulo alpha equivalence) and performs the necessary transformations to
 -- @let@-bind them automatically.
 --
--- @since wip
+-- @since 2.0.0
 plet ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s a -> (Term s a -> Term s b) -> Term s b
@@ -519,7 +519,7 @@ plet v f = Term $ do
 -- produces a fixpoint functional, construct the corresponding fixed point find.
 -- This is the canonical recursion construct.
 --
--- @since wip
+-- @since 2.0.0
 pfix ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (Term s (a :--> b) -> Term s (a :--> b)) ->
@@ -541,7 +541,7 @@ pfix f = Term $ do
 -- Prefer this to composing functions using a fresh lambda. Plutarch's back-end
 -- can emit much better code from a 'pcompose', especially if the chain is long.
 --
--- @since wip
+-- @since 2.0.0
 pcompose ::
   forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
   Term s (a :--> b) ->
@@ -597,7 +597,7 @@ pcompose f g = Term $ do
 
 -- | Abort generating code and signal a user-specified error.
 --
--- @since wip
+-- @since 2.0.0
 pthrow ::
   forall (a :: S -> Type) (s :: S).
   (HasCallStack) => Text -> Term s a
@@ -606,7 +606,7 @@ pthrow = Term . throwError . UserSpecified callStack
 -- | Given the code for a function, and the code for its argument, construct the
 -- application of that function to that argument.
 --
--- @since wip
+-- @since 2.0.0
 papp ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (a :--> b) -> Term s a -> Term s b
@@ -620,7 +620,7 @@ papp f x = Term $ do
 
 -- | Given the code for @a@, construct code that delays its evaluation.
 --
--- @since wip
+-- @since 2.0.0
 pdelay ::
   forall (a :: S -> Type) (s :: S).
   Term s a -> Term s (PDelayed a)
@@ -631,7 +631,7 @@ pdelay t = Term $ do
 -- | Given a piece of code producing a delayed result, construct code forcing
 -- its evaluation.
 --
--- @since wip
+-- @since 2.0.0
 pforce ::
   forall (a :: S -> Type) (s :: S).
   Term s (PDelayed a) -> Term s a
@@ -641,7 +641,7 @@ pforce t = Term $ do
 
 -- | Construct the canonical UPLC error.
 --
--- @since wip
+-- @since 2.0.0
 perror :: forall (a :: S -> Type) (s :: S). Term s a
 perror = Term . pure $ (vmEmpty, RError ())
 
@@ -650,7 +650,7 @@ perror = Term . pure $ (vmEmpty, RError ())
 -- Furthermore, any placeholders remaining in code when compiling are treated as
 -- errors.
 --
--- @since wip
+-- @since 2.0.0
 pplaceholder ::
   forall (a :: S -> Type) (s :: S).
   Integer -> Term s a
@@ -660,7 +660,7 @@ pplaceholder i = Term . pure $ (vmEmpty, RPlaceholder () i)
 -- extremely unsafe, as it can subvert any and all type system guarantees of
 -- Plutarch. Use with care.
 --
--- @since wip
+-- @since 2.0.0
 punsafeCoerce ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s a -> Term s b
@@ -672,7 +672,7 @@ punsafeCoerce = Term . asRawTerm
 -- they are called correctly. If you want to use this directly, ensure you
 -- verify this is being done.
 --
--- @since wip
+-- @since 2.0.0
 punsafeBuiltin ::
   forall (a :: S -> Type) (s :: S).
   PLC.DefaultFun -> Term s a
@@ -683,7 +683,7 @@ punsafeBuiltin f = Term . pure $ (vmEmpty, RBuiltin () f)
 -- no guarantees that @a@ corresponds appropriately. Ensure this holds if you
 -- plan to use this directly.
 --
--- @since wip
+-- @since 2.0.0
 punsafeConstant ::
   forall (a :: S -> Type) (s :: S).
   Some (ValueOf PLC.DefaultUni) -> Term s a
@@ -699,7 +699,7 @@ punsafeConstant c = Term . pure $ (vmEmpty, RConstant () c)
 -- you get the result you are after: ensure that the types make sense for the
 -- SOP you're trying to construct.
 --
--- @since wip
+-- @since 2.0.0
 punsafeConstr ::
   forall (a :: S -> Type) (s :: S).
   Word64 ->
@@ -731,7 +731,7 @@ punsafeConstr ix fields = Term $ do
 -- that the scrutinee can be @case@d on at all. Ensure you verify all this when
 -- using.
 --
--- @since wip
+-- @since 2.0.0
 punsafeCase ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s a ->
@@ -766,7 +766,7 @@ punsafeCase scrut handlers = Term $ do
 -- Only use this if you are certain this gives you any benefit. The primary use
 -- case for this is property-based testing.
 --
--- @since wip
+-- @since 2.0.0
 pcompiled ::
   forall (a :: S -> Type) (s :: S).
   (forall (s' :: S). Term s' a) ->
@@ -798,7 +798,7 @@ pcompiled t = Term $ do
 -- optimize this /at all/, even locally. Be /very/ sure this is worthwhile
 -- before you attempt it!
 --
--- @since wip
+-- @since 2.0.0
 punsafeCompiled ::
   forall (a :: S -> Type) (s :: S).
   UPLCTerm ->

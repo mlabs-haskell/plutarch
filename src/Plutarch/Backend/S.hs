@@ -10,5 +10,5 @@ module Plutarch.Backend.S (S) where
 -- | An empty kind to ensure that the @s@ parameter never gets used for
 -- anything.
 --
--- @since wip
+-- @since 2.0.0
 type data S

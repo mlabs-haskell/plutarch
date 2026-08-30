@@ -18,7 +18,7 @@
 --
 -- - [The original paper](https://arxiv.org/pdf/2105.02856)
 --
--- @since wip
+-- @since 2.0.0
 module Plutarch.Backend.AST
   ( -- * Common
     Hash (..),
@@ -113,24 +113,24 @@ import Prelude hiding (until)
 
 -- | A clarity newtype for hashes, both \'structural\' and \'combined\'.
 --
--- @since wip
+-- @since 2.0.0
 newtype Hash = Hash Int
   deriving (Eq, Ord, Hashable) via Int
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show
     )
 
 -- Hashing will give huge Ints which are hard to read
 -- so we turn them into something readable
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty Hash where
   pretty (Hash h) = pretty . compactReadableVar . fromIntegral $ h
 
 -- | A leaf computation (namely, one that cannot have dependencies).
 --
--- @since wip
+-- @since 2.0.0
 data Leaf (ann :: Type)
   = LVar ann Hash
   | LConstant ann (Some (ValueOf PLC.DefaultUni))
@@ -138,15 +138,15 @@ data Leaf (ann :: Type)
   | LCompiled ann UPLCTerm
   | LError ann
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Functor,
-      -- | @since wip
+      -- | @since 2.0.0
       Show,
-      -- | @since wip
+      -- | @since 2.0.0
       Eq
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty (Leaf ann) where
   pretty = \case
     LVar _ h ->
@@ -175,7 +175,7 @@ instance Pretty (Leaf ann) where
 -- * `case` nodes scrutinizing the error node are replaced with the error node.
 -- * `Force` adjacent to `Delay` have been replaced with just the body of `Delay`.
 --
--- @since wip
+-- @since 2.0.0
 data AST (ann :: Type)
   = ASTLeaf (Leaf ann)
   | ASTForce ann (AST ann)
@@ -187,18 +187,18 @@ data AST (ann :: Type)
   | ASTCase ann (AST ann) (NonEmptyVector (AST ann))
   | ASTCompose ann (NonEmptyVector (AST ann))
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Functor,
-      -- | @since wip
+      -- | @since 2.0.0
       Show,
-      -- | @since wip
+      -- | @since 2.0.0
       Eq
     )
 
 -- For the sake of consistency this uses the same formatting as the overlapping instance,
 -- although this *could* be prettier if we wanted it to be.
 
--- | @since wip
+-- | @since 2.0.0
 instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
   pretty = \case
     ASTLeaf l -> pretty l
@@ -220,7 +220,7 @@ instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
         <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
     ASTCompose _ args -> "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
 
--- | @since wip
+-- | @since 2.0.0
 instance {-# OVERLAPS #-} (Pretty ann) => Pretty (AST ann) where
   pretty = \case
     ASTLeaf l -> case l of
@@ -257,7 +257,7 @@ instance {-# OVERLAPS #-} (Pretty ann) => Pretty (AST ann) where
 -- | Given a 'RawTerm', construct its AST, using hashing to mark
 -- alpha-equivalent subcomputations.
 --
--- @since wip
+-- @since 2.0.0
 fromRawTerm :: RawTerm () -> AST Hash
 fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
   where

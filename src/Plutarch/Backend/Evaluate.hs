@@ -1,5 +1,3 @@
-{-# LANGUAGE NoPartialTypeSignatures #-}
-
 module Plutarch.Backend.Evaluate
   ( EvalError (..),
     peval,
@@ -16,16 +14,16 @@ import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
 import PlutusCore qualified as PLC
 import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
--- | @since wip
+-- | @since 2.0.0
 data EvalError
   = ATermError TermError
   | AnExecError (Cek.CekEvaluationException PLC.Name PLC.DefaultUni PLC.DefaultFun)
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show
     )
 
--- | @since wip
+-- | @since 2.0.0
 peval ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->

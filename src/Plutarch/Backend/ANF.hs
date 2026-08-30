@@ -11,7 +11,7 @@
 -- - [Description of administrative normal
 -- form](https://en.wikipedia.org/wiki/A-normal_form)
 --
--- @since wip
+-- @since 2.0.0
 module Plutarch.Backend.ANF
   ( BoundVar (..),
     Multiplicity (MultOne),
@@ -94,63 +94,65 @@ import Prettyprinter
 -- | A hash identifying a bound variable argument, together with its
 -- multiplicity (how many times it occurs in the body where it is bound).
 --
--- @since wip
+-- @since 2.0.0
 data BoundVar = BoundVar Hash Multiplicity
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Show
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty BoundVar where
   pretty (BoundVar h m) = pretty h <> ":" <> pretty m
 
 -- | A positive-only number indicating the number of times a bound variable is
 -- used in the body of whatever binds it.
 --
--- @since wip
+-- @since 2.0.0
 newtype Multiplicity = Multiplicity Word
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show
     )
   deriving
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Pretty
     )
     via Word
   deriving
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Semigroup
     )
     via (Sum Word)
 
--- | @since wip
+-- | The multiplicity of one.
+--
+-- @since 2.0.0
 pattern MultOne :: Multiplicity
 pattern MultOne = Multiplicity 1
 
 -- | A leaf bind in the ANF (that is, one that cannot have dependencies).
 --
--- @since wip
+-- @since 2.0.0
 data Leaf (ann :: Type)
   = LConstant ann (Some (ValueOf PLC.DefaultUni))
   | LBuiltin ann PLC.DefaultFun
   | LCompiled ann UPLCTerm
   | LError ann
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Functor,
-      -- | @since wip
+      -- | @since 2.0.0
       Show,
-      -- | @since wip
+      -- | @since 2.0.0
       Eq
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty (Leaf ann) where
   pretty = \case
     LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
@@ -162,18 +164,18 @@ instance Pretty (Leaf ann) where
 -- (identified by their hashes) or other binds (identified by their
 -- identifiers).
 --
--- @since wip
+-- @since 2.0.0
 data Ref
   = AVar Hash
   | AnId Id
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show,
-      -- | @since wip
+      -- | @since 2.0.0
       Eq
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty Ref where
   pretty = \case
     AVar h -> pretty h
@@ -181,28 +183,28 @@ instance Pretty Ref where
 
 -- | An identifier for an ANF bind.
 --
--- @since wip
+-- @since 2.0.0
 newtype Id = Id Int
   deriving
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Ord
     )
     via Int
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty Id where
   pretty (Id i) = "#" <> viaShow i
 
 -- | An ANF bind. Instead of a recursive ANF-like structure, this uses 'Id' to
 -- determine subcomputations.
 --
--- @since wip
+-- @since 2.0.0
 data ANFBind (ann :: Type)
   = ANFLeaf (Leaf ann)
   | ANFForce ann Ref
@@ -214,15 +216,15 @@ data ANFBind (ann :: Type)
   | ANFCase ann Ref (NonEmptyVector Ref)
   | ANFCompose ann (NonEmptyVector Ref)
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Show,
-      -- | @since wip
+      -- | @since 2.0.0
       Functor,
-      -- | @since wip
+      -- | @since 2.0.0
       Eq
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty (ANFBind ann) where
   pretty = \case
     ANFLeaf l -> pretty l
@@ -241,7 +243,7 @@ instance Pretty (ANFBind ann) where
           . fmap (\case Nothing -> "_"; Just m -> pretty m)
           $ xs
 
--- | @since wip
+-- | @since 2.0.0
 getANFBindAnn :: forall (ann :: Type). ANFBind ann -> ann
 getANFBindAnn = \case
   ANFLeaf ell -> case ell of
@@ -261,10 +263,10 @@ getANFBindAnn = \case
 -- | A combination of a (nonempty) vector of binds, together with a unique
 -- mapping between identifiers and hashes of unique subcomputations.
 --
--- @since wip
+-- @since 2.0.0
 data ANF (ann :: Type) = ANF (Bimap Id Hash) (NonEmptyVector (ANFBind ann))
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty (ANF ()) where
   pretty anf =
     "ANF Hashes:"
@@ -277,7 +279,7 @@ instance Pretty (ANF ()) where
       <> indent 1 (align $ prettyANFBinds anf)
       <> hardline
 
--- | @since wip
+-- | @since 2.0.0
 instance {-# OVERLAPS #-} (Pretty ann) => Pretty (ANF ann) where
   pretty anf =
     "ANF Hashes:"
@@ -300,7 +302,7 @@ instance {-# OVERLAPS #-} (Pretty ann) => Pretty (ANF ann) where
 -- identify alpha-equivalent subcomputations, so that they correspond to a
 -- single unique bind.
 --
--- @since wip
+-- @since 2.0.0
 fromHashedAST :: AST Hash -> ANF ()
 fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
   -- Note (Koz, 05/06/2026): Due to how we construct the IntMap here, there is
@@ -370,38 +372,38 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
 -- | A type to indicate how often a (sub) computation is needed as part of an
 -- entire translation unit, as well as where it should be @let@ bound if needed.
 --
--- @since wip
+-- @since 2.0.0
 data Demand
   = -- | This computation is not needed anywhere. This typically indicates the
     --    top-level computation in any translation unit.
     --
-    --    @since wip
+    --    @since 2.0.0
     NeverDemanded
   | -- | This computation is needed at least once (exact use count indicated
     --    by 'Word64'), and if it needs to be @let@-bound, where this can be
     --    done (indicated by 'Id').
     --
-    --    @since wip
+    --    @since 2.0.0
     Demanded Id Word64
   | -- | Should never be @let@-bound. Thus, its use count is not needed.
     --
-    --    @since wip
+    --    @since 2.0.0
     Trivial
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 2.0.0
       Eq,
-      -- | @since wip
+      -- | @since 2.0.0
       Show
     )
 
--- | @since wip
+-- | @since 2.0.0
 instance Pretty Demand where
   pretty = viaShow
 
 -- | Performs all analysis steps needed to get the full demand analysis, then
 -- annotates the ANF with that analysis.
 --
--- @since wip
+-- @since 2.0.0
 fullPipeline :: forall (ann :: Type). ANF ann -> ANF Demand
 fullPipeline anf@(ANF _ binds) =
   let labelled = labelTransitiveDeps binds
