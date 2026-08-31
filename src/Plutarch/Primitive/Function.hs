@@ -5,7 +5,7 @@ module Plutarch.Primitive.Function
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.S (S)
+import Plutarch.Backend.Term (S)
 
 -- | The type of a Plutarch lambda.
 --

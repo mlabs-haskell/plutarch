@@ -72,10 +72,10 @@ import Plutarch.Backend.RawTerm
       ),
     VarTag (Argument, LetBinding, Self),
   )
-import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term
   ( OptimizationMode (InternalExternal, OnlyInternal),
     PDelayed,
+    S,
     SomeTerm (SomeTerm),
     Term (Term),
     TermEnv (TermEnv),

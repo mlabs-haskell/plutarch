@@ -6,8 +6,7 @@ where
 
 import Control.Monad.Except (throwError)
 import Data.Kind (Type)
-import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, TermError, releaseTermEnv)
+import Plutarch.Backend.Term (S, Term, TermError, releaseTermEnv)
 import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Helpers.Compile (termToUPLC)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
