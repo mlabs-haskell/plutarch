@@ -19,6 +19,7 @@ module Plutarch.Primitive.Term
     punsafeCase,
     pcompiled,
     punsafeCompiled,
+    phoistAcyclic,
   )
 where
 
@@ -432,6 +433,26 @@ punsafeCompiled ::
   UPLCTerm ->
   Term s a
 punsafeCompiled t = Term . pure $ (vmEmpty, RCompiled () t)
+
+-- | Given a 'Term' which is \'relatively closed\', \'hoist\' it into the
+-- current 'Term' context.
+--
+-- = Note
+--
+-- \'Relative closure\' refers to not re-using anything from the context being
+-- \'hoisted into\'. Essentially, 'phoistAcyclic' asserts that the subterm is
+-- truly independent of whatever computation it's being \'hoisted\' into.
+--
+-- This exists only for backwards compatibility with earlier versions of
+-- Plutarch. It no longer does anything, as the need for it has been completely
+-- superceded.
+--
+-- @since 2.0.0
+phoistAcyclic ::
+  forall (a :: S -> Type) (s :: S).
+  (forall (s' :: S). Term s' a) ->
+  Term s a
+phoistAcyclic f = Term $ asRawTerm f
 
 -- Helpers
 
