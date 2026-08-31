@@ -63,6 +63,7 @@ library
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
     Plutarch.Primitive.Function
+    Plutarch.Primitive.Term
 
   build-depends:
     , bimap
