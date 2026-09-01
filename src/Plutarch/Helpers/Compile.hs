@@ -11,16 +11,16 @@ import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
-import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term
   ( OptimizationMode (InternalExternal, OnlyInternal),
+    S,
     Term (Term),
     TermEnv (TermEnv),
     TermError,
   )
 import Plutarch.Backend.UPLC (UPLCTerm)
 
--- | @since wip
+-- | @since 2.0.0
 compileTerm ::
   forall (a :: S -> Type).
   TermEnv ->
@@ -28,7 +28,7 @@ compileTerm ::
   Either TermError (RawTerm ())
 compileTerm env (Term comp) = (\(x, _, _) -> fmap snd x) . runRWS (runExceptT comp) env $ 0
 
--- | @since wip
+-- | @since 2.0.0
 termToUPLC ::
   forall (a :: S -> Type).
   TermEnv ->

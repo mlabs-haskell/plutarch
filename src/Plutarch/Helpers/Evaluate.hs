@@ -1,5 +1,3 @@
-{-# LANGUAGE NoPartialTypeSignatures #-}
-
 module Plutarch.Helpers.Evaluate
   ( evalUPLC,
     maxBudget,
@@ -22,6 +20,7 @@ import PlutusCore.Evaluation.Machine.ExMemory
   )
 import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
+-- | @since 2.0.0
 evalUPLC ::
   ExBudget ->
   UPLCTerm ->
@@ -41,5 +40,6 @@ evalUPLC budget (UPLCTerm t) =
           Cek.CekSuccessConstant c -> (Right . Left $ c, cost, logs)
           Cek.CekSuccessNonConstant t' -> (Right . Right . UPLCTerm $ t', cost, logs)
 
+-- | @since 2.0.0
 maxBudget :: ExBudget
 maxBudget = ExBudget (ExCPU maxBound) (ExMemory maxBound)
