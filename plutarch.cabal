@@ -62,7 +62,9 @@ library
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
+    Plutarch.Primitive.Con
     Plutarch.Primitive.Function
+    Plutarch.Primitive.Match
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Term
 
