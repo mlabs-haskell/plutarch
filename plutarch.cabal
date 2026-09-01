@@ -42,6 +42,7 @@ common lang
     TypeApplications
     TypeFamilies
     TypeOperators
+    UndecidableSuperClasses
 
   default-language:   Haskell2010
 
@@ -62,6 +63,7 @@ library
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
     Plutarch.Primitive.Function
+    Plutarch.Primitive.Representation
     Plutarch.Primitive.Term
 
   build-depends:
