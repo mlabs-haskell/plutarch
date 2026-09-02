@@ -67,6 +67,7 @@ library
     Plutarch.Primitive.Match
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Term
+    Plutarch.Primitive.Types
 
   build-depends:
     , bimap

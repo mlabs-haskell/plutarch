@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 -- Needed for 'safety constraints' on several functions.
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
@@ -19,6 +18,7 @@ import Data.Kind (Type)
 import Plutarch.Backend.Term (S, Term)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Term (papp, punsafeCoerce)
+import Plutarch.Primitive.Types qualified as T
 
 -- | Designates that @a@ is a representative of something that can be onchain.
 -- More precisely, @a@ corresponds to the result of some onchain computation,
@@ -41,9 +41,9 @@ import Plutarch.Primitive.Term (papp, punsafeCoerce)
 -- 'papply', as the default implementation works in 99% of cases. Normally, the
 -- choice is merely between defining 'PRepresentation' or using the default.
 --
--- The default assumes that you are defining a secondary type, as this is the
--- most common use case. If you are defining a new fundamental type, you instead
--- want to have
+-- The default assumes that you are defining a fundamental type. If you want to
+-- define a secondary type, define the appropriate 'PRepresentation' associated
+-- type manually.
 --
 -- @PRepresentation a = a@
 --
@@ -53,12 +53,66 @@ class
   PlutarchType (a :: S -> Type)
   where
   type PRepresentation a :: S -> Type
-  type PRepresentation a = PRepresentation (PRepresentation a)
+  type PRepresentation a = a
   papply ::
     forall (b :: S -> Type) (s :: S).
     (PlutarchType b) =>
     Term s (PRepresentation a :--> PRepresentation b) -> Term s a -> Term s b
   papply f x = punsafeSecondary (papp (punsafeCoerce f) (pfundamental x))
+
+-- | @since 2.0.0
+instance PlutarchType T.PBool
+
+-- | @since 2.0.0
+instance PlutarchType T.PInteger
+
+-- | @since 2.0.0
+instance PlutarchType T.PNatural where
+  type PRepresentation T.PNatural = T.PInteger
+
+-- | @since 2.0.0
+instance PlutarchType T.PPositive where
+  type PRepresentation T.PPositive = T.PInteger
+
+-- | @since 2.0.0
+instance PlutarchType T.PNZInteger where
+  type PRepresentation T.PNZInteger = T.PInteger
+
+-- | @since 2.0.0
+instance PlutarchType T.PByte where
+  type PRepresentation T.PByte = T.PInteger
+
+-- | @since 2.0.0
+instance PlutarchType T.PByteString
+
+-- | @since 2.0.0
+instance PlutarchType T.PString
+
+-- | @since 2.0.0
+instance PlutarchType T.PBLS12_381_G1_Element
+
+-- | @since 2.0.0
+instance PlutarchType T.PBLS12_381_G2_Element
+
+-- | @since 2.0.0
+instance PlutarchType T.PBLS12_381_MlResult
+
+-- | @since 2.0.0
+instance (PlutarchType a) => PlutarchType (T.PBArray a) where
+  type PRepresentation (T.PBArray a) = T.PBArray (PRepresentation a)
+
+-- | @since 2.0.0
+instance PlutarchType T.PBValue
+
+-- | @since 2.0.0
+instance PlutarchType T.PSOP
+
+-- | @since 2.0.0
+instance PlutarchType T.PData
+
+-- | @since 2.0.0
+instance PlutarchType (T.PAsData a) where
+  type PRepresentation (T.PAsData a) = T.PData
 
 -- | Any Plutarch type can \'forget\' any additional structure it may have, and
 -- revert to being its fundamental representation. This is safe, and has zero runtime cost.
