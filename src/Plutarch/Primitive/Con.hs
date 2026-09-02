@@ -7,9 +7,17 @@ where
 
 import Data.Kind (Type)
 import Plutarch.Backend.Term (S, Term)
+import Plutarch.Primitive.BuiltinFun (pmkCons)
+import Plutarch.Primitive.Composite qualified as C
+import Plutarch.Primitive.Liftable (AsPlutus, PLiftable (AsHaskell))
 import Plutarch.Primitive.Match (PMatch)
-import Plutarch.Primitive.Representation (PRepresentation)
-import Plutarch.Primitive.Term (punsafeCoerce)
+import Plutarch.Primitive.Representation
+  ( PlutarchType (PRepresentation),
+    pfundamental,
+    (#),
+  )
+import Plutarch.Primitive.Term (punsafeCoerce, punsafeConstant)
+import PlutusCore qualified as PLC
 
 -- | = Laws
 --
@@ -19,6 +27,12 @@ import Plutarch.Primitive.Term (punsafeCoerce)
 -- @since 2.0.0
 class (PMatch a) => PCon (a :: S -> Type) where
   pcon' :: forall (s :: S). a s -> Term s (PRepresentation a)
+
+-- | @since 2.0.0
+instance (PLiftable a) => PCon (C.PBList a) where
+  pcon' = \case
+    C.PBNil -> punsafeConstant . PLC.someValue @[AsPlutus (AsHaskell a)] $ []
+    C.PBCons x xs -> pmkCons # pfundamental x # pfundamental xs
 
 -- | @since 2.0.0
 pcon ::

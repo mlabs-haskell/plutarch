@@ -16,9 +16,10 @@ where
 
 import Data.Kind (Type)
 import Plutarch.Backend.Term (S, Term)
-import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Composite as C
+import Plutarch.Primitive.Singular ((:-->))
+import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (papp, punsafeCoerce)
-import Plutarch.Primitive.Types qualified as T
 
 -- | Designates that @a@ is a representative of something that can be onchain.
 -- More precisely, @a@ corresponds to the result of some onchain computation,
@@ -61,58 +62,70 @@ class
   papply f x = punsafeSecondary (papp (punsafeCoerce f) (pfundamental x))
 
 -- | @since 2.0.0
-instance PlutarchType T.PBool
+instance (PlutarchType a, PlutarchType b) => PlutarchType (a :--> b) where
+  type PRepresentation (a :--> b) = a :--> PRepresentation b
 
 -- | @since 2.0.0
-instance PlutarchType T.PInteger
+instance PlutarchType S.PBool
 
 -- | @since 2.0.0
-instance PlutarchType T.PNatural where
-  type PRepresentation T.PNatural = T.PInteger
+instance PlutarchType S.PInteger
 
 -- | @since 2.0.0
-instance PlutarchType T.PPositive where
-  type PRepresentation T.PPositive = T.PInteger
+instance PlutarchType S.PNatural where
+  type PRepresentation S.PNatural = S.PInteger
 
 -- | @since 2.0.0
-instance PlutarchType T.PNZInteger where
-  type PRepresentation T.PNZInteger = T.PInteger
+instance PlutarchType S.PPositive where
+  type PRepresentation S.PPositive = S.PInteger
 
 -- | @since 2.0.0
-instance PlutarchType T.PByte where
-  type PRepresentation T.PByte = T.PInteger
+instance PlutarchType S.PNZInteger where
+  type PRepresentation S.PNZInteger = S.PInteger
 
 -- | @since 2.0.0
-instance PlutarchType T.PByteString
+instance PlutarchType S.PByte where
+  type PRepresentation S.PByte = S.PInteger
 
 -- | @since 2.0.0
-instance PlutarchType T.PString
+instance PlutarchType S.PByteString
 
 -- | @since 2.0.0
-instance PlutarchType T.PBLS12_381_G1_Element
+instance PlutarchType S.PString
 
 -- | @since 2.0.0
-instance PlutarchType T.PBLS12_381_G2_Element
+instance PlutarchType S.PBLS12_381_G1_Element
 
 -- | @since 2.0.0
-instance PlutarchType T.PBLS12_381_MlResult
+instance PlutarchType S.PBLS12_381_G2_Element
 
 -- | @since 2.0.0
-instance (PlutarchType a) => PlutarchType (T.PBArray a) where
-  type PRepresentation (T.PBArray a) = T.PBArray (PRepresentation a)
+instance PlutarchType S.PBLS12_381_MlResult
 
 -- | @since 2.0.0
-instance PlutarchType T.PBValue
+instance (PlutarchType a) => PlutarchType (S.PBArray a) where
+  type PRepresentation (S.PBArray a) = S.PBArray (PRepresentation a)
 
 -- | @since 2.0.0
-instance PlutarchType T.PSOP
+instance PlutarchType S.PBValue
 
 -- | @since 2.0.0
-instance PlutarchType T.PData
+instance PlutarchType S.PSOP
 
 -- | @since 2.0.0
-instance PlutarchType (T.PAsData a) where
-  type PRepresentation (T.PAsData a) = T.PData
+instance PlutarchType S.PData
+
+-- | @since 2.0.0
+instance PlutarchType (S.PAsData a) where
+  type PRepresentation (S.PAsData a) = S.PData
+
+-- | @since 2.0.0
+instance (PlutarchType a) => PlutarchType (C.PBList a) where
+  type PRepresentation (C.PBList a) = C.PBList (PRepresentation a)
+
+-- | @since 2.0.0
+instance (PlutarchType a, PlutarchType b) => PlutarchType (C.PBPair a b) where
+  type PRepresentation (C.PBPair a b) = C.PBPair (PRepresentation a) (PRepresentation b)
 
 -- | Any Plutarch type can \'forget\' any additional structure it may have, and
 -- revert to being its fundamental representation. This is safe, and has zero runtime cost.

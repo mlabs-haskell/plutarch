@@ -1,6 +1,7 @@
 -- | @since 2.0.0
-module Plutarch.Primitive.Types
-  ( PBool,
+module Plutarch.Primitive.Singular
+  ( (:-->),
+    PBool,
     PInteger,
     PNatural,
     PPositive,
@@ -21,6 +22,13 @@ where
 
 import Data.Kind (Type)
 import Plutarch.Backend.Term (S)
+
+-- | @since 2.0.0
+data (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
+
+type role (:-->) representational representational nominal
+
+infixr 0 :-->
 
 -- | @since 2.0.0
 data PBool (s :: S)

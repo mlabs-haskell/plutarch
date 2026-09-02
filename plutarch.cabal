@@ -32,12 +32,14 @@ common lang
     FlexibleContexts
     FlexibleInstances
     ImportQualifiedPost
+    InstanceSigs
     KindSignatures
     LambdaCase
     NoStarIsType
     RankNTypes
     RoleAnnotations
     ScopedTypeVariables
+    StandaloneDeriving
     TupleSections
     TypeApplications
     TypeFamilies
@@ -62,12 +64,14 @@ library
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
+    Plutarch.Primitive.BuiltinFun
+    Plutarch.Primitive.Composite
     Plutarch.Primitive.Con
-    Plutarch.Primitive.Function
+    Plutarch.Primitive.Liftable
     Plutarch.Primitive.Match
     Plutarch.Primitive.Representation
+    Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
-    Plutarch.Primitive.Types
 
   build-depends:
     , bimap
