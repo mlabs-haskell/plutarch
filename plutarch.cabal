@@ -73,12 +73,14 @@ library
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
+    Plutarch.Test.Golden
 
   build-depends:
     , bimap
     , bytestring
     , containers
     , data-default
+    , filepath
     , hashable
     , lens
     , mtl
@@ -87,6 +89,8 @@ library
     , plutus-core          ==1.67.0.0
     , prettyprinter
     , smash
+    , tasty
+    , tasty-golden
     , text
     , these
     , vector
