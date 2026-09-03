@@ -1,0 +1,1 @@
+\a -> case a [(60 :: Integer), (500 :: Integer)]

@@ -2,6 +2,8 @@
 module Plutarch.Test.Golden
   ( Evaluation (..),
     plutarchGoldenWith,
+    debugGolden,
+    releaseGolden,
   )
 where
 
@@ -20,6 +22,8 @@ import Plutarch.Backend.Term
     Term,
     TermEnv (TermEnv),
     TermError,
+    debugTermEnv,
+    releaseTermEnv,
   )
 import Plutarch.Backend.UPLC (UPLCTerm, uplcConstant)
 import Plutarch.Helpers.Compile (compileTerm)
@@ -109,6 +113,42 @@ plutarchGoldenWith evaluation env@(TermEnv _ opt) testDescription testName t =
               uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
            in mandatoryTests
                 <> [goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)]
+
+-- | As 'plutachGoldenWith', with the 'TermEnv' set to 'debugTermEnv'.
+--
+-- @since 2.0.0
+debugGolden ::
+  forall (a :: S -> Type).
+  -- | Should we evaluate the result?
+  Evaluation ->
+  -- | A description for the test. This is what you will see when you run the
+  -- test. Does not have to be unique.
+  String ->
+  -- | A name for the test. This will determine the golden file names and
+  -- locations, and thus, should be unique, as described above.
+  String ->
+  -- | A closed 'Term'.
+  (forall (s :: S). Term s a) ->
+  TestTree
+debugGolden evaluation = plutarchGoldenWith evaluation debugTermEnv
+
+-- | As 'plutarchGoldenWith', with the 'TermEnv' set to 'releaseTermEnv'.
+--
+-- @since 2.0.0
+releaseGolden ::
+  forall (a :: S -> Type).
+  -- | Should we evaluate the result?
+  Evaluation ->
+  -- | A description for the test. This is what you will see when you run the
+  -- test. Does not have to be unique.
+  String ->
+  -- | A name for the test. This will determine the golden file names and
+  -- locations, and thus, should be unique, as described above.
+  String ->
+  -- | A closed 'Term'.
+  (forall (s :: S). Term s a) ->
+  TestTree
+releaseGolden evaluation = plutarchGoldenWith evaluation releaseTermEnv
 
 -- Helpers
 
