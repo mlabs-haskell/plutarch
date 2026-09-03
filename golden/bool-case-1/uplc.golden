@@ -1,0 +1,3 @@
+\he ie ->
+  let bind_je = case he [(True :: Bool), (False :: Bool)]
+  in case bind_je [ie, bind_je]

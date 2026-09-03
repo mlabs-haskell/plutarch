@@ -1,6 +1,6 @@
 module Main (main) where
 
--- import Bool qualified
+import Bool qualified
 -- import Compiled qualified
 -- import Compose qualified
 -- import Debug qualified
@@ -16,14 +16,14 @@ import Test.Tasty (defaultMain, testGroup)
 main :: IO ()
 main =
   defaultMain . testGroup "Goldens" $
-    [ Term.goldens
-    -- , Bool.goldens
-    -- , Numeric.goldens
-    -- , Compiled.goldens
-    -- , Error.goldens
-    -- , Compose.goldens
-    -- , Pretty.goldens
-    -- , Derivation.goldens
-    -- , Trace.goldens
-    -- , Debug.goldens
+    [ Term.goldens,
+      Bool.goldens
+      -- , Numeric.goldens
+      -- , Compiled.goldens
+      -- , Error.goldens
+      -- , Compose.goldens
+      -- , Pretty.goldens
+      -- , Derivation.goldens
+      -- , Trace.goldens
+      -- , Debug.goldens
     ]

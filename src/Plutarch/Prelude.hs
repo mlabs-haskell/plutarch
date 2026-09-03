@@ -31,6 +31,8 @@ module Plutarch.Prelude
 
     -- *** Operations
     pif,
+    por,
+    pnot,
 
     -- ** Integer
 
@@ -84,3 +86,23 @@ pif cond ifT ifF =
       -- This is backwards in UPLC `case`s: false first.
       handlers = NEVector.cons fAsSome $ NEVector.singleton tAsSome
    in punsafeCase cond handlers
+
+-- | Lazy inclusive or: if the first argument evaluates as true, second argument
+-- will not evaluate.
+--
+-- @since 2.0.0
+por ::
+  forall (s :: S).
+  Term s PBool ->
+  Term s PBool ->
+  Term s PBool
+por x = pif x x
+
+-- | Logical negation.
+--
+-- @since 2.0.0
+pnot ::
+  forall (s :: S).
+  Term s PBool ->
+  Term s PBool
+pnot x = pif x pfalse ptrue
