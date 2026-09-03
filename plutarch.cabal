@@ -65,6 +65,7 @@ library
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
     Plutarch.Primitive.BuiltinFun
+    Plutarch.Primitive.CanData
     Plutarch.Primitive.Composite
     Plutarch.Primitive.Con
     Plutarch.Primitive.Liftable
