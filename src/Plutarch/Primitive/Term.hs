@@ -101,7 +101,7 @@ import Plutarch.Backend.VarMap
     vmSingleton,
   )
 import Plutarch.Helpers.Backend (getFresh)
-import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Singular ((:-->))
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
 
