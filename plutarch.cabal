@@ -74,7 +74,9 @@ library
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
+    Plutarch.Primitive.Trace
     Plutarch.Test.Golden
+    Plutarch.Unsafe
 
   build-depends:
     , bimap
@@ -105,9 +107,17 @@ test-suite tests
   main-is:        Main.hs
   other-modules:
     Bool
+    Compiled
+    Compose
+    Error
+    Pretty
     Term
+    Trace
 
   hs-source-dirs: test
   build-depends:
+    , nonempty-vector
     , plutarch
+    , prettyprinter
     , tasty
+    , text

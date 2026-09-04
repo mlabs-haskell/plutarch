@@ -2,6 +2,9 @@ module Plutarch.Prelude
   ( -- * DSL types
     BackendTerm.S,
     BackendTerm.Term,
+    BackendTerm.TracingMode (..),
+    BackendTerm.OptimizationMode (..),
+    BackendTerm.TermEnv (..),
 
     -- * DSL construction operations
     PrimTerm.plam',
@@ -11,6 +14,9 @@ module Plutarch.Prelude
     PrimTerm.pdelay,
     PrimTerm.plet,
     PrimTerm.pfix,
+    PrimTerm.perror,
+    PrimTerm.pcompiled,
+    PrimTerm.pcompose,
 
     -- * Lifting
     Lift.pconstant,
@@ -42,7 +48,27 @@ module Plutarch.Prelude
     -- *** Primitive operations
     BF.pequalsInteger,
     BF.paddInteger,
+    BF.psubtractInteger,
     BF.pmultiplyInteger,
+
+    -- ** String
+
+    -- *** Type marker
+    S.PString,
+
+    -- ** Builtin list
+
+    -- *** Type marker
+    C.PBList (..),
+
+    -- ** Builtin pair
+
+    -- *** Type marker
+    C.PBPair (..),
+
+    -- ** Tracing
+    Trace.ptraceDebug,
+    Trace.ptraceError,
   )
 where
 
@@ -51,12 +77,14 @@ import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.Term (S, Term, toSomeTerm)
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Primitive.BuiltinFun qualified as BF
+import Plutarch.Primitive.Composite qualified as C
 import Plutarch.Primitive.Liftable qualified as Lift
 import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Singular (PBool)
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (punsafeCase, punsafeConstant)
 import Plutarch.Primitive.Term qualified as PrimTerm
+import Plutarch.Primitive.Trace qualified as Trace
 import PlutusCore qualified as PLC
 
 -- | Canonical true 'Term'.

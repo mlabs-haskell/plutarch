@@ -1,0 +1,17 @@
+<\a -> 
+  <Apply
+    <Compose
+      [
+        <\b -> 
+          <Apply<MultiplyInteger>@vjMEhbkCp9cN [b, b]>@fJUSkp3b4BnN
+        >@gqkffdFA6vnN, 
+        <\c -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [c, <2 :: Integer>@qjJx7b4Msxl]
+          >@sQnIXlhM1Ik
+        >@tdePJZnjEPB
+      ]
+    >@raPTEyQyFUn
+    [a]
+  >@rrFlSlCL4op
+>@mEmT8Olc9MqN

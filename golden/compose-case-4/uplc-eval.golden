@@ -1,0 +1,1 @@
+\a -> let b = AddInteger # a # (2 :: Integer) in MultiplyInteger # b # b
