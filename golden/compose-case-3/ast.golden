@@ -1,0 +1,24 @@
+<\a -> 
+  <Apply
+    <Compose
+      [
+        <\b -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [b, <2 :: Integer>@qjJx7b4Msxl]
+          >@i8py2W1iKkz
+        >@tdePJZnjEPB, 
+        <\c -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [c, <2 :: Integer>@qjJx7b4Msxl]
+          >@sQnIXlhM1Ik
+        >@tdePJZnjEPB, 
+        <\d -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [d, <2 :: Integer>@qjJx7b4Msxl]
+          >@hLjyGBI2DHlN
+        >@tdePJZnjEPB
+      ]
+    >@rM6bXY4gfnq
+    [a]
+  >@v68sfbrnJijN
+>@lGUax0rDest

@@ -1,0 +1,13 @@
+ANF Hashes:
+ #0 := nAyEnYBEW9k
+ #1 := ofkSqfsbj7l
+ #2 := hJah96zkoBhN
+ #3 := ndCEglga1kiN
+ #4 := lYcMIQHr97i
+
+ANF Binds:
+ #0 := True :: Bool
+ #1 := False :: Bool
+ #2 := Case a [#0, #1]
+ #3 := Case #2 [b, #2]
+ #4 := \a:1 b:1 -> #3

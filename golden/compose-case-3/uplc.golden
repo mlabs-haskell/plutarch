@@ -1,0 +1,4 @@
+\bc ->
+  AddInteger
+  # (AddInteger # (AddInteger # bc # (2 :: Integer)) # (2 :: Integer))
+  # (2 :: Integer)

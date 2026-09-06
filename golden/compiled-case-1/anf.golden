@@ -1,0 +1,9 @@
+ANF Hashes:
+ #0 := qs5nWTudVTv
+ #1 := q380PEwVpMeN
+ #2 := z5xgQVWXPoE
+
+ANF Binds:
+ #0 := COMPILED {\ee fe ge -> case ee [ge, fe]}
+ #1 := Apply #0 [a, b, c]
+ #2 := \a:1 b:1 c:1 -> #1

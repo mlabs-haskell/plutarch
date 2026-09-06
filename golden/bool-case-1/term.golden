@@ -1,0 +1,4 @@
+\a b ->
+  case 
+    (case a [True :: Bool, False :: Bool])
+    [b, case a [True :: Bool, False :: Bool]]

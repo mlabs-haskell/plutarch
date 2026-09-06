@@ -1,0 +1,22 @@
+<\a -> 
+  <Apply
+    <Compose
+      [
+        <\b -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [b, <2 :: Integer>@qjJx7b4Msxl]
+          >@i8py2W1iKkz
+        >@tdePJZnjEPB, 
+        <\c -> 
+          <Apply<MultiplyInteger>@vjMEhbkCp9cN [a, c]>@wK4gCppT8Fn
+        >@sIkK384YZYv, 
+        <\d -> 
+          <Apply
+            <SubtractInteger>@lAuuiZ9AppE [d, <5 :: Integer>@hF9c7g4Bb9pN]
+          >@adezdKolsQC
+        >@bqULYnvgFUnN
+      ]
+    >@ztQX2SasvEfN
+    [a]
+  >@rh278vqdbiB
+>@n8vW6zJDZAj

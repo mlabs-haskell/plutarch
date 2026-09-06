@@ -64,6 +64,7 @@ library
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
+    Plutarch.Prelude
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
     Plutarch.Primitive.Composite
@@ -73,12 +74,16 @@ library
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
+    Plutarch.Primitive.Trace
+    Plutarch.Test.Golden
+    Plutarch.Unsafe
 
   build-depends:
     , bimap
     , bytestring
     , containers
     , data-default
+    , filepath
     , hashable
     , lens
     , mtl
@@ -87,8 +92,32 @@ library
     , plutus-core          ==1.67.0.0
     , prettyprinter
     , smash
+    , tasty
+    , tasty-golden
     , text
     , these
     , vector
 
   hs-source-dirs:  src
+
+test-suite tests
+  import:         lang
+  type:           exitcode-stdio-1.0
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  main-is:        Main.hs
+  other-modules:
+    Bool
+    Compiled
+    Compose
+    Error
+    Pretty
+    Term
+    Trace
+
+  hs-source-dirs: test
+  build-depends:
+    , nonempty-vector
+    , plutarch
+    , prettyprinter
+    , tasty
+    , text
