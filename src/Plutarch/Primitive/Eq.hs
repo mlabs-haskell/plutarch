@@ -13,6 +13,8 @@ import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.Term (S, Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun qualified as F
 import Plutarch.Primitive.Composite qualified as C
+import Plutarch.Primitive.DerivedFun (pfalse, pif, pnot, ptrue)
+import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Representation
   ( PlutarchType (PRepresentation),
@@ -41,9 +43,7 @@ class (PlutarchType a) => PEq (a :: S -> Type) where
 -- | @since 2.0.0
 instance PEq PBool where
   peq = plam' $ \x -> plam' $ \y ->
-    punsafeCase x
-      . NEVector.cons (toSomeTerm $ invert y)
-      $ NEVector.singleton (toSomeTerm y)
+    pif x y (pnot y)
 
 -- | @since 2.0.0
 instance PEq S.PInteger where
@@ -92,11 +92,10 @@ instance PEq S.PBValue where
 -- | @since 2.0.0
 instance (PEq a) => PEq (S.PBArray a) where
   peq = plam' $ \xs -> plam' $ \ys ->
-    punsafeCase (peq # (F.plengthOfArray # xs) # (F.plengthOfArray # ys))
-      . NEVector.cons (toSomeTerm . punsafeConstant . PLC.someValue @Bool $ False)
-      . NEVector.singleton
-      . toSomeTerm
-      $ go xs ys (F.plengthOfArray # xs) # punsafeConstant (PLC.someValue @Integer 0)
+    pif
+      (peq # (F.plengthOfArray # xs) # (F.plengthOfArray # ys))
+      (go xs ys (F.plengthOfArray # xs) # pconstant 0)
+      pfalse
     where
       go ::
         forall (s :: S).
@@ -105,21 +104,14 @@ instance (PEq a) => PEq (S.PBArray a) where
         Term s S.PNatural ->
         Term s (S.PNatural :--> PBool)
       go xs ys limit = pfix $ \self -> plam' $ \i ->
-        punsafeCase
+        pif
           (peq # i # limit)
-          . NEVector.cons
-            ( toSomeTerm
-                . punsafeCase (peq # (F.pindexArray # xs # i) # (F.pindexArray # ys # i))
-                . NEVector.cons (toSomeTerm . punsafeConstant . PLC.someValue @Bool $ False)
-                . NEVector.singleton
-                . toSomeTerm
-                $ self # punsafeCoerce (F.paddInteger # pfundamental i # punsafeConstant (PLC.someValue @Integer 1))
-            )
-          . NEVector.singleton
-          . toSomeTerm
-          . punsafeConstant
-          . PLC.someValue @Bool
-          $ True
+          ptrue
+          ( pif
+              (peq # (F.pindexArray # xs # i) # (F.pindexArray # ys # i))
+              (self # punsafeCoerce (F.paddInteger # pfundamental i # pconstant 1))
+              pfalse
+          )
 
 -- | @since 2.0.0
 instance (PEq a) => PEq (C.PBList a) where
@@ -142,11 +134,10 @@ instance (PEq a, PEq b) => PEq (C.PBPair a b) where
   peq = plam' $ \xs -> plam' $ \ys ->
     pmatch xs $ \(C.PBPair x1 x2) ->
       pmatch ys $ \(C.PBPair y1 y2) ->
-        punsafeCase (peq # x1 # y1)
-          . NEVector.cons (toSomeTerm . punsafeConstant . PLC.someValue @Bool $ False)
-          . NEVector.singleton
-          . toSomeTerm
-          $ peq # x2 # y2
+        pif
+          (peq # x1 # y1)
+          (peq # x2 # y2)
+          pfalse
 
 -- | @since 2.0.0
 (#==) ::
@@ -163,19 +154,7 @@ infix 4 #==
   forall (a :: S -> Type) (s :: S).
   (PEq a) =>
   Term s a -> Term s a -> Term s PBool
-x #/= y = invert (peq # x # y)
+x #/= y = pnot (peq # x # y)
 
 -- | @since 2.0.0
 infix 4 #/=
-
--- Helpers
-
-invert ::
-  forall (s :: S).
-  Term s PBool ->
-  Term s PBool
-invert t =
-  punsafeCase t
-    . NEVector.cons (toSomeTerm . punsafeConstant . PLC.someValue @Bool $ True)
-    . NEVector.singleton
-    $ toSomeTerm (punsafeConstant . PLC.someValue @Bool $ False)

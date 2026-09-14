@@ -69,6 +69,8 @@ library
     Plutarch.Primitive.CanData
     Plutarch.Primitive.Composite
     Plutarch.Primitive.Con
+    Plutarch.Primitive.Debug
+    Plutarch.Primitive.DerivedFun
     Plutarch.Primitive.Eq
     Plutarch.Primitive.Liftable
     Plutarch.Primitive.Match
