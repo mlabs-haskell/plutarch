@@ -7,13 +7,23 @@ module Plutarch.Primitive.DerivedFun
     pnot,
     por,
     pand,
+
+    -- * Numeric
+    pisNegative,
   )
 where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.Term (S, Term, toSomeTerm)
-import Plutarch.Primitive.Singular (PBool)
+import Plutarch.Primitive.BuiltinFun qualified as BF
+import Plutarch.Primitive.Liftable (pconstant)
+import Plutarch.Primitive.Representation
+  ( PlutarchType (PRepresentation),
+    pfundamental,
+    (#),
+  )
+import Plutarch.Primitive.Singular (PBool, PInteger)
 import Plutarch.Primitive.Term (punsafeCase, punsafeConstant)
 import PlutusCore qualified as PLC
 
@@ -75,3 +85,14 @@ pnot ::
   Term s PBool ->
   Term s PBool
 pnot x = pif x pfalse ptrue
+
+-- | Checks if a given numeric type is negative. This is slightly more efficient
+-- than a direct comparison to zero.
+--
+-- @since 2.0.0
+pisNegative ::
+  forall (a :: S -> Type) (s :: S).
+  (PlutarchType a, PRepresentation a ~ PInteger) =>
+  Term s a ->
+  Term s PBool
+pisNegative t = BF.plessThanEqualsInteger # pfundamental t # pconstant (-1)
