@@ -1,0 +1,18 @@
+<\a b c d -> 
+  <case
+    a 
+    [
+      <case
+        b 
+        [
+          <case
+            c 
+            [d, <True :: Bool>@nAyEnYBEW9k]
+          >@uxWRc7S9PnD, 
+          <True :: Bool>@nAyEnYBEW9k
+        ]
+      >@gsu7FzFeiex, 
+      <True :: Bool>@nAyEnYBEW9k
+    ]
+  >@jRFvhIFYLJtN
+>@bDBDsrKboVn

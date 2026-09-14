@@ -1,0 +1,20 @@
+ANF Hashes:
+ #0 := nAyEnYBEW9k
+ #1 := uxWRc7S9PnD
+ #2 := gsu7FzFeiex
+ #3 := jRFvhIFYLJtN
+ #4 := bDBDsrKboVn
+
+ANF Binds:
+ #0 := True :: Bool
+ #1 := Case c [d, #0]
+ #2 := Case b [#1, #0]
+ #3 := Case a [#2, #0]
+ #4 := \a:1 b:1 c:1 d:1 -> #3
+
+ANF Annotations:
+ #0 := Trivial
+ #1 := Demanded (Id 1) 1
+ #2 := Demanded (Id 2) 1
+ #3 := Demanded (Id 3) 1
+ #4 := NeverDemanded

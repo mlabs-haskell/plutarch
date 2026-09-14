@@ -124,7 +124,7 @@ por ::
   Term s PBool ->
   Term s PBool ->
   Term s PBool
-por x = pif x x
+por x = pif x ptrue
 
 -- | Logical negation.
 --
