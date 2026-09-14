@@ -38,6 +38,7 @@ module Plutarch.Prelude
     -- *** Operations
     pif,
     por,
+    pand,
     pnot,
 
     -- ** Integer
@@ -125,6 +126,17 @@ por ::
   Term s PBool ->
   Term s PBool
 por x = pif x ptrue
+
+-- | Lazy inclusive and: if the first argument evaluates as false, second
+-- argument will not evaluate.
+--
+-- @since 2.0.0
+pand ::
+  forall (s :: S).
+  Term s PBool ->
+  Term s PBool ->
+  Term s PBool
+pand x y = pif x y pfalse
 
 -- | Logical negation.
 --
