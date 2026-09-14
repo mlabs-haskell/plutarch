@@ -1,3 +1,1 @@
-\he ie ->
-  let bind_je = case he [(True :: Bool), (False :: Bool)]
-  in case bind_je [ie, bind_je]
+\uc vc -> case uc [(True :: Bool), vc]

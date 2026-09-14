@@ -120,4 +120,4 @@ score tSize boundSize =
     <> show boundSize
     <> " bytes\nDelta: "
     <> show (boundSize - tSize)
-    <> "bytes (negative means we overshot the bound)"
+    <> " bytes (negative means we overshot the bound)"

@@ -4,12 +4,6 @@
       a 
       [<True :: Bool>@nAyEnYBEW9k, <False :: Bool>@ofkSqfsbj7l]
     >@hJah96zkoBhN 
-    [
-      b, 
-      <case
-        a 
-        [<True :: Bool>@nAyEnYBEW9k, <False :: Bool>@ofkSqfsbj7l]
-      >@hJah96zkoBhN
-    ]
-  >@ndCEglga1kiN
->@lYcMIQHr97i
+    [b, <True :: Bool>@nAyEnYBEW9k]
+  >@hCOqT14ed8pN
+>@uGKlYA2nKTkN

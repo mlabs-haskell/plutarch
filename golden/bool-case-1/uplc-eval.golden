@@ -1,3 +1,1 @@
-\a b ->
-  let bind_c = case a [(True :: Bool), (False :: Bool)]
-  in case bind_c [b, bind_c]
+\a b -> case a [(True :: Bool), b]
