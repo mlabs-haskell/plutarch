@@ -41,6 +41,11 @@ module Plutarch.Prelude
     DF.pand,
     DF.pnot,
 
+    -- ** Byte
+
+    -- *** Type marker
+    S.PByte,
+
     -- ** Integer
 
     -- *** Type marker
@@ -51,6 +56,11 @@ module Plutarch.Prelude
     BF.paddInteger,
     BF.psubtractInteger,
     BF.pmultiplyInteger,
+
+    -- ** ByteString
+
+    -- *** Type marker
+    S.PByteString,
 
     -- ** String
 
@@ -70,12 +80,17 @@ module Plutarch.Prelude
     -- ** Tracing
     Trace.ptraceDebug,
     Trace.ptraceError,
+
+    -- ** Debug
+    Debug.PDebug (..),
+    Debug.pshow,
   )
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite qualified as C
+import Plutarch.Primitive.Debug qualified as Debug
 import Plutarch.Primitive.DerivedFun qualified as DF
 import Plutarch.Primitive.Liftable qualified as Lift
 import Plutarch.Primitive.Representation qualified as Representation

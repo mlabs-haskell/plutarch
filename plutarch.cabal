@@ -115,6 +115,7 @@ test-suite tests
     Bool
     Compiled
     Compose
+    Debug
     Error
     Pretty
     Term
