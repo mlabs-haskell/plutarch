@@ -378,7 +378,9 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
 newtype Rank = Rank Word
   deriving
     ( -- | @since 2.0.0
-      Eq
+      Eq,
+      -- | @since 2.0.0
+      Ord
     )
     via Word
   deriving stock

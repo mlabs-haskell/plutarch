@@ -25,6 +25,8 @@ import Data.Default (def)
 import Data.Foldable (foldl', for_)
 import Data.Kind (Type)
 import Data.List.NonEmpty qualified as NEList
+import Data.Map.NonEmpty (NEMap)
+import Data.Map.NonEmpty qualified as NEMap
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Maybe (fromJust)
@@ -60,6 +62,7 @@ import Plutarch.Backend.ANF
         LConstant,
         LError
       ),
+    Rank,
     Ref (AVar, AnId),
     getANFBindAnn,
   )
@@ -82,6 +85,7 @@ import Plutarch.Backend.UPLC
     uplcLam,
     uplcLam1,
     uplcLet,
+    uplcLetP,
     uplcMCombinator,
     uplcVar,
   )
@@ -295,7 +299,7 @@ data CompileEnv = CompileEnv
 
 data CompileState = CompileState
   { csCache :: Map Id UPLCTerm,
-    csBindRequirements :: Map Id (NESet Id)
+    csBindRequirements :: Map Id (NEMap Rank (NESet Id))
   }
 
 newtype CompileM (a :: Type) = CompileM (RWS CompileEnv () CompileState a)
@@ -354,25 +358,30 @@ compile = do
         -- This node is only used once.
         OneShot -> pure ()
         -- We need this more than once, record this fact.
-        Demanded letBindLoc _ _ -> modify (recordLetBind letBindLoc ix)
+        Demanded letBindLoc _ rank -> modify (recordLetBind letBindLoc ix rank)
       -- Check if we have to `let`-bind anything here.
       letBindsRequired <- do
         mBinds <- gets (Map.lookup (Id ix) . csBindRequirements)
         case mBinds of
           Nothing -> pure []
-          Just ess -> traverse lookupBindName . NEList.toList . NESet.toList $ ess
+          Just rankedBinds -> traverse entryToBinds . NEList.toList . NEMap.toAscList $ rankedBinds
       -- Compile the bind, doing any `let`-binds we need, and cache.
       compileAndCache ix letBindsRequired bind
+    -- Note (Koz, 22/09/2026): The `Rank` here serves only as an ordering
+    -- and grouping helper. Once we get here, things are already correctly
+    -- ordered and grouped, so we can just discard `Rank`s.
+    entryToBinds :: (Rank, NESet Id) -> m (NonEmptyVector (UPLC.Name, UPLCTerm))
+    entryToBinds (_, ids) = traverse lookupBindName . NEVector.fromNonEmpty . NESet.toList $ ids
 
-recordLetBind :: Id -> Int -> CompileState -> CompileState
-recordLetBind letBindLoc whatToBind = \case
+recordLetBind :: Id -> Int -> Rank -> CompileState -> CompileState
+recordLetBind letBindLoc whatToBind rank = \case
   CompileState cache reqs -> CompileState cache . Map.alter go letBindLoc $ reqs
   where
-    go :: Maybe (NESet Id) -> Maybe (NESet Id)
+    go :: Maybe (NEMap Rank (NESet Id)) -> Maybe (NEMap Rank (NESet Id))
     go =
       Just . \case
-        Nothing -> NESet.singleton (Id whatToBind)
-        Just ess -> NESet.insert (Id whatToBind) ess
+        Nothing -> NEMap.singleton rank . NESet.singleton . Id $ whatToBind
+        Just emm -> NEMap.insertWith NESet.union rank (NESet.singleton . Id $ whatToBind) emm
 
 lookupBindName ::
   forall (m :: Type -> Type).
@@ -388,11 +397,14 @@ lookupBindName i@(Id asIx) = do
 compileAndCache ::
   forall (m :: Type -> Type).
   (MonadState CompileState m, MonadReader CompileEnv m) =>
-  Int -> [(PLC.Name, UPLCTerm)] -> ANFBind Demand -> m ()
+  Int ->
+  [NonEmptyVector (PLC.Name, UPLCTerm)] ->
+  ANFBind Demand ->
+  m ()
 compileAndCache ix requiredLetBinds = \case
   -- Leaves can never require any `let`-bindings, so we just compile and cache
-  -- the bind and move on. Furthermore, leaves can never reference anything, so
-  -- we don't have to namecheck.
+  -- the bind, then move on. Furthermore, leaves can never reference anything,
+  -- so we don't have to namecheck.
   ANFLeaf ell -> modify (writeToCache (Id ix) . compileLeaf $ ell)
   -- For `force` and `delay`, we have to namecheck their bodies. We also have to
   -- potentially resolve some `let`-binds.
@@ -539,9 +551,16 @@ checkCache = \case
 
 -- Note (Koz, 06/08/2026): The fold direction is important, as this preserves
 -- the dependency order of `let`-binds.
-doLetBinds :: [(PLC.Name, UPLCTerm)] -> UPLCTerm -> UPLCTerm
-doLetBinds requiredLetBinds t =
-  foldr (\(name, bind) acc -> uplcLet name bind acc) t requiredLetBinds
+doLetBinds :: [NonEmptyVector (UPLC.Name, UPLCTerm)] -> UPLCTerm -> UPLCTerm
+doLetBinds requiredLetBinds t = foldr go t requiredLetBinds
+  where
+    go :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
+    go nameBinds acc = case NEVector.uncons nameBinds of
+      ((name, bind), nameBinds') -> case Vector.uncons nameBinds' of
+        -- Singular bind, bind sequentially
+        Nothing -> uplcLet name bind acc
+        -- Parallel bind
+        Just _ -> uplcLetP nameBinds acc
 
 isTheIdentity ::
   forall (m :: Type -> Type).

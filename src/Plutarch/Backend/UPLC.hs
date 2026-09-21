@@ -8,6 +8,7 @@ module Plutarch.Backend.UPLC
     uplcLam,
     uplcLam1,
     uplcLet,
+    uplcLetP,
     uplcForce,
     uplcDelay,
     uplcVar,
@@ -78,6 +79,14 @@ uplcMCombinator arg = uplcLam1 arg . uplcApply1 (uplcVar arg) . uplcVar $ arg
 -- @since 2.0.0
 uplcLet :: UPLC.Name -> UPLCTerm -> UPLCTerm -> UPLCTerm
 uplcLet varName v f = uplcApply1 (uplcLam1 varName f) v
+
+-- | \'Parallel\' @let@, as a combination of @constr@ and @case@.
+--
+-- @since 2.0.0
+uplcLetP :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
+uplcLetP nameBodies f =
+  let scrut = uplcConstr 0 (NEVector.toVector . fmap snd $ nameBodies)
+   in uplcCase scrut . NEVector.singleton . uplcLam (fmap fst nameBodies) $ f
 
 -- | Arity-1 application.
 --

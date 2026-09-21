@@ -16,8 +16,8 @@
                  )
                  [ (\mArg_f -> mArg_f # mArg_f)
                    # (\a b c d ->
-                       (\bind_ib ->
-                         (\bind_lb ->
+                       (\bind_lb ->
+                         (\bind_ib ->
                            (\bind_tb ->
                              case 
                                (EqualsInteger # c # d)
@@ -54,28 +54,28 @@
                                  )
                              )
                          )
-                         # (IndexByteString # b # d)
+                         # (\e ->
+                             case e
+                               [ ("0" :: String)
+                               , ("1" :: String)
+                               , ("2" :: String)
+                               , ("3" :: String)
+                               , ("4" :: String)
+                               , ("5" :: String)
+                               , ("6" :: String)
+                               , ("7" :: String)
+                               , ("8" :: String)
+                               , ("9" :: String)
+                               , ("A" :: String)
+                               , ("B" :: String)
+                               , ("C" :: String)
+                               , ("D" :: String)
+                               , ("E" :: String)
+                               , ("F" :: String)
+                               ]
+                           )
                        )
-                       # (\e ->
-                           case e
-                             [ ("0" :: String)
-                             , ("1" :: String)
-                             , ("2" :: String)
-                             , ("3" :: String)
-                             , ("4" :: String)
-                             , ("5" :: String)
-                             , ("6" :: String)
-                             , ("7" :: String)
-                             , ("8" :: String)
-                             , ("9" :: String)
-                             , ("A" :: String)
-                             , ("B" :: String)
-                             , ("C" :: String)
-                             , ("D" :: String)
-                             , ("E" :: String)
-                             , ("F" :: String)
-                             ]
-                         )
+                       # (IndexByteString # b # d)
                      )
                  ]
                )
