@@ -11,7 +11,7 @@ ANF Binds:
  #3 := \a:1 -> #2
 
 ANF Annotations:
- #0 := Demanded (Id 2) 2
+ #0 := Demanded (Id 2) 2 (Rank 0)
  #1 := OneShot
  #2 := OneShot
  #3 := NeverDemanded

@@ -1,3 +1,4 @@
+{-# LANGUAGE ImpredicativeTypes #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
@@ -21,13 +22,14 @@ module Plutarch.Backend.ANF
     Id (..),
     ANF (..),
     Demand (..),
+    Rank (..),
     fromHashedAST,
     getANFBindAnn,
     fullPipeline,
   )
 where
 
-import Control.Monad (when)
+import Control.Monad (foldM, when)
 import Control.Monad.State.Strict
   ( MonadState,
     State,
@@ -369,6 +371,26 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
       modify (bimap (Bimap.insert asId h) (IntMap.insert firstAvailable bind))
       pure . AnId $ asId
 
+-- | Indicates dependency chains. More precisely, ANF binds with a higher rank
+-- have dependencies whose rank is lower.
+--
+-- @since 2.0.0
+newtype Rank = Rank Word
+  deriving
+    ( -- | @since 2.0.0
+      Eq
+    )
+    via Word
+  deriving stock
+    ( -- | @since 2.0.0
+      Show
+    )
+
+-- | @since 2.0.0
+instance Pretty Rank where
+  {-# INLINEABLE pretty #-}
+  pretty = viaShow
+
 -- | A type to indicate how often a (sub) computation is needed as part of an
 -- entire translation unit, as well as where it should be @let@ bound if needed.
 --
@@ -381,10 +403,11 @@ data Demand
     NeverDemanded
   | -- | This computation is needed at least twice (exact use count indicated
     --    by 'Word64'), and if it needs to be @let@-bound, where this can be
-    --    done (indicated by 'Id').
+    --    done (indicated by 'Id'). Also store a 'Rank' to verify whether
+    --    parallel let-binding is possible here.
     --
     --    @since 2.0.0
-    Demanded Id Word64
+    Demanded Id Word64 Rank
   | -- | Should never be @let@-bound. Thus, its use count is not needed.
     --
     --    @since 2.0.0
@@ -404,8 +427,8 @@ data Demand
 instance Pretty Demand where
   pretty = viaShow
 
--- | Performs all analysis steps needed to get the full demand analysis, then
--- annotates the ANF with that analysis.
+-- | Performs all analysis steps needed to get the full demand analysis, as well
+-- as rank analysis. Annotate the input 'ANF' with both at each node.
 --
 -- @since 2.0.0
 fullPipeline :: forall (ann :: Type). ANF ann -> ANF Demand
@@ -414,19 +437,69 @@ fullPipeline anf@(ANF _ binds) =
       counted = countUses binds
       reqVars = collectRequiredVars binds
       bindSites = determineBindSites anf
-   in analyzeDemand labelled counted reqVars bindSites anf
+      ranks = determineRanks binds
+   in analyzeDemand labelled counted reqVars bindSites ranks anf
 
 -- Helpers
 
+determineRanks :: forall (ann :: Type). NonEmptyVector (ANFBind ann) -> NonEmptyVector Rank
+determineRanks binds = fmap (Rank . fromIntegral) . NEVector.unsafeCreate $ do
+  let len = NEVector.length binds
+  mv <- MVector.replicate len (-1)
+  NEVector.imapM_ (go mv) binds
+  pure mv
+  where
+    go ::
+      forall (m :: Type -> Type).
+      (PrimMonad m) =>
+      MVector (PrimState m) Int ->
+      Int ->
+      ANFBind ann ->
+      m ()
+    go mv i = \case
+      -- All leaves unconditionally have rank 0
+      ANFLeaf _ -> MVector.write mv i 0
+      -- Single-descendant nodes must have a rank one higher than their
+      -- descendants. Variables do not impact rank.
+      ANFForce _ r -> rankOf mv r >>= (MVector.write mv i . (+ 1))
+      ANFDelay _ r -> rankOf mv r >>= (MVector.write mv i . (+ 1))
+      ANFLam _ _ body -> rankOf mv body >>= (MVector.write mv i . (+ 1))
+      ANFFix _ _ body -> rankOf mv body >>= (MVector.write mv i . (+ 1))
+      -- Multiple-descendant node must have a rank one higher than the maximum
+      -- of all their descendants. Variables do not impact rank.
+      ANFApply _ f xs -> do
+        rankStart <- rankOf mv f
+        rank <- foldM (\acc r -> max acc <$> rankOf mv r) rankStart xs
+        MVector.write mv i (rank + 1)
+      ANFConstr _ _ fields -> do
+        rank <- foldM (\acc r -> max acc <$> rankOf mv r) (-1) fields
+        MVector.write mv i (rank + 1)
+      ANFCase _ scrut handlers -> do
+        rankStart <- rankOf mv scrut
+        rank <- foldM (\acc r -> max acc <$> rankOf mv r) rankStart handlers
+        MVector.write mv i (rank + 1)
+      ANFCompose _ components -> do
+        rank <- foldM (\acc r -> max acc <$> rankOf mv r) (-1) components
+        MVector.write mv i (rank + 1)
+    rankOf ::
+      forall (m :: Type -> Type).
+      (PrimMonad m) =>
+      MVector (PrimState m) Int ->
+      Ref ->
+      m Int
+    rankOf mv = \case
+      AVar _ -> pure (-1)
+      -- Note (Koz, 22/09/2026): This 'read-behind' is always safe. We process
+      -- nodes from lowest to highest bind index, and thus, any dependencies
+      -- will have been assigned a rank already.
+      AnId (Id i) -> MVector.read mv i
+
 -- At this stage, we have all of the following for each bind:
 --
-
--- * Its transitive dependencies (as `Id`s)
-
--- * A direct use count (or `Nothing` if trivial)
-
--- * All variables required by its subcomputation
-
+-- 1. Its transitive dependencies (as `Id`s)
+-- 2. A direct use count (or `Nothing` if trivial)
+-- 3. All variables required by its subcomputation
+-- 4. Its rank.
 --
 -- Additionally, we also have, for every variable, the site where it is bound
 -- (as an `Id`). We can put all this together to construct `Demand`s for each
@@ -437,130 +510,165 @@ analyzeDemand ::
   NonEmptyVector (Maybe Word) ->
   NonEmptyVector (Set Hash) ->
   Map Hash Id ->
+  NonEmptyVector Rank ->
   ANF ann ->
   ANF Demand
-analyzeDemand labelled counted reqVars bindSites (ANF bm binds) =
+analyzeDemand labelled counted reqVars bindSites ranks (ANF bm binds) =
   let len = NEVector.length binds
       newBinds = NEVector.generate1 len $ \i ->
         let oldBind = binds NEVector.! i
             uses = counted NEVector.! i
          in case uses of
-              -- Trivial binds are always inlined, so no need to do any
-              -- analysis.
+              -- Trivial binds are always inlined, no need for any analysis.
               Nothing -> Trivial <$ oldBind
-              -- Only the toplevel node will ever have a zero use count.
+              -- This must be the toplevel node, and it's unique by
+              -- construction. No analysis needed.
               Just 0 -> NeverDemanded <$ oldBind
-              -- We're only using this once, so no need for a bind site
+              -- A single-use bind doesn't need any analysis either.
               Just 1 -> OneShot <$ oldBind
               Just n ->
                 let neededVars = reqVars NEVector.! i
-                    -- Once we know all the required variables, we can determine
-                    -- a 'bind site of last resort'. This is because we _must_
-                    -- have all required variables in scope, or the bind is
+                    -- Once we know all required vars, we can determine a 'bind
+                    -- site of last resort'. This is because we _must_ have all
+                    -- variables needed by the bind in scope, or the bind is
                     -- meaningless.
                     --
                     -- We can establish this by finding the `Id` corresponding
-                    -- to the lambda that binds a variable we need with the
+                    -- to the lambda that binds the variable we need with the
                     -- _lowest_ possible identifier. As lower `Id`s are
                     -- dependencies of higher `Id`s, this guarantees we'll get
                     -- the closest enclosing lambda.
                     lastResort = Set.foldl' siteMin (len - 1) neededVars
-                 in -- The site of last resort isn't always optimal, especially
+                    -- The site of last resort isn't always optimal, especially
                     -- for closed subcomputations. As UPLC is strict, and
-                    -- `let`-bindings are compiled into applications of lambdas,
-                    -- `let`-binding 'too high' can cause more evaluation than we
-                    -- actually need. Consider the following example:
+                    -- `let`-bindings can compile to applications of lambdas,
+                    -- `let`-binding 'too high' can cause more evaluation than
+                    -- we want. Consider the following example:
                     --
                     -- \a -> if a then doB else doC
                     --
                     -- Suppose that `doB` (and only `doB`) depends on a closed
-                    -- subcomputation `c1` multiple times. Likewise, suppose that
-                    -- `doC` (and only `doC`) depends on a closed subcomputation
-                    -- `c2` multiple times. If we use the site of last resort, we
-                    -- end up compiling something akin to:
+                    -- subcomputation `c1` multiple times. Likewise, suppose
+                    -- that `doC` (and only `doC`) depends on a closed
+                    -- subcomputation `c2` multiple times. If we use the site of
+                    -- last resort, we end up compiling something akin to:
                     --
                     -- let c1 = ... in let c2 = ... in \a -> if a then doB' else doC'
                     --
                     -- where `doB'` and `doC'` are `doB` and `doC` with the
-                    -- relevant subcomputations replaced by `let`-bound variables.
-                    -- However, this would force evaluation of both `c1` and `c2`,
-                    -- even though we only ever need one of them!
+                    -- relevant subcomputations replaced by `let`-bound
+                    -- variables. However, this would force evaluation of both
+                    -- `c1` and `c2`, even though we only ever need one of them!
                     --
-                    -- A more sensible strategy would compile to something like so
-                    -- instead:
+                    -- A more sensible strategy would compile to something like
+                    -- this instead:
                     --
-                    -- \a -> if a then (let c1 = .. in doB') (let c2 = .. in doC')
+                    -- \a -> if a then (let c1 = ... in doB') (let c2 = ... in doC')
                     --
-                    -- This way, we end up evaluating only what we need and
-                    -- nothing more.
+                    -- Thus, we only evaluate what we actually need.
                     --
-                    -- We thus do a 'digging' analysis to try and 'push'
-                    -- `let`-bindings as close to their use sites as we can.
-                    Demanded (digDependency (Id i) lastResort) (fromIntegral n) <$ oldBind
+                    -- To enable this, we do a 'digging' analysis to try and
+                    -- 'push' `let`-bindings as close to their use sites as we
+                    -- can.
+                    idealLocation = digDependency (Id i) lastResort
+                    -- After finding the 'ideal' site to perform a `let`-bind,
+                    -- we may find that a single given site may need multiple
+                    -- `let`-binds to be performed there. This can be done in
+                    -- two ways:
+                    --
+                    -- 1. _Sequentially_, by applying the `let`-transform
+                    --    multiple times in sequence; or
+                    -- 2. _In parallel_, by transforming into a combination of
+                    --    `case` and `constr` (as for applications).
+                    --
+                    -- We want to perform `let`-binds in parallel where
+                    -- possible. However, in some cases, `let`-binds may depend
+                    -- on each other, which makes in parallel binds impossible.
+                    -- This is not immediately apparent at the binding site: we
+                    -- would have to examine all pairs of binds to determine
+                    -- this.
+                    --
+                    -- To save on this tedium, we also annotate any bind that
+                    -- needs `let`-binding with its rank. As nodes of higher
+                    -- rank depend on nodes of lower rank, we can thus determine
+                    -- whether we can `let`-bind in parallel and to what extent.
+                    rank = ranks NEVector.! i
+                 in Demanded idealLocation (fromIntegral n) rank <$ oldBind
    in ANF bm newBinds
   where
     siteMin :: Int -> Hash -> Int
     siteMin acc varHash = case Map.lookup varHash bindSites of
       -- Technically impossible
-      Nothing -> acc
+      Nothing -> error "No bind site found for a given var. Please report this!"
       Just (Id site) -> min acc site
     digDependency :: Id -> Int -> Id
     digDependency target currId =
       let currBind = binds NEVector.! currId
        in case currBind of
-            -- We should never make it down here.
-            ANFLeaf _ -> error "When performing demand analysis, a let-binding would be placed on a constant."
-            -- As these binds have only a single descendant, they are never the
-            -- optimal place for a `let`-bind, as we can also bind in their
-            -- bodies. Thus, we 'step into' their bodies and keep searching.
+            -- We should never make it down here
+            ANFLeaf _ ->
+              error $
+                "Let-binding placement on a constant during demand analysis. "
+                  <> "If you see this, please report this as a bug!"
+            -- Binds with single decendants, they are never the optimal place for
+            -- a `let`-bind, as we could bind at their descendant instead.
             ANFForce _ r -> refToBindSite target (Id currId) r
             ANFDelay _ r -> refToBindSite target (Id currId) r
             ANFLam _ _ body -> refToBindSite target (Id currId) body
             ANFFix _ _ body -> refToBindSite target (Id currId) body
-            -- Each of the following have multiple descendants. By our earlier
-            -- analyses, we know that at least one of them depends, either
-            -- directly or not, on `target`. Thus, there are two possibilities:
+            -- For binds with multiple descendants, by our earlier analyses, we
+            -- know that at least one of those descendants depends on `target`.
+            -- There are two cases:
             --
-            -- 1. Exactly one descendant bind depends (transitively) on
-            --    `target`.
-            -- 2. More than one descendant bind depends (transitively) on
-            --    `target.
+            -- 1. There is exactly one such descendant; or
+            -- 2. There is more than one such descendant.
             --
             -- The _first time_ we encounter Case 2 represents the point at
-            -- which the `let`-bind of `target` _must_ happen. If we see a Case
-            -- 1, the descendant (or possibly one of its descendants) is instead
-            -- a better choice.
-            ANFApply _ f xs ->
+            -- which the `let`-bind of `target` _must_ happen. If we see Case 1,
+            -- that descendant (or possibly one of _its_ descendants) is instead
+            -- a better choice of `let`-binding location.
+            ANFApply _ f xs -> do
               let start = refToJPR target f
                in case NEVector.foldl' (combineJPRs target) start xs of
-                    -- This cannot happen: at least one of the descendants must
-                    -- depend on `target` somehow.
-                    NoCandidateFound -> error "When performing demand analysis, an ANFApply join point had no candidate descendants."
+                    -- This cannot happen: at least one descendant must depend on
+                    -- `target` somehow.
+                    NoCandidateFound ->
+                      error $
+                        "ANFApply join point had no candidate descendants. "
+                          <> "If you see this, please report this as a bug!"
                     Ineligible -> Id currId
                     Descend next -> digDependency target next
             ANFConstr _ _ fields -> case Vector.uncons fields of
-              -- This cannot happen: if we have no fields, this cannot require a
-              -- let-binding to occur here.
-              Nothing -> error "When performing demand analysis, an ANFConstr was declared as a join point, but it has no descendants."
+              -- This cannot happen: if we have no fields, a `let`-binding
+              -- cannot be required to occur here.
+              Nothing ->
+                error $
+                  "ANFConstr join point had no descendants. "
+                    <> "If you see this, please report this as a bug!"
               Just (field, fields') -> case Vector.foldl' (combineJPRs target) (refToJPR target field) fields' of
-                -- This cannot happen: at least one of the descendants must
-                -- depend on `target` somehow.
-                NoCandidateFound -> error "When performing demand analysis, an ANFConstr join point had no candidate descendants."
+                -- This cannot happen: at least one descendant must depend on
+                -- `target` somehow.
+                NoCandidateFound ->
+                  error $
+                    "ANFConstr join point had no candidate descendants. "
+                      <> "If you see this, please report this as a bug!"
                 Ineligible -> Id currId
                 Descend next -> digDependency target next
             ANFCase _ scrut handlers ->
               let start = refToJPR target scrut
                in case NEVector.foldl' (combineJPRs target) start handlers of
-                    -- This cannot happen: at least one of the descendants must
-                    -- depend on `target` somehow.
-                    NoCandidateFound -> error "When performing demand analysis, an ANFCase join point had no candidate descendants."
+                    NoCandidateFound ->
+                      error $
+                        "ANFCase join point had no candidate descendants. "
+                          <> "If you see this, please report this as a bug!"
                     Ineligible -> Id currId
                     Descend next -> digDependency target next
             ANFCompose _ components -> case NEVector.uncons components of
               (c, cs) -> case Vector.foldl' (combineJPRs target) (refToJPR target c) cs of
-                -- This cannot happen: at least one of the descendants must
-                -- depend on `target` somehow.
-                NoCandidateFound -> error "When performing demand analysis, an ANFCompose join point had no candidate descendants."
+                NoCandidateFound ->
+                  error $
+                    "ANFCompose join point had no candidate descendants. "
+                      <> "If you see this, please report this as a bug!"
                 Ineligible -> Id currId
                 Descend next -> digDependency target next
     refToBindSite :: Id -> Id -> Ref -> Id

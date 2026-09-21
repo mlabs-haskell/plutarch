@@ -20,9 +20,9 @@ ANF Binds:
 
 ANF Annotations:
  #0 := Trivial
- #1 := Demanded (Id 6) 2
+ #1 := Demanded (Id 6) 2 (Rank 1)
  #2 := Trivial
- #3 := Demanded (Id 6) 2
+ #3 := Demanded (Id 6) 2 (Rank 1)
  #4 := OneShot
  #5 := OneShot
  #6 := OneShot

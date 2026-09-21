@@ -134,8 +134,8 @@ ANF Binds:
 ANF Annotations:
  #0 := Trivial
  #1 := Trivial
- #2 := Demanded (Id 56) 2
- #3 := Demanded (Id 56) 2
+ #2 := Demanded (Id 56) 2 (Rank 0)
+ #3 := Demanded (Id 56) 2 (Rank 1)
  #4 := Trivial
  #5 := OneShot
  #6 := Trivial
@@ -159,10 +159,10 @@ ANF Annotations:
  #24 := OneShot
  #25 := OneShot
  #26 := OneShot
- #27 := Demanded (Id 46) 2
+ #27 := Demanded (Id 46) 2 (Rank 2)
  #28 := Trivial
  #29 := Trivial
- #30 := Demanded (Id 46) 2
+ #30 := Demanded (Id 46) 2 (Rank 1)
  #31 := Trivial
  #32 := OneShot
  #33 := OneShot
@@ -170,7 +170,7 @@ ANF Annotations:
  #35 := Trivial
  #36 := OneShot
  #37 := OneShot
- #38 := Demanded (Id 46) 2
+ #38 := Demanded (Id 46) 2 (Rank 5)
  #39 := OneShot
  #40 := OneShot
  #41 := Trivial

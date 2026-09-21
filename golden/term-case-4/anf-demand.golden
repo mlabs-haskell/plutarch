@@ -45,7 +45,7 @@ ANF Binds:
 ANF Annotations:
  #0 := Trivial
  #1 := OneShot
- #2 := Demanded (Id 5) 2
+ #2 := Demanded (Id 5) 2 (Rank 2)
  #3 := OneShot
  #4 := OneShot
  #5 := OneShot
@@ -55,7 +55,7 @@ ANF Annotations:
  #9 := OneShot
  #10 := Trivial
  #11 := OneShot
- #12 := Demanded (Id 15) 2
+ #12 := Demanded (Id 15) 2 (Rank 2)
  #13 := OneShot
  #14 := OneShot
  #15 := OneShot

@@ -97,10 +97,10 @@ import UntypedPlutusCore qualified as UPLC
 -- @since 2.0.0
 toUPLCTerm :: Bool -> ANF Demand -> UPLCTerm
 toUPLCTerm runExternalOpts (ANF _ binds) =
-  -- We use the hashes of any variable as its `Unique`. To ensure we don't
-  -- accidentally ever alias them, we collect all the ones we use. As we know
-  -- they can't collide, we don't perform any rehashing.
-  let allVarUniques = NEVector.foldl' collectVarName Set.empty binds
+  let -- We use the hashes of any variable as its `Unique`. To ensure we don't
+      -- accidentally ever alias them, we collect all the ones we use. As we know
+      -- they can't collide, we don't perform any rehashing.
+      allVarUniques = NEVector.foldl' collectVarName Set.empty binds
       -- If we have any chunks of precompiled code, some of their variable
       -- `Unique`s might clash with ours. We can use rehashing to fix this.
       (rewrittenBinds, usedNames) = fixPrecompiled binds allVarUniques
@@ -184,10 +184,8 @@ isAffine = NEVector.all (go . getANFBindAnn)
   where
     go :: Demand -> Bool
     go = \case
-      NeverDemanded -> True
-      OneShot -> True
-      Trivial -> True
-      Demanded _ _ -> False
+      Demanded {} -> False
+      _ -> True
 
 fixPrecompiled ::
   NonEmptyVector (ANFBind Demand) ->
@@ -356,7 +354,7 @@ compile = do
         -- This node is only used once.
         OneShot -> pure ()
         -- We need this more than once, record this fact.
-        Demanded letBindLoc _ -> modify (recordLetBind letBindLoc ix)
+        Demanded letBindLoc _ _ -> modify (recordLetBind letBindLoc ix)
       -- Check if we have to `let`-bind anything here.
       letBindsRequired <- do
         mBinds <- gets (Map.lookup (Id ix) . csBindRequirements)
@@ -535,7 +533,7 @@ checkCache = \case
     code <- gets (fromJust . Map.lookup asId . csCache)
     pure $ case getANFBindAnn bind of
       -- Use name
-      Demanded _ _ -> uplcVar name
+      Demanded {} -> uplcVar name
       -- Use code
       _ -> code
 

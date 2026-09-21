@@ -96,7 +96,7 @@ ANF Binds:
 
 ANF Annotations:
  #0 := Trivial
- #1 := Demanded (Id 45) 5
+ #1 := Demanded (Id 45) 5 (Rank 0)
  #2 := Trivial
  #3 := OneShot
  #4 := Trivial
@@ -110,7 +110,7 @@ ANF Annotations:
  #12 := Trivial
  #13 := OneShot
  #14 := OneShot
- #15 := Demanded (Id 45) 3
+ #15 := Demanded (Id 45) 3 (Rank 0)
  #16 := OneShot
  #17 := OneShot
  #18 := OneShot
@@ -122,18 +122,18 @@ ANF Annotations:
  #24 := OneShot
  #25 := OneShot
  #26 := OneShot
- #27 := Demanded (Id 29) 2
+ #27 := Demanded (Id 29) 2 (Rank 3)
  #28 := OneShot
  #29 := OneShot
  #30 := OneShot
- #31 := Demanded (Id 45) 2
+ #31 := Demanded (Id 45) 2 (Rank 7)
  #32 := OneShot
  #33 := OneShot
  #34 := OneShot
  #35 := OneShot
  #36 := OneShot
  #37 := Trivial
- #38 := Demanded (Id 43) 3
+ #38 := Demanded (Id 43) 3 (Rank 1)
  #39 := OneShot
  #40 := OneShot
  #41 := OneShot

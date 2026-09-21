@@ -97,7 +97,7 @@ ANF Annotations:
  #16 := OneShot
  #17 := OneShot
  #18 := OneShot
- #19 := Demanded (Id 29) 2
+ #19 := Demanded (Id 29) 2 (Rank 2)
  #20 := Trivial
  #21 := Trivial
  #22 := Trivial
