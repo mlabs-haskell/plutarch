@@ -9,7 +9,7 @@ module Plutarch.Backend.Compile
   )
 where
 
-import Control.Monad (foldM, when)
+import Control.Monad (foldM)
 import Control.Monad.RWS.CPS
   ( MonadState (get),
     RWS,
@@ -52,7 +52,7 @@ import Plutarch.Backend.ANF
         ANFLeaf
       ),
     BoundVar (BoundVar),
-    Demand (Demanded, NeverDemanded, Trivial),
+    Demand (Demanded, NeverDemanded, OneShot, Trivial),
     Id (Id),
     Leaf
       ( LBuiltin,
@@ -185,8 +185,9 @@ isAffine = NEVector.all (go . getANFBindAnn)
     go :: Demand -> Bool
     go = \case
       NeverDemanded -> True
-      Demanded _ useCount -> useCount == 1
+      OneShot -> True
       Trivial -> True
+      Demanded _ _ -> False
 
 fixPrecompiled ::
   NonEmptyVector (ANFBind Demand) ->
@@ -352,8 +353,10 @@ compile = do
         NeverDemanded -> pure ()
         -- This node is always inlined.
         Trivial -> pure ()
-        -- If we need this more than once, record this fact.
-        Demanded letBindLoc useCount -> when (useCount > 1) (modify (recordLetBind letBindLoc ix))
+        -- This node is only used once.
+        OneShot -> pure ()
+        -- We need this more than once, record this fact.
+        Demanded letBindLoc _ -> modify (recordLetBind letBindLoc ix)
       -- Check if we have to `let`-bind anything here.
       letBindsRequired <- do
         mBinds <- gets (Map.lookup (Id ix) . csBindRequirements)
@@ -531,13 +534,9 @@ checkCache = \case
     -- this cannot 'miss'.
     code <- gets (fromJust . Map.lookup asId . csCache)
     pure $ case getANFBindAnn bind of
-      Demanded _ useCount ->
-        if useCount > 1
-          -- Use name
-          then uplcVar name
-          -- Use code
-          else code
-      -- Use code unconditionally
+      -- Use name
+      Demanded _ _ -> uplcVar name
+      -- Use code
       _ -> code
 
 -- Note (Koz, 06/08/2026): The fold direction is important, as this preserves

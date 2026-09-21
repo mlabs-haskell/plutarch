@@ -23,7 +23,7 @@ ANF Annotations:
  #1 := Demanded (Id 6) 2
  #2 := Trivial
  #3 := Demanded (Id 6) 2
- #4 := Demanded (Id 4) 1
- #5 := Demanded (Id 5) 1
- #6 := Demanded (Id 6) 1
+ #4 := OneShot
+ #5 := OneShot
+ #6 := OneShot
  #7 := NeverDemanded

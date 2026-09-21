@@ -44,22 +44,22 @@ ANF Binds:
 
 ANF Annotations:
  #0 := Trivial
- #1 := Demanded (Id 1) 1
+ #1 := OneShot
  #2 := Demanded (Id 5) 2
- #3 := Demanded (Id 3) 1
- #4 := Demanded (Id 4) 1
- #5 := Demanded (Id 5) 1
- #6 := Demanded (Id 6) 1
+ #3 := OneShot
+ #4 := OneShot
+ #5 := OneShot
+ #6 := OneShot
  #7 := Trivial
  #8 := Trivial
- #9 := Demanded (Id 9) 1
+ #9 := OneShot
  #10 := Trivial
- #11 := Demanded (Id 11) 1
+ #11 := OneShot
  #12 := Demanded (Id 15) 2
- #13 := Demanded (Id 13) 1
- #14 := Demanded (Id 14) 1
- #15 := Demanded (Id 15) 1
- #16 := Demanded (Id 16) 1
- #17 := Demanded (Id 17) 1
- #18 := Demanded (Id 18) 1
+ #13 := OneShot
+ #14 := OneShot
+ #15 := OneShot
+ #16 := OneShot
+ #17 := OneShot
+ #18 := OneShot
  #19 := NeverDemanded

@@ -24,12 +24,12 @@ ANF Binds:
 
 ANF Annotations:
  #0 := Trivial
- #1 := Demanded (Id 1) 1
- #2 := Demanded (Id 2) 1
+ #1 := OneShot
+ #2 := OneShot
  #3 := Trivial
  #4 := Trivial
- #5 := Demanded (Id 5) 1
- #6 := Demanded (Id 6) 1
- #7 := Demanded (Id 7) 1
- #8 := Demanded (Id 8) 1
+ #5 := OneShot
+ #6 := OneShot
+ #7 := OneShot
+ #8 := OneShot
  #9 := NeverDemanded

@@ -7,5 +7,5 @@ ANF Binds:
  #1 := \_ _ -> #0
 
 ANF Annotations:
- #0 := Demanded (Id 0) 1
+ #0 := OneShot
  #1 := NeverDemanded

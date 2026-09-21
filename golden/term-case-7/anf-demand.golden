@@ -19,5 +19,5 @@ ANF Annotations:
  #1 := Trivial
  #2 := Demanded (Id 4) 2
  #3 := Demanded (Id 4) 2
- #4 := Demanded (Id 4) 1
+ #4 := OneShot
  #5 := NeverDemanded

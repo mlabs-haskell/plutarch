@@ -379,7 +379,7 @@ data Demand
     --
     --    @since 2.0.0
     NeverDemanded
-  | -- | This computation is needed at least once (exact use count indicated
+  | -- | This computation is needed at least twice (exact use count indicated
     --    by 'Word64'), and if it needs to be @let@-bound, where this can be
     --    done (indicated by 'Id').
     --
@@ -389,6 +389,10 @@ data Demand
     --
     --    @since 2.0.0
     Trivial
+  | -- | Only needed one time. Thus, no @let@-binding location is needed.
+    --
+    -- @since 2.0.0
+    OneShot
   deriving stock
     ( -- | @since 2.0.0
       Eq,
@@ -446,10 +450,8 @@ analyzeDemand labelled counted reqVars bindSites (ANF bm binds) =
               Nothing -> Trivial <$ oldBind
               -- Only the toplevel node will ever have a zero use count.
               Just 0 -> NeverDemanded <$ oldBind
-              -- If we're only used once, we're getting inlined. Thus, what bind
-              -- site we give is irrelevant, so we might as well just give
-              -- itself.
-              Just 1 -> Demanded (Id i) 1 <$ oldBind
+              -- We're only using this once, so no need for a bind site
+              Just 1 -> OneShot <$ oldBind
               Just n ->
                 let neededVars = reqVars NEVector.! i
                     -- Once we know all the required variables, we can determine
