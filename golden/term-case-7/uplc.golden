@@ -1,0 +1,4 @@
+\he ->
+  let bind_ie = MultiplyInteger # he # he
+  let bind_je = AddInteger # bind_ie # bind_ie
+  in AddInteger # bind_je # bind_je
