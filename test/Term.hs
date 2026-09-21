@@ -17,7 +17,8 @@ goldens =
       releaseGolden Don'tEvaluateUPLC "(pif false 1 2) + (pif true 1 2)" "Term Case 3" case3,
       releaseGolden Don'tEvaluateUPLC "(pif false 1 2) + (pif true 1 2)" "Term Case 3 plet" case3Plet,
       releaseGolden EvaluateUPLC "pif a then (b c) else (d e)" "Term Case 4" case4,
-      releaseGolden EvaluateUPLC "sum 0 .. 9" "Term Case 5" case5
+      releaseGolden EvaluateUPLC "sum 0 .. 9" "Term Case 5" case5,
+      releaseGolden Don'tEvaluateUPLC "parallel let" "Term Case 6" case6
     ]
 
 -- Cases
@@ -63,3 +64,9 @@ case5 = go # pconstant 0
         (pequalsInteger # i # pconstant 10)
         (pconstant 0)
         (paddInteger # i #$ self #$ paddInteger # i # pconstant 1)
+
+case6 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case6 = plam' $ \x ->
+  let squared = pmultiplyInteger # x # x
+      doubled = paddInteger # x # x
+   in paddInteger # (paddInteger # doubled # squared) #$ paddInteger # squared # doubled

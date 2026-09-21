@@ -1,0 +1,21 @@
+<\a -> 
+  <Apply
+    <AddInteger>@m5XKL3leqWoN
+    [
+      <Apply
+        <AddInteger>@m5XKL3leqWoN
+        [
+          <Apply<AddInteger>@m5XKL3leqWoN [a, a]>@pfoAlLMvd4vN, 
+          <Apply<MultiplyInteger>@vjMEhbkCp9cN [a, a]>@yI8DIugRYDcN
+        ]
+      >@c9R5mfuTYldN, 
+      <Apply
+        <AddInteger>@m5XKL3leqWoN
+        [
+          <Apply<MultiplyInteger>@vjMEhbkCp9cN [a, a]>@yI8DIugRYDcN, 
+          <Apply<AddInteger>@m5XKL3leqWoN [a, a]>@pfoAlLMvd4vN
+        ]
+      >@kYaQl1obdzB
+    ]
+  >@lDvQ1bDHK6gN
+>@uwZYZsKz2ypN
