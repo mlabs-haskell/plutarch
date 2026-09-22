@@ -64,6 +64,7 @@ library
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Pretty
+    Plutarch.Helpers.TH
     Plutarch.Prelude
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
@@ -80,6 +81,12 @@ library
     Plutarch.Primitive.Trace
     Plutarch.Test.Golden
     Plutarch.Test.Size
+    Plutarch.TH.DataList
+    Plutarch.TH.DataPlutus
+    Plutarch.TH.Enum
+    Plutarch.TH.MS
+    Plutarch.TH.SOP
+    Plutarch.TH.Strategy
     Plutarch.Unsafe
 
   build-depends:
@@ -89,6 +96,7 @@ library
     , data-default
     , filepath
     , hashable
+    , indexed-traversable
     , lens
     , mtl
     , nonempty-containers
@@ -100,6 +108,7 @@ library
     , tagged
     , tasty
     , tasty-golden
+    , template-haskell
     , text
     , these
     , vector
