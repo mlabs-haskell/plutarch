@@ -1,0 +1,92 @@
+-- | @since 2.0.0
+module Plutarch.TH.Strategy
+  ( Strategy (..),
+    deriveFor,
+  )
+where
+
+import Data.Vector qualified as Vector
+import Language.Haskell.TH
+  ( Dec (DataD, NewtypeD, TySynD),
+    Name,
+    Q,
+  )
+import Plutarch.Helpers.TH (checkTyName, consToPTypeSum)
+import Plutarch.TH.DataList (deriveDataList)
+import Plutarch.TH.DataPlutus (deriveDataPlutus)
+import Plutarch.TH.Enum (deriveEnum)
+import Plutarch.TH.MS (deriveMS)
+import Plutarch.TH.SOP (deriveSOP)
+
+-- | Specifies a representation choice for the data type you want derivations
+-- for. This will determine both what instances are generated, and also what the
+-- generated instances will look like.
+--
+-- @since 2.0.0
+data Strategy
+  = -- | Use UPLC's built-in @SOP@ as the representation. This strategy derives
+    --    'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    --
+    --    @since 2.0.0
+    SOP
+  | -- | Use @PData@ as the representation. This strategy derives
+    --    'PlutarchType', 'PMatch' and 'PCon' and 'PEq' instances.
+    --
+    --    This will use a PlutusTx-style sum-of-products encoding with @Constr@,
+    --    even for types with only one \'arm\'.
+    --
+    --    @since 2.0.0
+    DataPlutus
+  | -- | Use an onchain @Integer@ as the representation. This strategy derives
+    --    'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    --
+    --    @since 2.0.0
+    Enum
+  | -- | Use a @'PBList'@ as the representation. This strategy derives
+    --    'PlutarchType', 'PMatch', and 'PCon' instances. 'PEq' can be derived using
+    --    the default instance for anything 'Data'-encoded.
+    --
+    --    @since 2.0.0
+    DataList
+  | -- | Use a final-encoding lambda as the representation. This strategy
+    --    derives 'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    --
+    --    @since 2.0.0
+    MogensenScott
+
+-- | Given a type name, and a 'Strategy', derive all possible instances for that
+-- type as allowed by that 'Strategy'.
+--
+-- = Important note
+--
+-- All 'Strategy' choices assume that the type is formed correctly to be a
+-- Plutarch type. This means the following in practice:
+--
+-- * The type's /last/ type parameter must be of kind 'S'.
+-- * Every field of every \'arm\' must be wrapped in @'Term' s@, where @s@ is
+--  the type parameter of kind 'S'.
+--
+-- While 'deriveFor' will check for all of these, it cannot \'look through\' type
+-- synonyms. Please make sure that you do not use a type synonym as a field of any data
+-- type that you wish to use 'deriveFor' with.
+--
+-- @since 2.0.0
+deriveFor :: Name -> Strategy -> Q [Dec]
+deriveFor tyName strat = do
+  tyDec <- checkTyName tyName
+  case tyDec of
+    DataD _ name tyVarBinds _ constructors _ -> do
+      let tvbAsVec = Vector.fromList tyVarBinds
+      let consAsVec = Vector.fromList constructors
+      typeStructure <- consToPTypeSum consAsVec
+      case Vector.unsnoc tvbAsVec of
+        Nothing -> fail "Types must have an s :: S type parameter in last position."
+        Just (tvbs, _) -> case strat of
+          Enum -> deriveEnum tvbs name typeStructure
+          DataList -> deriveDataList tvbs name typeStructure
+          DataPlutus -> deriveDataPlutus tvbs name typeStructure
+          SOP -> deriveSOP tvbs name typeStructure
+          MogensenScott -> deriveMS tvbs name typeStructure
+    NewtypeD {} -> fail "Newtype derivations not supported at present."
+    TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
+    _ -> fail $ "Not a valid type name: " <> show tyName

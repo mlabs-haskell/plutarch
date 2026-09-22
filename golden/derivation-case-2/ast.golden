@@ -1,0 +1,29 @@
+<\a b -> 
+  <case
+    a 
+    [
+      <\c -> 
+        <case
+          b 
+          [
+            <\d -> 
+              <Apply<EqualsInteger>@dr5yy9ULU5j [c, d]>@hTZyTFV7cmhN
+            >@e0lWZl47L8oN, 
+            <\_ -> <False :: Bool>@ofkSqfsbj7l>@uEIIWb896Im
+          ]
+        >@nBDhzPkvqxf
+      >@sBRQAFPQ4X, 
+      <\f -> 
+        <case
+          b 
+          [
+            <\_ -> <False :: Bool>@ofkSqfsbj7l>@uEIIWb896Im, 
+            <\h -> 
+              <Apply<EqualsInteger>@dr5yy9ULU5j [f, h]>@scSQTdZE1qu
+            >@dQwcyS8r8zzN
+          ]
+        >@jtAGCAmnnJqN
+      >@h79Vr7yiSyh
+    ]
+  >@kpnwwRZCnmj
+>@lrESA2Tso4t
