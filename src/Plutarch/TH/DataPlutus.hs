@@ -231,13 +231,13 @@ derivePCon tyVars tyName constructors =
       matchBody <- [e|$pconstrDataE # $(pure constrE) # $(pure constrList)|]
       pure . Match conMatchPat (NormalB matchBody) $ []
     go :: Name -> Exp -> Q Exp
-    go fieldName acc = [e|$pmkConsE # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]
+    go fieldName acc = [e|$pmkConsE # pfundamental $(pure . VarE $ fieldName) # $(pure acc)|]
 
 derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePEq tyVars tyName =
   [d|
     instance ($ctx) => PEq $name where
-      peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsDataE # pcoerce x # pcoerce y
+      peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsDataE # pfundamental x # pfundamental y
     |]
   where
     name :: Q Type

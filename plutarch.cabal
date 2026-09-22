@@ -125,9 +125,14 @@ test-suite tests
     Compiled
     Compose
     Debug
+    Derivation
     Error
     Pretty
     Term
+    TH.Data
+    TH.Enum
+    TH.MS
+    TH.SOP
     Trace
 
   hs-source-dirs: test

@@ -136,4 +136,4 @@ derivePCon tyVars tyName cName fieldTypes =
       constrList <- foldrM go start fieldNames
       pure . Match conMatchPat (NormalB constrList) $ []
     go :: Name -> Exp -> Q Exp
-    go fieldName acc = [e|$pmkConsE # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]
+    go fieldName acc = [e|$pmkConsE # pfundamental $(pure . VarE $ fieldName) # $(pure acc)|]

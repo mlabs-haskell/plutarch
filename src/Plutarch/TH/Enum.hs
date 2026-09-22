@@ -118,7 +118,7 @@ derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePEq tyVars tyName =
   [d|
     instance ($ctx) => PEq $name where
-      peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsIntegerE # pcoerce x # pcoerce y
+      peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsIntegerE # pfundamental x # pfundamental y
     |]
   where
     name :: Q Type

@@ -1,0 +1,37 @@
+\px qx ->
+  let bind_rx = \unused_ey unused_fy -> (False :: Bool)
+  in case 
+       (constr 0
+         [ \sx ->
+             case 
+               (constr 0
+                 [ \tx -> EqualsInteger # sx # tx
+                 , \unused_ux -> (False :: Bool)
+                 , bind_rx
+                 ]
+               )
+               [qx]
+         , \vx ->
+             case 
+               (constr 0
+                 [ \unused_wx -> (False :: Bool)
+                 , \xx -> EqualsInteger # vx # xx
+                 , bind_rx
+                 ]
+               )
+               [qx]
+         , \yx zx ->
+             case 
+               (constr 0
+                 [ \unused_ay -> (False :: Bool)
+                 , \unused_by -> (False :: Bool)
+                 , \cy dy ->
+                     case 
+                       (EqualsInteger # yx # cy)
+                       [(False :: Bool), EqualsInteger # zx # dy]
+                 ]
+               )
+               [qx]
+         ]
+       )
+       [px]
