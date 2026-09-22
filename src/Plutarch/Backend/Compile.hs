@@ -375,13 +375,11 @@ compile = do
 
 recordLetBind :: Id -> Int -> Rank -> CompileState -> CompileState
 recordLetBind letBindLoc whatToBind rank = \case
-  CompileState cache reqs -> CompileState cache . Map.alter go letBindLoc $ reqs
-  where
-    go :: Maybe (NEMap Rank (NESet Id)) -> Maybe (NEMap Rank (NESet Id))
-    go =
-      Just . \case
-        Nothing -> NEMap.singleton rank . NESet.singleton . Id $ whatToBind
-        Just emm -> NEMap.insertWith NESet.union rank (NESet.singleton . Id $ whatToBind) emm
+  CompileState cache reqs -> CompileState cache $ case Map.lookup letBindLoc reqs of
+    Nothing -> Map.insert letBindLoc (NEMap.singleton rank . NESet.singleton . Id $ whatToBind) reqs
+    Just innerMap -> case NEMap.lookup rank innerMap of
+      Nothing -> Map.insert letBindLoc (NEMap.insert rank (NESet.singleton . Id $ whatToBind) innerMap) reqs
+      Just ids -> Map.insert letBindLoc (NEMap.insert rank (NESet.insert (Id whatToBind) ids) innerMap) reqs
 
 lookupBindName ::
   forall (m :: Type -> Type).
