@@ -18,6 +18,14 @@ module Plutarch.Prelude
     PrimTerm.pcompiled,
     PrimTerm.pcompose,
 
+    -- * Basic operations
+    Representation.PlutarchType (..),
+    Representation.pfundamental,
+    Match.PMatch (..),
+    Match.pmatch,
+    Con.PCon (..),
+    Con.pcon,
+
     -- * Lifting
     Lift.pconstant,
 
@@ -84,16 +92,33 @@ module Plutarch.Prelude
     -- ** Debug
     Debug.PDebug (..),
     Debug.pshow,
+
+    -- ** Data
+    S.PData,
+    S.PAsData,
+
+    -- ** Equality
+    Eq.PEq (..),
+    (Eq.#==),
+    (Eq.#/=),
+
+    -- * Derivations
+    Strategy.Strategy (..),
+    Strategy.deriveFor,
   )
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite qualified as C
+import Plutarch.Primitive.Con qualified as Con
 import Plutarch.Primitive.Debug qualified as Debug
 import Plutarch.Primitive.DerivedFun qualified as DF
+import Plutarch.Primitive.Eq qualified as Eq
 import Plutarch.Primitive.Liftable qualified as Lift
+import Plutarch.Primitive.Match qualified as Match
 import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term qualified as PrimTerm
 import Plutarch.Primitive.Trace qualified as Trace
+import Plutarch.TH.Strategy qualified as Strategy

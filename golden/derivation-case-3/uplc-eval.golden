@@ -1,0 +1,37 @@
+\a b ->
+  let bind_c = \unused_p unused_q -> (False :: Bool)
+  in case 
+       (constr 0
+         [ \d ->
+             case 
+               (constr 0
+                 [ \e -> EqualsInteger # d # e
+                 , \unused_f -> (False :: Bool)
+                 , bind_c
+                 ]
+               )
+               [b]
+         , \g ->
+             case 
+               (constr 0
+                 [ \unused_h -> (False :: Bool)
+                 , \i -> EqualsInteger # g # i
+                 , bind_c
+                 ]
+               )
+               [b]
+         , \j k ->
+             case 
+               (constr 0
+                 [ \unused_l -> (False :: Bool)
+                 , \unused_m -> (False :: Bool)
+                 , \n o ->
+                     case 
+                       (EqualsInteger # j # n)
+                       [(False :: Bool), EqualsInteger # k # o]
+                 ]
+               )
+               [b]
+         ]
+       )
+       [a]

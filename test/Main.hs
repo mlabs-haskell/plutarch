@@ -4,7 +4,7 @@ import Bool qualified
 import Compiled qualified
 import Compose qualified
 import Debug qualified
--- import Derivation qualified
+import Derivation qualified
 import Error qualified
 -- import Numeric qualified
 import Pretty qualified
@@ -22,7 +22,7 @@ main =
       Error.goldens,
       Compose.goldens,
       Pretty.goldens,
-      -- , Derivation.goldens
+      Derivation.goldens,
       Trace.goldens,
       Debug.goldens
     ]
