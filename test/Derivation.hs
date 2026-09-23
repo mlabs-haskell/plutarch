@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Derivation (goldens) where
 
 import Plutarch.Prelude
@@ -6,6 +8,7 @@ import Plutarch.Test.Golden
     debugGolden,
     releaseGolden,
   )
+import TH.Data (PTriple (PTriple))
 import TH.Enum (PColour (PRed))
 import TH.MS (PTheseMS)
 import TH.SOP (PEither, PSOPList (PSOPCons, PSOPNil), PThese)
@@ -39,7 +42,12 @@ goldens =
         EvaluateUPLC
         "pshow @PColour"
         "Derivation Case 5"
-        (pshow @PColour . pcon $ PRed)
+        (pshow @PColour . pcon $ PRed),
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PTriple PBool)"
+        "Derivation Case 6"
+        case6
     ]
 
 -- Cases
@@ -61,3 +69,11 @@ case4 = peq # ell1 # ell2
                 )
             )
         )
+
+case6 :: forall (s :: S). Term s PString
+case6 =
+  pshow . pcon $
+    PTriple
+      (ptoData pfalse)
+      (ptoData pfalse)
+      (ptoData pfalse)

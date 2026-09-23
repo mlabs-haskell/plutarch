@@ -16,13 +16,15 @@ import Language.Haskell.TH
   ( BndrVis,
     Body (NormalB),
     Dec,
-    Exp (AppE, CaseE, ConE, VarE),
+    Exp (AppE, CaseE, ConE, LitE, VarE),
+    Lit (StringL),
     Match (Match),
     Name,
     Pat (ConP, VarP),
     Q,
     TyVarBndr,
     Type,
+    nameBase,
     newName,
   )
 import Plutarch.Helpers.TH
@@ -41,9 +43,10 @@ import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Composite (PBList)
 import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Singular (PData)
+import Plutarch.Primitive.Singular (PData, PString)
 
 -- | @since 2.0.0
 deriveDataList :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
@@ -60,7 +63,8 @@ deriveDataList tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStr
         plutarchTypeDec <- derivePlutarchType tvbs name
         pmatchDec <- derivePMatch tvbs name conName unwrapped
         pconDec <- derivePCon tvbs name conName unwrapped
-        pure $ plutarchTypeDec <> pmatchDec <> pconDec
+        pdebugDec <- derivePDebug tvbs name conName unwrapped
+        pure $ plutarchTypeDec <> pmatchDec <> pconDec <> pdebugDec
 
 -- Helpers
 
@@ -137,3 +141,34 @@ derivePCon tyVars tyName cName fieldTypes =
       pure . Match conMatchPat (NormalB constrList) $ []
     go :: Name -> Exp -> Q Exp
     go fieldName acc = [e|$pmkConsE # pfundamental $(pure . VarE $ fieldName) # $(pure acc)|]
+
+derivePDebug :: Vector (TyVarBndr BndrVis) -> Name -> Name -> NonEmptyVector Type -> Q [Dec]
+derivePDebug tyVars tyName cName fieldTypes =
+  [d|
+    instance ($ctx) => PDebug $name where
+      pdebug t f = f (pmatch t $ \x -> $(mkMatch 'x))
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf ''PCanData $ tyVars
+    mkMatch :: Name -> Q Exp
+    mkMatch bindName = do
+      fieldNames <- NEVector.imapM (\i _ -> newName $ "f" <> show i) fieldTypes
+      let conMatchPat = ConP cName [] . fmap VarP . NEVector.toList $ fieldNames
+      startLit <- [e|pconstant @PString $(pure . LitE . StringL $ nameBase cName <> " {\n")|]
+      endLit <- [e|pconstant @PString $(pure . LitE . StringL $ "}")|]
+      fieldEs <- traverse mkFieldShow fieldNames
+      matchBody <- go startLit (NEVector.toList fieldEs <> [endLit])
+      pure . CaseE (VarE bindName) $ [Match conMatchPat (NormalB matchBody) []]
+    mkFieldShow :: Name -> Q Exp
+    mkFieldShow fVarName = do
+      commaE <- [e|pconstant @PString ", "|]
+      newlineE <- [e|pconstant @PString "\n"|]
+      fieldE <- [e|pshow $(pure . VarE $ fVarName)|]
+      [e|pappendString # $(pure commaE) # (pappendString # $(pure fieldE) # $(pure newlineE))|]
+    go :: Exp -> [Exp] -> Q Exp
+    go acc = \case
+      [] -> pure acc
+      (e : es) -> [e|pappendString # $(pure acc) # $(go e es)|]
