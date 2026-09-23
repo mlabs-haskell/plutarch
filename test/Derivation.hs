@@ -11,7 +11,7 @@ import Plutarch.Test.Golden
 import TH.Data (PTriple (PTriple))
 import TH.Enum (PColour (PRed))
 import TH.MS (PTheseMS)
-import TH.SOP (PEither, PSOPList (PSOPCons, PSOPNil), PThese)
+import TH.SOP (PEither (PLeft), PSOPList (PSOPCons, PSOPNil), PThese)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
@@ -47,7 +47,17 @@ goldens =
         EvaluateUPLC
         "pshow @(PTriple PBool)"
         "Derivation Case 6"
-        case6
+        case6,
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PEither PInteger PByteString)"
+        "Derivation Case 7"
+        case7,
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PSOPList PInteger)"
+        "Derivation Case 8"
+        case8
     ]
 
 -- Cases
@@ -58,17 +68,7 @@ case4 = peq # ell1 # ell2
     ell1 :: Term s (PSOPList PInteger)
     ell1 = pcon PSOPNil
     ell2 :: Term s (PSOPList PInteger)
-    ell2 =
-      pcon
-        ( PSOPCons
-            (pconstant @PInteger 3)
-            ( pcon
-                ( PSOPCons
-                    (pconstant @PInteger 2)
-                    (pcon (PSOPCons (pconstant @PInteger 1) (pcon PSOPNil)))
-                )
-            )
-        )
+    ell2 = pcon sopList
 
 case6 :: forall (s :: S). Term s PString
 case6 =
@@ -77,3 +77,25 @@ case6 =
       (ptoData pfalse)
       (ptoData pfalse)
       (ptoData pfalse)
+
+case7 :: forall (s :: S). Term s PString
+case7 =
+  pshow
+    . pcon @(PEither PInteger PByteString)
+    . PLeft
+    . pconstant @PInteger
+    $ 2
+
+case8 :: forall (s :: S). Term s PString
+case8 = pshow . pcon $ sopList
+
+sopList :: forall (s :: S). PSOPList PInteger s
+sopList =
+  PSOPCons
+    (pconstant @PInteger 3)
+    ( pcon
+        ( PSOPCons
+            (pconstant @PInteger 2)
+            (pcon (PSOPCons (pconstant @PInteger 1) (pcon PSOPNil)))
+        )
+    )

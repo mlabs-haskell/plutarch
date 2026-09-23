@@ -29,7 +29,6 @@ import Plutarch.Helpers.TH
   ( PTypeProduct (PTypeProduct),
     PTypeSum (PTypeSum),
     fullTypeName,
-    mkContextOf,
     pequalsIntegerE,
     plam'E,
     punsafeCaseE,
@@ -65,26 +64,22 @@ asEmptyProduct (name, PTypeProduct fields) = case Vector.uncons fields of
 derivePlutarchType :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePlutarchType tyVars tyName =
   [d|
-    instance ($ctx) => PlutarchType $name where
+    instance PlutarchType $name where
       type PRepresentation $name = PInteger
     |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
-    ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
 
 derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> NonEmptyVector Name -> Q [Dec]
 derivePMatch tyVars tyName constructorNames =
   [d|
-    instance ($ctx) => PMatch $name where
+    instance PMatch $name where
       pmatch' x f = $punsafeCaseE x $(mkHandlers 'f)
     |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
-    ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
     mkHandlers :: Name -> Q Exp
     mkHandlers contName = do
       let (namesRest, nameLast) = NEVector.unsnoc constructorNames
@@ -98,14 +93,12 @@ derivePMatch tyVars tyName constructorNames =
 derivePCon :: Vector (TyVarBndr BndrVis) -> Name -> NonEmptyVector Name -> Q [Dec]
 derivePCon tyVars tyName constructorNames =
   [d|
-    instance ($ctx) => PCon $name where
+    instance PCon $name where
       pcon' x = $(matches 'x)
     |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
-    ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
     matches :: Name -> Q Exp
     matches bindName = do
       matchVec <- NEVector.imapM mkMatch constructorNames
@@ -120,26 +113,22 @@ derivePCon tyVars tyName constructorNames =
 derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePEq tyVars tyName =
   [d|
-    instance ($ctx) => PEq $name where
+    instance PEq $name where
       peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsIntegerE # pfundamental x # pfundamental y
     |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
-    ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
 
 derivePDebug :: Vector (TyVarBndr BndrVis) -> Name -> NonEmptyVector Name -> Q [Dec]
 derivePDebug tyVars tyName constructorNames =
   [d|
-    instance ($ctx) => PDebug $name where
+    instance PDebug $name where
       pdebug t f = f (pmatch t $ \x -> $(matches 'x))
     |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
-    ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
     matches :: Name -> Q Exp
     matches bindName = do
       matchVec <- NEVector.mapM mkMatch constructorNames

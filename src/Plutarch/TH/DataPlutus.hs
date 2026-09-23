@@ -85,7 +85,7 @@ derivePlutarchType tyVars tyName =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
 
 derivePMatch ::
   Vector (TyVarBndr BndrVis) ->
@@ -103,7 +103,7 @@ derivePMatch tyVars tyName cs (nameLast, fieldsLast) =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
     mkMatchBody :: Name -> Name -> Name -> Q Exp
     mkMatchBody contName tagName fieldsName = do
       let arityLast = Vector.length fieldsLast
@@ -217,7 +217,7 @@ derivePCon tyVars tyName constructors =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
     matches :: Name -> Q Exp
     matches bindName = CaseE (VarE bindName) . NEVector.toList <$> NEVector.imapM mkMatch constructors
     mkMatch :: Int -> (Name, Vector Type) -> Q Match
@@ -243,4 +243,4 @@ derivePEq tyVars tyName =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars

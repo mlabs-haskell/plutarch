@@ -95,7 +95,7 @@ derivePlutarchType tyVars tyName =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf [''PlutarchType] $ tyVars
     generalizedName :: Q Type
     generalizedName =
       pure
@@ -120,7 +120,7 @@ derivePMatch tyVars tyName cs c =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf [''PlutarchType] $ tyVars
     mkPMatchBody :: Name -> Name -> Name -> Q Exp
     mkPMatchBody msThingName contName resTyName = do
       msType <- mkMSType (VarT resTyName) (Vector.snoc cs c)
@@ -159,7 +159,7 @@ derivePCon tyVars tyName constructors =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf [''PlutarchType] $ tyVars
     cases :: Name -> Q Exp
     cases argName = CaseE (VarE argName) . NEVector.toList <$> NEVector.imapM mkMatch constructors
     mkMatch :: Int -> (Name, Vector (Bool, Type)) -> Q Match
@@ -203,7 +203,7 @@ derivePEq tyVars tyName constructors =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PEq $ tyVars
+    ctx = pure . mkContextOf [''PEq] $ tyVars
     peqImpl :: Name -> Name -> Name -> Q Exp
     peqImpl selfName xName yName = do
       msType <- mkMSType (ConT ''PBool) (NEVector.toVector constructors)

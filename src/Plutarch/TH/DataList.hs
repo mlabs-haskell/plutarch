@@ -78,7 +78,7 @@ derivePlutarchType tyVars tyName =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
 
 derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Name -> NonEmptyVector Type -> Q [Dec]
 derivePMatch tyVars tyName cName fieldTypes =
@@ -90,7 +90,7 @@ derivePMatch tyVars tyName cName fieldTypes =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
     -- We have to do this in such a convoluted way because the continuation (`f`
     -- argument to `pmatch'`) has to be placed on the _inside_ of all our list
     -- unconses. However, at the same time, we _also_ have to build up a large
@@ -129,7 +129,7 @@ derivePCon tyVars tyName cName fieldTypes =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
     match :: Name -> Q Exp
     match bindName = CaseE (VarE bindName) . (: []) <$> mkMatch
     mkMatch :: Q Match
@@ -152,13 +152,13 @@ derivePDebug tyVars tyName cName fieldTypes =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PCanData $ tyVars
+    ctx = pure . mkContextOf [''PCanData, ''PDebug] $ tyVars
     mkMatch :: Name -> Q Exp
     mkMatch bindName = do
       fieldNames <- NEVector.imapM (\i _ -> newName $ "f" <> show i) fieldTypes
       let conMatchPat = ConP cName [] . fmap VarP . NEVector.toList $ fieldNames
       startLit <- [e|pconstant @PString $(pure . LitE . StringL $ nameBase cName <> " {\n")|]
-      endLit <- [e|pconstant @PString $(pure . LitE . StringL $ "}")|]
+      endLit <- [e|pconstant @PString "}"|]
       fieldEs <- traverse mkFieldShow fieldNames
       matchBody <- go startLit (NEVector.toList fieldEs <> [endLit])
       pure . CaseE (VarE bindName) $ [Match conMatchPat (NormalB matchBody) []]
@@ -166,7 +166,7 @@ derivePDebug tyVars tyName cName fieldTypes =
     mkFieldShow fVarName = do
       commaE <- [e|pconstant @PString ", "|]
       newlineE <- [e|pconstant @PString "\n"|]
-      fieldE <- [e|pshow $(pure . VarE $ fVarName)|]
+      fieldE <- [e|pshow (pfromData $(pure . VarE $ fVarName))|]
       [e|pappendString # $(pure commaE) # (pappendString # $(pure fieldE) # $(pure newlineE))|]
     go :: Exp -> [Exp] -> Q Exp
     go acc = \case
