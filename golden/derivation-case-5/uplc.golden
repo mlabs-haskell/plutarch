@@ -1,0 +1,2 @@
+case (0 :: Integer)
+  [("PRed" :: String), ("PGreen" :: String), ("PBlue" :: String)]

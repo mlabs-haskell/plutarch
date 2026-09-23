@@ -16,13 +16,14 @@ import Language.Haskell.TH
     Body (NormalB),
     Dec,
     Exp (CaseE, ConE, LitE, VarE),
-    Lit (IntegerL),
+    Lit (IntegerL, StringL),
     Match (Match),
     Name,
     Pat (ConP),
     Q,
     TyVarBndr,
     Type,
+    nameBase,
   )
 import Plutarch.Helpers.TH
   ( PTypeProduct (PTypeProduct),
@@ -36,10 +37,11 @@ import Plutarch.Helpers.TH
     toSomeTermE,
   )
 import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Singular (PInteger)
+import Plutarch.Primitive.Singular (PInteger, PString)
 import PlutusCore qualified as PLC
 
 -- | @since 2.0.0
@@ -50,7 +52,8 @@ deriveEnum tvbs name (PTypeSum typeStructure) = do
   pmatchDec <- derivePMatch tvbs name skeleton
   pconDec <- derivePCon tvbs name skeleton
   peqDec <- derivePEq tvbs name
-  pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
+  pdebugDec <- derivePDebug tvbs name skeleton
+  pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
 
 -- Helpers
 
@@ -125,3 +128,25 @@ derivePEq tyVars tyName =
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
     ctx = pure . mkContextOf ''PlutarchType $ tyVars
+
+derivePDebug :: Vector (TyVarBndr BndrVis) -> Name -> NonEmptyVector Name -> Q [Dec]
+derivePDebug tyVars tyName constructorNames =
+  [d|
+    instance ($ctx) => PDebug $name where
+      pdebug t f = f (pmatch t $ \x -> $(matches 'x))
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    matches :: Name -> Q Exp
+    matches bindName = do
+      matchVec <- NEVector.mapM mkMatch constructorNames
+      pure . CaseE (VarE bindName) . NEVector.toList $ matchVec
+    mkMatch :: Name -> Q Match
+    mkMatch conName = do
+      let conMatchPat = ConP conName [] []
+      let conNameLit = LitE . StringL . nameBase $ conName
+      constantE <- [e|pconstant @PString $(pure conNameLit)|]
+      pure . Match conMatchPat (NormalB constantE) $ []

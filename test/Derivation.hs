@@ -1,7 +1,12 @@
 module Derivation (goldens) where
 
 import Plutarch.Prelude
-import Plutarch.Test.Golden (Evaluation (EvaluateUPLC), releaseGolden)
+import Plutarch.Test.Golden
+  ( Evaluation (EvaluateUPLC),
+    debugGolden,
+    releaseGolden,
+  )
+import TH.Enum (PColour (PRed))
 import TH.MS (PTheseMS)
 import TH.SOP (PEither, PSOPList (PSOPCons, PSOPNil), PThese)
 import Test.Tasty (TestTree, testGroup)
@@ -29,7 +34,12 @@ goldens =
         EvaluateUPLC
         "peq @(PSOPList PInteger)"
         "Derivation Case 4"
-        case4
+        case4,
+      debugGolden
+        EvaluateUPLC
+        "pshow @PColour"
+        "Derivation Case 5"
+        (pshow @PColour . pcon $ PRed)
     ]
 
 -- Cases
