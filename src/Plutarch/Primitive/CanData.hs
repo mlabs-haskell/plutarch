@@ -42,6 +42,7 @@ import Plutarch.Primitive.Singular
     PBool,
     PByte,
     PByteString,
+    PData,
     PInteger,
     PNZInteger,
     PNatural,
@@ -109,6 +110,11 @@ instance PCanData PByteString where
 instance (PCanData a) => PCanData (PBList (PAsData a)) where
   pfromData x = punsafeCoerce (punListData # pfundamental x)
   ptoData x = punsafeCoerce (plistData @(PAsData a)) # x
+
+-- | @since 2.0.0
+instance PCanData (PBList PData) where
+  pfromData x = punListData # pfundamental x
+  ptoData x = punsafeCoerce plistData # x
 
 -- | @since 2.0.0
 instance (PCanData a, PCanData b) => PCanData (PBPair (PAsData a) (PAsData b)) where

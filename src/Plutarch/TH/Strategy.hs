@@ -26,12 +26,12 @@ import Plutarch.TH.SOP (deriveSOP)
 -- @since 2.0.0
 data Strategy
   = -- | Use UPLC's built-in @SOP@ as the representation. This strategy derives
-    --    'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    --    'PlutarchType', 'PMatch', 'PCon', 'PEq' and 'PDebug' instances.
     --
     --    @since 2.0.0
     SOP
   | -- | Use @PData@ as the representation. This strategy derives
-    --    'PlutarchType', 'PMatch' and 'PCon' and 'PEq' instances.
+    --    'PlutarchType', 'PMatch' and 'PCon', 'PEq' and 'PDebug' instances.
     --
     --    This will use a PlutusTx-style sum-of-products encoding with @Constr@,
     --    even for types with only one \'arm\'.
@@ -39,18 +39,19 @@ data Strategy
     --    @since 2.0.0
     DataPlutus
   | -- | Use an onchain @Integer@ as the representation. This strategy derives
-    --    'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    --    'PlutarchType', 'PMatch', 'PCon', 'PEq' and 'PDebug' instances.
+    --   'PCanData' can be derived using the default instance.
     --
     --    @since 2.0.0
     Enum
   | -- | Use a @'PBList'@ as the representation. This strategy derives
-    --    'PlutarchType', 'PMatch', and 'PCon' instances. 'PEq' can be derived using
-    --    the default instance for anything 'Data'-encoded.
+    --    'PlutarchType', 'PMatch', 'PCon' and 'PDebug' instances. 'PEq' can
+    --    be derived using the default instance.
     --
     --    @since 2.0.0
     DataList
   | -- | Use a final-encoding lambda as the representation. This strategy
-    --    derives 'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    --    derives 'PlutarchType', 'PMatch', 'PCon', 'PEq' and 'PDebug' instances.
     --
     --    @since 2.0.0
     MogensenScott

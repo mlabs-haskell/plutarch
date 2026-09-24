@@ -1,0 +1,9 @@
+ANF Hashes:
+ #0 := lq7M85OSbvc
+ #1 := mqE7eqJLvgvN
+ #2 := wR3z8FFtdSvN
+
+ANF Binds:
+ #0 := IData
+ #1 := 0 :: Integer
+ #2 := Apply #0 [#1]

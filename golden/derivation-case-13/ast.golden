@@ -1,0 +1,51 @@
+<Apply
+  <ListData>@uaAQngLqohnN
+  [
+    <Apply
+      <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+      [
+        <Apply
+          <ConstrData>@zd9ooDLRiOB
+          [
+            <case
+              <False :: Bool>@ofkSqfsbj7l 
+              [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
+            >@qQ04tJc9RWiN, 
+            <[] :: [Data]>@rcJtquzh7RfN
+          ]
+        >@nEkzqkvcf7C, 
+        <Apply
+          <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+          [
+            <Apply
+              <ConstrData>@zd9ooDLRiOB
+              [
+                <case
+                  <False :: Bool>@ofkSqfsbj7l 
+                  [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
+                >@qQ04tJc9RWiN, 
+                <[] :: [Data]>@rcJtquzh7RfN
+              ]
+            >@nEkzqkvcf7C, 
+            <Apply
+              <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+              [
+                <Apply
+                  <ConstrData>@zd9ooDLRiOB
+                  [
+                    <case
+                      <False :: Bool>@ofkSqfsbj7l 
+                      [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
+                    >@qQ04tJc9RWiN, 
+                    <[] :: [Data]>@rcJtquzh7RfN
+                  ]
+                >@nEkzqkvcf7C, 
+                <[] :: [Data]>@rcJtquzh7RfN
+              ]
+            >@aHKajk285kh
+          ]
+        >@koZdZlX8OxC
+      ]
+    >@mTDzj76b1vn
+  ]
+>@fG4WOP4T2Hl

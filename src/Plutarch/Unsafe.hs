@@ -7,6 +7,7 @@ module Plutarch.Unsafe
     -- * Unsafe 'Term' construction
     PrimTerm.punsafeCase,
     PrimTerm.punsafeConstr,
+    PrimTerm.punsafeCoerce,
   )
 where
 

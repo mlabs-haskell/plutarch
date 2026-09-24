@@ -25,6 +25,8 @@ data PTriple (a :: S -> Type) (s :: S)
 
 deriveFor ''PTriple DataList AllInstances
 
+instance (PCanData a) => PCanData (PTriple a)
+
 data PPairData (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PPairData (Term s (PAsData a)) (Term s (PAsData b))
 

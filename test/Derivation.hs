@@ -8,6 +8,7 @@ import Plutarch.Test.Golden
     debugGolden,
     releaseGolden,
   )
+import Plutarch.Unsafe (punsafeCoerce)
 import TH.Data (PTheseData (PTheseData), PTriple (PTriple))
 import TH.Enum (PColour (PRed))
 import TH.MS (PTheseMS (PTheseMS))
@@ -67,7 +68,22 @@ goldens =
         EvaluateUPLC
         "pshow @(PTheseMS PInteger PBool)"
         "Derivation Case 10"
-        case10
+        case10,
+      releaseGolden
+        EvaluateUPLC
+        "pfromData @PColour"
+        "Derivation Case 11"
+        (pfromData @PColour . punsafeCoerce $ piData # pconstant 1),
+      releaseGolden
+        EvaluateUPLC
+        "ptoData @PColour"
+        "Derivation Case 12"
+        (ptoData @PColour . pcon $ PRed),
+      releaseGolden
+        EvaluateUPLC
+        "ptoData @(PTriple PBool)"
+        "Derivation Case 13"
+        (ptoData . pcon $ trip)
     ]
 
 -- Cases
@@ -81,12 +97,7 @@ case4 = peq # ell1 # ell2
     ell2 = pcon sopList
 
 case6 :: forall (s :: S). Term s PString
-case6 =
-  pshow . pcon $
-    PTriple
-      (ptoData pfalse)
-      (ptoData pfalse)
-      (ptoData pfalse)
+case6 = pshow . pcon $ trip
 
 case7 :: forall (s :: S). Term s PString
 case7 =
@@ -127,3 +138,6 @@ sopList =
             (pcon (PSOPCons (pconstant @PInteger 1) (pcon PSOPNil)))
         )
     )
+
+trip :: forall (s :: S). PTriple PBool s
+trip = PTriple (ptoData pfalse) (ptoData pfalse) (ptoData pfalse)
