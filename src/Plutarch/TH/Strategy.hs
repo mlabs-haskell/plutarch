@@ -1,6 +1,7 @@
 -- | @since 2.0.0
 module Plutarch.TH.Strategy
   ( Strategy (..),
+    WhichInstances (..),
     deriveFor,
   )
 where
@@ -54,8 +55,28 @@ data Strategy
     --    @since 2.0.0
     MogensenScott
 
--- | Given a type name, and a 'Strategy', derive all possible instances for that
--- type as allowed by that 'Strategy'.
+-- | Specifies which instances to derive. Currently only has two options.
+--
+-- = Note
+--
+-- 'PEq' and 'PDebug' cannot be derived for Plutarch arrows. Any attempt to
+-- derive these will error at compile time: ensure that you choose only
+-- instances that are actually possible for your data type.
+--
+-- @since 2.0.0
+data WhichInstances
+  = -- | Derive everything possible.
+    --
+    -- @since 2.0.0
+    AllInstances
+  | -- | Skip 'PEq' and 'PDebug'.
+    --
+    -- @since 2.0.0
+    NoEqDebug
+
+-- | Given a type name, a 'Strategy' and which instances to generate, derive all
+-- possible instances for that type, as allowed by the choice of 'Strategy' and
+-- which instances are requested.
 --
 -- You will need to enable the following extensions for this mechanism to work:
 --
@@ -76,18 +97,21 @@ data Strategy
 -- type that you wish to use 'deriveFor' with.
 --
 -- @since 2.0.0
-deriveFor :: Name -> Strategy -> Q [Dec]
-deriveFor tyName strat = do
+deriveFor :: Name -> Strategy -> WhichInstances -> Q [Dec]
+deriveFor tyName strat insts = do
   tyDec <- checkTyName tyName
   case tyDec of
     DataD _ name tyVarBinds _ constructors _ -> do
       let tvbAsVec = Vector.fromList tyVarBinds
       let consAsVec = Vector.fromList constructors
       typeStructure <- consToPTypeSum consAsVec
+      let deriveEqDebug = case insts of
+            AllInstances -> True
+            NoEqDebug -> False
       case Vector.unsnoc tvbAsVec of
         Nothing -> fail "Types must have an s :: S type parameter in last position."
         Just (tvbs, _) -> case strat of
-          Enum -> deriveEnum tvbs name typeStructure
+          Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
           DataList -> deriveDataList tvbs name typeStructure
           DataPlutus -> deriveDataPlutus tvbs name typeStructure
           SOP -> deriveSOP tvbs name typeStructure

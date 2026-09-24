@@ -12,4 +12,10 @@ data PColour (s :: S)
   | PGreen
   | PBlue
 
-deriveFor ''PColour P.Enum
+deriveFor ''PColour P.Enum AllInstances
+
+data PTimeOfDay (s :: S)
+  = PDay
+  | PNight
+
+deriveFor ''PTimeOfDay P.Enum NoEqDebug

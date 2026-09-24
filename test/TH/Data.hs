@@ -12,9 +12,9 @@ data PTheseData (a :: S -> Type) (b :: S -> Type) (s :: S)
   | PThatData (Term s (PAsData b))
   | PTheseData (Term s (PAsData a)) (Term s (PAsData b))
 
-deriveFor ''PTheseData DataPlutus
+deriveFor ''PTheseData DataPlutus AllInstances
 
 data PTriple (a :: S -> Type) (s :: S)
   = PTriple (Term s (PAsData a)) (Term s (PAsData a)) (Term s (PAsData a))
 
-deriveFor ''PTriple DataList
+deriveFor ''PTriple DataList AllInstances

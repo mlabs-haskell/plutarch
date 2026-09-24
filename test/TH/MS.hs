@@ -12,4 +12,4 @@ data PTheseMS (a :: S -> Type) (b :: S -> Type) (s :: S)
   | PThatMS (Term s b)
   | PTheseMS (Term s a) (Term s b)
 
-deriveFor ''PTheseMS MogensenScott
+deriveFor ''PTheseMS MogensenScott AllInstances
