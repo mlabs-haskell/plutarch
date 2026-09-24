@@ -33,8 +33,8 @@ data Strategy
   | -- | Use @PData@ as the representation. This strategy derives
     --    'PlutarchType', 'PMatch' and 'PCon', 'PEq' and 'PDebug' instances.
     --
-    --    This will use a PlutusTx-style sum-of-products encoding with @Constr@,
-    --    even for types with only one \'arm\'.
+    --   This will use a PlutusTx-style sum-of-products encoding with @Constr@,
+    --   even for types with only one \'arm\'.
     --
     --    @since 2.0.0
     DataPlutus
@@ -52,6 +52,7 @@ data Strategy
     DataList
   | -- | Use a final-encoding lambda as the representation. This strategy
     --    derives 'PlutarchType', 'PMatch', 'PCon', 'PEq' and 'PDebug' instances.
+    --   `PCanData` can be derived using the default instance.
     --
     --    @since 2.0.0
     MogensenScott

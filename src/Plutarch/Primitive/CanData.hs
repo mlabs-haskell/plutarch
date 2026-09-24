@@ -107,6 +107,11 @@ instance PCanData PByteString where
   ptoData x = pbData # x
 
 -- | @since 2.0.0
+instance PCanData PData where
+  pfromData = punsafeCoerce
+  ptoData = punsafeCoerce
+
+-- | @since 2.0.0
 instance (PCanData a) => PCanData (PBList (PAsData a)) where
   pfromData x = punsafeCoerce (punListData # pfundamental x)
   ptoData x = punsafeCoerce (plistData @(PAsData a)) # x

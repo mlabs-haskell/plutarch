@@ -83,7 +83,12 @@ goldens =
         EvaluateUPLC
         "ptoData @(PTriple PBool)"
         "Derivation Case 13"
-        (ptoData . pcon $ trip)
+        (ptoData . pcon $ trip),
+      releaseGolden
+        EvaluateUPLC
+        "ptoData @(PTheseData PInteger PByteString)"
+        "Derivation Case 14"
+        (ptoData pthese)
     ]
 
 -- Cases
@@ -111,13 +116,7 @@ case8 :: forall (s :: S). Term s PString
 case8 = pshow . pcon $ sopList
 
 case9 :: forall (s :: S). Term s PString
-case9 =
-  pshow
-    . pcon @(PTheseData PInteger PByteString)
-    . PTheseData (ptoData . pconstant $ 2)
-    . ptoData
-    . pconstant
-    $ "foo"
+case9 = pshow pthese
 
 case10 :: forall (s :: S). Term s PString
 case10 =
@@ -141,3 +140,11 @@ sopList =
 
 trip :: forall (s :: S). PTriple PBool s
 trip = PTriple (ptoData pfalse) (ptoData pfalse) (ptoData pfalse)
+
+pthese :: forall (s :: S). Term s (PTheseData PInteger PByteString)
+pthese =
+  pcon @(PTheseData PInteger PByteString)
+    . PTheseData (ptoData . pconstant $ 2)
+    . ptoData
+    . pconstant
+    $ "foo"
