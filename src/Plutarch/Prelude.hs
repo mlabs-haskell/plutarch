@@ -108,6 +108,7 @@ module Plutarch.Prelude
 
     -- * Derivations
     Strategy.Strategy (..),
+    Strategy.WhichInstances (..),
     Strategy.deriveFor,
   )
 where

@@ -44,14 +44,19 @@ import Plutarch.Primitive.Singular (PInteger, PString)
 import PlutusCore qualified as PLC
 
 -- | @since 2.0.0
-deriveEnum :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
-deriveEnum tvbs name (PTypeSum typeStructure) = do
+deriveEnum ::
+  Vector (TyVarBndr BndrVis) ->
+  Name ->
+  PTypeSum ->
+  Bool ->
+  Q [Dec]
+deriveEnum tvbs name (PTypeSum typeStructure) deriveEqDebug = do
   skeleton <- traverse asEmptyProduct typeStructure
   plutarchTypeDec <- derivePlutarchType tvbs name
   pmatchDec <- derivePMatch tvbs name skeleton
   pconDec <- derivePCon tvbs name skeleton
-  peqDec <- derivePEq tvbs name
-  pdebugDec <- derivePDebug tvbs name skeleton
+  peqDec <- if deriveEqDebug then derivePEq tvbs name else pure []
+  pdebugDec <- if deriveEqDebug then derivePDebug tvbs name skeleton else pure []
   pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
 
 -- Helpers

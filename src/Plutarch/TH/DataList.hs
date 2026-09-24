@@ -49,8 +49,13 @@ import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
 import Plutarch.Primitive.Singular (PData, PString)
 
 -- | @since 2.0.0
-deriveDataList :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
-deriveDataList tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStructure of
+deriveDataList ::
+  Vector (TyVarBndr BndrVis) ->
+  Name ->
+  PTypeSum ->
+  Bool ->
+  Q [Dec]
+deriveDataList tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVector.unsnoc typeStructure of
   (ps, (conName, PTypeProduct conStructure)) -> do
     unless (Vector.null ps) (fail "Cannot use DataList strategy for a type with multiple data constructors.")
     case NEVector.fromVector conStructure of
@@ -63,7 +68,7 @@ deriveDataList tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStr
         plutarchTypeDec <- derivePlutarchType tvbs name
         pmatchDec <- derivePMatch tvbs name conName unwrapped
         pconDec <- derivePCon tvbs name conName unwrapped
-        pdebugDec <- derivePDebug tvbs name conName unwrapped
+        pdebugDec <- if deriveEqDebug then derivePDebug tvbs name conName unwrapped else pure []
         pure $ plutarchTypeDec <> pmatchDec <> pconDec <> pdebugDec
 
 -- Helpers
