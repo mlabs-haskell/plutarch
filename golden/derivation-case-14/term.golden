@@ -1,0 +1,7 @@
+ConstrData
+# 2 :: Integer
+# (
+    !MkCons
+    # (IData # 2 :: Integer)
+    # (!MkCons # (BData # "foo" :: Bytestring) # [] :: [Data])
+  )

@@ -8,6 +8,7 @@ import Plutarch.Test.Golden
     debugGolden,
     releaseGolden,
   )
+import Plutarch.Unsafe (punsafeCoerce)
 import TH.Data (PTheseData (PTheseData), PTriple (PTriple))
 import TH.Enum (PColour (PRed))
 import TH.MS (PTheseMS (PTheseMS))
@@ -67,7 +68,27 @@ goldens =
         EvaluateUPLC
         "pshow @(PTheseMS PInteger PBool)"
         "Derivation Case 10"
-        case10
+        case10,
+      releaseGolden
+        EvaluateUPLC
+        "pfromData @PColour"
+        "Derivation Case 11"
+        (pfromData @PColour . punsafeCoerce $ piData # pconstant 1),
+      releaseGolden
+        EvaluateUPLC
+        "ptoData @PColour"
+        "Derivation Case 12"
+        (ptoData @PColour . pcon $ PRed),
+      releaseGolden
+        EvaluateUPLC
+        "ptoData @(PTriple PBool)"
+        "Derivation Case 13"
+        (ptoData . pcon $ trip),
+      releaseGolden
+        EvaluateUPLC
+        "ptoData @(PTheseData PInteger PByteString)"
+        "Derivation Case 14"
+        (ptoData pthese)
     ]
 
 -- Cases
@@ -81,12 +102,7 @@ case4 = peq # ell1 # ell2
     ell2 = pcon sopList
 
 case6 :: forall (s :: S). Term s PString
-case6 =
-  pshow . pcon $
-    PTriple
-      (ptoData pfalse)
-      (ptoData pfalse)
-      (ptoData pfalse)
+case6 = pshow . pcon $ trip
 
 case7 :: forall (s :: S). Term s PString
 case7 =
@@ -100,13 +116,7 @@ case8 :: forall (s :: S). Term s PString
 case8 = pshow . pcon $ sopList
 
 case9 :: forall (s :: S). Term s PString
-case9 =
-  pshow
-    . pcon @(PTheseData PInteger PByteString)
-    . PTheseData (ptoData . pconstant $ 2)
-    . ptoData
-    . pconstant
-    $ "foo"
+case9 = pshow pthese
 
 case10 :: forall (s :: S). Term s PString
 case10 =
@@ -127,3 +137,14 @@ sopList =
             (pcon (PSOPCons (pconstant @PInteger 1) (pcon PSOPNil)))
         )
     )
+
+trip :: forall (s :: S). PTriple PBool s
+trip = PTriple (ptoData pfalse) (ptoData pfalse) (ptoData pfalse)
+
+pthese :: forall (s :: S). Term s (PTheseData PInteger PByteString)
+pthese =
+  pcon @(PTheseData PInteger PByteString)
+    . PTheseData (ptoData . pconstant $ 2)
+    . ptoData
+    . pconstant
+    $ "foo"

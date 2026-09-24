@@ -1,0 +1,7 @@
+\ ->
+  let forced_ec = !MkCons
+  in ListData
+       # (
+           (\cse_dc -> cse_dc # (cse_dc # (cse_dc # ([] :: [Data]))))
+           # (forced_ec # (<> :: Data))
+         )

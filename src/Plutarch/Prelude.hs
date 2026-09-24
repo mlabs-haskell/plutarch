@@ -98,8 +98,14 @@ module Plutarch.Prelude
     Debug.pshow,
 
     -- ** Data
+
+    -- *** Type markers
     S.PData,
     S.PAsData,
+
+    -- *** Primitive operations
+    BF.piData,
+    BF.plistData,
 
     -- ** Equality
     Eq.PEq (..),
