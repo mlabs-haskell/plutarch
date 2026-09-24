@@ -57,6 +57,11 @@ data Strategy
 -- | Given a type name, and a 'Strategy', derive all possible instances for that
 -- type as allowed by that 'Strategy'.
 --
+-- You will need to enable the following extensions for this mechanism to work:
+--
+-- * @ConstraintKinds@
+-- * @OverloadedStrings@
+--
 -- = Important note
 --
 -- All 'Strategy' choices assume that the type is formed correctly to be a

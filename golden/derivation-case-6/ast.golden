@@ -1,0 +1,191 @@
+<case
+  <Apply
+    <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+    [
+      <Apply
+        <ConstrData>@zd9ooDLRiOB
+        [
+          <case
+            <False :: Bool>@ofkSqfsbj7l 
+            [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
+          >@qQ04tJc9RWiN, 
+          <[] :: [Data]>@rcJtquzh7RfN
+        ]
+      >@nEkzqkvcf7C, 
+      <Apply
+        <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+        [
+          <Apply
+            <ConstrData>@zd9ooDLRiOB
+            [
+              <case
+                <False :: Bool>@ofkSqfsbj7l 
+                [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
+              >@qQ04tJc9RWiN, 
+              <[] :: [Data]>@rcJtquzh7RfN
+            ]
+          >@nEkzqkvcf7C, 
+          <Apply
+            <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+            [
+              <Apply
+                <ConstrData>@zd9ooDLRiOB
+                [
+                  <case
+                    <False :: Bool>@ofkSqfsbj7l 
+                    [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
+                  >@qQ04tJc9RWiN, 
+                  <[] :: [Data]>@rcJtquzh7RfN
+                ]
+              >@nEkzqkvcf7C, 
+              <[] :: [Data]>@rcJtquzh7RfN
+            ]
+          >@aHKajk285kh
+        ]
+      >@koZdZlX8OxC
+    ]
+  >@mTDzj76b1vn 
+  [
+    <\a b -> 
+      <case
+        b 
+        [
+          <\c d -> 
+            <Apply
+              <AppendString>@p7qYeALXKVC
+              [
+                <"PTriple { " :: String>@i5ELeXTJ92oN, 
+                <Apply
+                  <AppendString>@p7qYeALXKVC
+                  [
+                    <Apply
+                      <AppendString>@p7qYeALXKVC
+                      [
+                        <", " :: String>@t3U4h8CsxbeN, 
+                        <Apply
+                          <AppendString>@p7qYeALXKVC
+                          [
+                            <case
+                              <case
+                                <Apply
+                                  <UnConstrData>@pOsZYZKxq5BN [c]
+                                >@gCpCkCPfkUmN 
+                                [
+                                  <\e _ -> 
+                                    <case
+                                      e 
+                                      [
+                                        <False :: Bool>@ofkSqfsbj7l, 
+                                        <True :: Bool>@nAyEnYBEW9k
+                                      ]
+                                    >@qkfbZT2vxZm
+                                  >@l5D61rbaZlt
+                                ]
+                              >@pELKb4FsHHzN 
+                              [
+                                <"false" :: String>@bCkXPqc92pCN, 
+                                <"true" :: String>@mCiXmXbySDe
+                              ]
+                            >@dIQntUUiZJCN, 
+                            <" " :: String>@lM1GM6LVDMcN
+                          ]
+                        >@bdWQ9fPtwcj
+                      ]
+                    >@vsmGIO27t8i, 
+                    <Apply
+                      <AppendString>@p7qYeALXKVC
+                      [
+                        <Apply
+                          <AppendString>@p7qYeALXKVC
+                          [
+                            <", " :: String>@t3U4h8CsxbeN, 
+                            <Apply
+                              <AppendString>@p7qYeALXKVC
+                              [
+                                <case
+                                  <case
+                                    <Apply
+                                      <UnConstrData>@pOsZYZKxq5BN [a]
+                                    >@j4CVW2aijXhN 
+                                    [
+                                      <\g _ -> 
+                                        <case
+                                          g 
+                                          [
+                                            <False :: Bool>@ofkSqfsbj7l, 
+                                            <True :: Bool>@nAyEnYBEW9k
+                                          ]
+                                        >@lHhxvFjtlCDN
+                                      >@l5D61rbaZlt
+                                    ]
+                                  >@dpl7J3j6D9w 
+                                  [
+                                    <"false" :: String>@bCkXPqc92pCN, 
+                                    <"true" :: String>@mCiXmXbySDe
+                                  ]
+                                >@tkpImUfAJJsN, 
+                                <" " :: String>@lM1GM6LVDMcN
+                              ]
+                            >@p0AWmbj5UWvN
+                          ]
+                        >@c2aOVavapCDN, 
+                        <Apply
+                          <AppendString>@p7qYeALXKVC
+                          [
+                            <Apply
+                              <AppendString>@p7qYeALXKVC
+                              [
+                                <", " :: String>@t3U4h8CsxbeN, 
+                                <Apply
+                                  <AppendString>@p7qYeALXKVC
+                                  [
+                                    <case
+                                      <case
+                                        <Apply
+                                          <UnConstrData>@pOsZYZKxq5BN
+                                          [
+                                            <Apply
+                                              <
+                                                force <HeadList>@p1kM2QYq7MdN
+                                              >@z4s5d3lE5at
+                                              [d]
+                                            >@t52vbsARIBC
+                                          ]
+                                        >@a4b5cW4wESdN 
+                                        [
+                                          <\i _ -> 
+                                            <case
+                                              i 
+                                              [
+                                                <False :: Bool>@ofkSqfsbj7l, 
+                                                <True :: Bool>@nAyEnYBEW9k
+                                              ]
+                                            >@qkRJ4exuzXr
+                                          >@l5D61rbaZlt
+                                        ]
+                                      >@cxv7ktClAmeN 
+                                      [
+                                        <"false" :: String>@bCkXPqc92pCN, 
+                                        <"true" :: String>@mCiXmXbySDe
+                                      ]
+                                    >@w4nvASAjakgN, 
+                                    <" " :: String>@lM1GM6LVDMcN
+                                  ]
+                                >@xF5nXxqrRzk
+                              ]
+                            >@hHxQmz4f13xN, 
+                            <"}" :: String>@iXxLwYZTYyx
+                          ]
+                        >@vj5aEBdE9zkN
+                      ]
+                    >@wMuPIQsjn2zN
+                  ]
+                >@e0ZXOMAP1mbN
+              ]
+            >@fvbOz9fBLBgN
+          >@c9p9pJApW3oN
+        ]
+      >@lKjlqM5Uq0y
+    >@eXriMLc0G8AN
+  ]
+>@n3FZlSlZ2MCN

@@ -23,14 +23,17 @@ import Language.Haskell.TH
         ConE,
         LamE,
         LetE,
+        LitE,
         VarE
       ),
+    Lit (StringL),
     Match (Match),
     Name,
     Pat (ConP, VarP, WildP),
     Q,
     TyVarBndr,
     Type (AppT, ConT, VarT, WildCardT),
+    nameBase,
     newName,
   )
 import Plutarch.Backend.Term (S, Term)
@@ -47,10 +50,11 @@ import Plutarch.Helpers.TH
     plam'E,
   )
 import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Singular (PBool, (:-->))
+import Plutarch.Primitive.Singular (PBool, PString, (:-->))
 import Plutarch.Primitive.Term (papp, plam', punsafeCoerce)
 
 -- | = Example
@@ -81,7 +85,8 @@ deriveMS tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStructure
     let markedAll = NEVector.snocV markedRest (nameLast, markedFieldsLast)
     pconDec <- derivePCon tvbs name markedAll
     peqDec <- derivePEq tvbs name markedAll
-    pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
+    pdebugDec <- derivePDebug tvbs name markedAll
+    pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
 
 -- Helpers
 
@@ -95,7 +100,7 @@ derivePlutarchType tyVars tyName =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf [''PlutarchType] $ tyVars
     generalizedName :: Q Type
     generalizedName =
       pure
@@ -120,7 +125,7 @@ derivePMatch tyVars tyName cs c =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf [''PlutarchType] $ tyVars
     mkPMatchBody :: Name -> Name -> Name -> Q Exp
     mkPMatchBody msThingName contName resTyName = do
       msType <- mkMSType (VarT resTyName) (Vector.snoc cs c)
@@ -159,7 +164,7 @@ derivePCon tyVars tyName constructors =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf [''PlutarchType] $ tyVars
     cases :: Name -> Q Exp
     cases argName = CaseE (VarE argName) . NEVector.toList <$> NEVector.imapM mkMatch constructors
     mkMatch :: Int -> (Name, Vector (Bool, Type)) -> Q Match
@@ -203,7 +208,7 @@ derivePEq tyVars tyName constructors =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PEq $ tyVars
+    ctx = pure . mkContextOf [''PEq] $ tyVars
     peqImpl :: Name -> Name -> Name -> Q Exp
     peqImpl selfName xName yName = do
       msType <- mkMSType (ConT ''PBool) (NEVector.toVector constructors)
@@ -262,6 +267,84 @@ derivePEq tyVars tyName constructors =
       if isRec
         then [e|pand $(pure acc) ($(pure selfE) # $(pure (VarE xName)) # $(pure (VarE yName)))|]
         else [e|pand $(pure acc) (peq # $(pure (VarE xName)) # $(pure (VarE yName)))|]
+
+derivePDebug ::
+  Vector (TyVarBndr BndrVis) ->
+  Name ->
+  NonEmptyVector (Name, Vector (Bool, Type)) ->
+  Q [Dec]
+derivePDebug tyVars tyName constructors =
+  if NEVector.any (\(_, fields) -> Vector.any fst fields) constructors
+    then -- We're isorecursive, so we need a fixpoint.
+      [d|
+        instance ($ctx) => PDebug $name where
+          pdebug t f =
+            f
+              ( pfix
+                  ( \self -> plam' $ \x -> pmatch x $ \y ->
+                      $(mkMatchesRec 'self 'y)
+                  )
+                  # t
+              )
+        |]
+    else -- Not isorecursive, so no need.
+      [d|
+        instance ($ctx) => PDebug $name where
+          pdebug t f = f (pmatch t $ \x -> $(mkMatches 'x))
+        |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf [''PDebug] $ tyVars
+    mkMatchesRec :: Name -> Name -> Q Exp
+    mkMatchesRec selfName bindName =
+      CaseE (VarE bindName) . NEVector.toList <$> NEVector.mapM (mkDebugRec selfName) constructors
+    mkMatches :: Name -> Q Exp
+    mkMatches bindName =
+      CaseE (VarE bindName)
+        . NEVector.toList
+        <$> (NEVector.mapM mkDebug . fmap (fmap (fmap snd)) $ constructors)
+    mkDebug :: (Name, Vector Type) -> Q Match
+    mkDebug (conName, conFields) = do
+      fieldNames <- itraverse (\i _ -> newName $ "f" <> show i) conFields
+      let conMatchPat = ConP conName [] . Vector.toList . fmap VarP $ fieldNames
+      startLit <- [e|pconstant @PString $(pure . LitE . StringL $ nameBase conName <> " {\n")|]
+      endLit <- [e|pconstant @PString "}"|]
+      fieldEs <- traverse mkFieldShow fieldNames
+      matchBody <- go startLit (Vector.toList fieldEs <> [endLit])
+      pure . Match conMatchPat (NormalB matchBody) $ []
+    mkFieldShow :: Name -> Q Exp
+    mkFieldShow fVarName = do
+      commaE <- [e|pconstant @PString ", "|]
+      newlineE <- [e|pconstant @PString "\n"|]
+      fieldE <- [e|pshow $(pure . VarE $ fVarName)|]
+      [e|pappendString # $(pure commaE) # (pappendString # $(pure fieldE) # $(pure newlineE))|]
+    mkDebugRec :: Name -> (Name, Vector (Bool, Type)) -> Q Match
+    mkDebugRec selfName (conName, conFields) = do
+      fieldNames <- itraverse (\i _ -> newName $ "f" <> show i) conFields
+      let conMatchPat = ConP conName [] . Vector.toList . fmap VarP $ fieldNames
+      startLit <- [e|pconstant @PString $(pure . LitE . StringL $ nameBase conName <> " {\n")|]
+      endLit <- [e|pconstant @PString "}"|]
+      fieldEs <-
+        traverse
+          (mkFieldShowRec selfName)
+          (Vector.zipWith (\n (isRec, _) -> (n, isRec)) fieldNames conFields)
+      matchBody <- go startLit (Vector.toList fieldEs <> [endLit])
+      pure . Match conMatchPat (NormalB matchBody) $ []
+    mkFieldShowRec :: Name -> (Name, Bool) -> Q Exp
+    mkFieldShowRec selfName (fVarName, isRec) = do
+      commaE <- [e|pconstant @PString ", "|]
+      newlineE <- [e|pconstant @PString "\n"|]
+      fieldE <-
+        if isRec
+          then [e|$(pure . VarE $ selfName) # $(pure . VarE $ fVarName)|]
+          else [e|pshow $(pure . VarE $ fVarName)|]
+      [e|pappendString # $(pure commaE) # (pappendString # $(pure fieldE) # $(pure newlineE))|]
+    go :: Exp -> [Exp] -> Q Exp
+    go acc = \case
+      [] -> pure acc
+      (e : es) -> [e|pappendString # $(pure acc) # $(go e es)|]
 
 mkMSType :: Type -> Vector (Name, Vector (Bool, Type)) -> Q Type
 mkMSType resType cs = do

@@ -99,16 +99,23 @@ fullTypeName ::
   (Foldable f) => Name -> f (TyVarBndr BndrVis) -> Type
 fullTypeName tyName = foldl' (\acc -> AppT acc . VarT . bindToName) (ConT tyName)
 
--- | Given a 'Vector' of type variables, and the name of a single-parameter type
--- class, construct a context asserting all of these type variables are
--- instances of that type class.
+-- | Given a 'Vector' of type variables, and a list of single-parameter type
+-- class names, construct a context asserting all of the type variables are
+-- instances of all of these type classes.
 --
 -- @since 2.0.0
-mkContextOf :: Name -> Vector (TyVarBndr BndrVis) -> Type
-mkContextOf tyClassName tyVars =
+mkContextOf :: [Name] -> Vector (TyVarBndr BndrVis) -> Type
+mkContextOf tyClassNames tyVars =
+  let varLen = Vector.length tyVars
+      classesLen = length tyClassNames
+      varNames = [AppT (ConT tcn) . VarT . bindToName $ bn | tcn <- tyClassNames, bn <- Vector.toList tyVars]
+   in foldl' AppT (TupleT (varLen * classesLen)) varNames
+
+{-
   let len = Vector.length tyVars
       varNames = fmap (AppT (ConT tyClassName) . VarT . bindToName) tyVars
    in foldl' AppT (TupleT len) varNames
+-}
 
 -- | Given a name @ell@ corresponding to a @PDList@ variable, constructs the
 -- equivalent of:
