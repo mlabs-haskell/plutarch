@@ -61,8 +61,13 @@ import Plutarch.Primitive.Singular (PData, PString)
 import PlutusCore qualified as PLC
 
 -- | @since wip
-deriveDataPlutus :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
-deriveDataPlutus tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStructure of
+deriveDataPlutus ::
+  Vector (TyVarBndr BndrVis) ->
+  Name ->
+  PTypeSum ->
+  Bool ->
+  Q [Dec]
+deriveDataPlutus tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVector.unsnoc typeStructure of
   (ps, (nameLast, PTypeProduct fieldsLast)) -> do
     when (Vector.null ps) (fail "Use the DataList strategy for a Data-encoded type with a single constructor.")
     when
@@ -71,14 +76,20 @@ deriveDataPlutus tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeS
     unwrappedFieldsLast <- traverse unwrapField fieldsLast
     unwrappedPS <- traverse (\(name', PTypeProduct fields) -> (name',) <$> traverse unwrapField fields) ps
     let allConFields = NEVector.snocV unwrappedPS (nameLast, unwrappedFieldsLast)
-    markedFieldsLast <- traverse (checkAndMark name) fieldsLast
-    markedRest <- traverse (\(name', PTypeProduct fields) -> (name',) <$> traverse (checkAndMark name) fields) ps
+    markedFieldsLast <- traverse (checkAndMark deriveEqDebug name) fieldsLast
+    markedRest <-
+      traverse
+        ( \(name', PTypeProduct fields) ->
+            (name',)
+              <$> traverse (checkAndMark deriveEqDebug name) fields
+        )
+        ps
     let markedAll = NEVector.snocV markedRest (nameLast, markedFieldsLast)
     plutarchTypeDec <- derivePlutarchType tvbs name
     pmatchDec <- derivePMatch tvbs name unwrappedPS (nameLast, unwrappedFieldsLast)
     pconDec <- derivePCon tvbs name allConFields
-    peqDec <- derivePEq tvbs name
-    pdebugDec <- derivePDebug tvbs name markedAll
+    peqDec <- if deriveEqDebug then derivePEq tvbs name else pure []
+    pdebugDec <- if deriveEqDebug then derivePDebug tvbs name markedAll else pure []
     pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
 
 -- Helpers

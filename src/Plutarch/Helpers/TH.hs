@@ -256,17 +256,22 @@ isTypeRecursive name = \case
       InfixT t name' u -> name' == name || go t || go u
       _ -> False
 
--- | Verify that a given 'PType' is not a function type (erroring if so), and
--- produces both of the following:
+-- | Check whether the given 'PType' is either recursive or a function type. If the
+-- first argument is 'True' (indicating the intent to derive 'PEq' or 'PDebug'),
+-- if the given 'PType' is a function type, error. Otherwise, produce:
 --
--- * An indication of whether the type is recursive given the 'Name' argument
--- ('True' means \'recursive\'); and
+-- * An indication of the type's recursivity given the 'Name' argument ('True'
+-- means \'recursive\'); and
 -- * The 'Type' as it would be originally (restoring 'PAsData' if it was there).
 --
 -- @since 2.0.0
-checkAndMark :: Name -> PType -> Q (Bool, Type)
-checkAndMark name t = case t of
-  PTypeFunction _ -> fail "Functions cannot have derivations for PEq."
+checkAndMark :: Bool -> Name -> PType -> Q (Bool, Type)
+checkAndMark deriveEqDebug name t = case t of
+  PTypeFunction t' ->
+    if deriveEqDebug
+      then fail "Functions cannot have derivations for PEq."
+      -- Function types are never recursive
+      else pure (False, t')
   PTypeData t' -> pure (isTypeRecursive name t, AppT (ConT ''PAsData) t')
   PTypeNotData t' -> pure (isTypeRecursive name t, t')
 

@@ -72,20 +72,31 @@ import Plutarch.Primitive.Term (papp, plam', punsafeCoerce)
 -- @
 --
 -- @since 2.0.0
-deriveMS :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
-deriveMS tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStructure of
+deriveMS ::
+  Vector (TyVarBndr BndrVis) ->
+  Name ->
+  PTypeSum ->
+  Bool ->
+  Q [Dec]
+deriveMS tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVector.unsnoc typeStructure of
   (ps, (nameLast, PTypeProduct fieldsLast)) -> do
     when
       (NEVector.all (Vector.null . coerce @_ @(Vector PType) . snd) typeStructure)
       (fail "Use the Enum strategy for types with no fields in any 'arm'.")
-    markedFieldsLast <- traverse (checkAndMark name) fieldsLast
-    markedRest <- traverse (\(name', PTypeProduct fields) -> (name',) <$> traverse (checkAndMark name) fields) ps
+    markedFieldsLast <- traverse (checkAndMark deriveEqDebug name) fieldsLast
+    markedRest <-
+      traverse
+        ( \(name', PTypeProduct fields) ->
+            (name',)
+              <$> traverse (checkAndMark deriveEqDebug name) fields
+        )
+        ps
     plutarchTypeDec <- derivePlutarchType tvbs name
     pmatchDec <- derivePMatch tvbs name markedRest (nameLast, markedFieldsLast)
     let markedAll = NEVector.snocV markedRest (nameLast, markedFieldsLast)
     pconDec <- derivePCon tvbs name markedAll
-    peqDec <- derivePEq tvbs name markedAll
-    pdebugDec <- derivePDebug tvbs name markedAll
+    peqDec <- if deriveEqDebug then derivePEq tvbs name markedAll else pure []
+    pdebugDec <- if deriveEqDebug then derivePDebug tvbs name markedAll else pure []
     pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
 
 -- Helpers
