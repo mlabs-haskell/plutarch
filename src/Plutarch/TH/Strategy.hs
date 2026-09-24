@@ -114,8 +114,22 @@ deriveFor tyName strat insts = do
           Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
           DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
           DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
-          SOP -> deriveSOP tvbs name typeStructure
-          MogensenScott -> deriveMS tvbs name typeStructure
-    NewtypeD {} -> fail "Newtype derivations not supported at present."
+          SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
+          MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
+    NewtypeD _ name tyVarBinds _ con _ -> do
+      let tvbAsVec = Vector.fromList tyVarBinds
+      let conAsVec = Vector.singleton con
+      typeStructure <- consToPTypeSum conAsVec
+      let deriveEqDebug = case insts of
+            AllInstances -> True
+            NoEqDebug -> False
+      case Vector.unsnoc tvbAsVec of
+        Nothing -> fail "Types must have an s :: S type parameter in last position."
+        Just (tvbs, _) -> case strat of
+          Enum -> fail "As a newtype must have one field, it cannot use the Enum strategy."
+          DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
+          DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
+          SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
+          MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
     TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
     _ -> fail $ "Not a valid type name: " <> show tyName

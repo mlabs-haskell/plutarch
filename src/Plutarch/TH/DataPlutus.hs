@@ -76,8 +76,14 @@ deriveDataPlutus tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVecto
     unwrappedFieldsLast <- traverse unwrapField fieldsLast
     unwrappedPS <- traverse (\(name', PTypeProduct fields) -> (name',) <$> traverse unwrapField fields) ps
     let allConFields = NEVector.snocV unwrappedPS (nameLast, unwrappedFieldsLast)
-    markedFieldsLast <- traverse (checkAndMark name) fieldsLast
-    markedRest <- traverse (\(name', PTypeProduct fields) -> (name',) <$> traverse (checkAndMark name) fields) ps
+    markedFieldsLast <- traverse (checkAndMark deriveEqDebug name) fieldsLast
+    markedRest <-
+      traverse
+        ( \(name', PTypeProduct fields) ->
+            (name',)
+              <$> traverse (checkAndMark deriveEqDebug name) fields
+        )
+        ps
     let markedAll = NEVector.snocV markedRest (nameLast, markedFieldsLast)
     plutarchTypeDec <- derivePlutarchType tvbs name
     pmatchDec <- derivePMatch tvbs name unwrappedPS (nameLast, unwrappedFieldsLast)

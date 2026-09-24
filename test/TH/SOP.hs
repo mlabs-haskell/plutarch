@@ -6,6 +6,7 @@ module TH.SOP
   ( PThese (..),
     PEither (..),
     PSOPList (..),
+    PSOPOp (..),
   )
 where
 
@@ -30,3 +31,8 @@ data PSOPList (a :: S -> Type) (s :: S)
   | PSOPCons (Term s a) (Term s (PSOPList a))
 
 deriveFor ''PSOPList SOP AllInstances
+
+newtype PSOPOp (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PSopOp (Term s (b :--> a))
+
+deriveFor ''PSOPOp SOP NoEqDebug
