@@ -1,0 +1,13 @@
+ANF Hashes:
+ #0 := odtykDZ33Rd
+ #1 := lq7M85OSbvc
+ #2 := vyRIuwDii3A
+ #3 := i0Dt1dpdPKq
+ #4 := oVoageyiLBr
+
+ANF Binds:
+ #0 := UnIData
+ #1 := IData
+ #2 := 1 :: Integer
+ #3 := Apply #1 [#2]
+ #4 := Apply #0 [#3]

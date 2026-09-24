@@ -1,0 +1,21 @@
+<Apply
+  <ConstrData>@zd9ooDLRiOB
+  [
+    <2 :: Integer>@qjJx7b4Msxl, 
+    <Apply
+      <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+      [
+        <Apply<IData>@lq7M85OSbvc [<2 :: Integer>@qjJx7b4Msxl]>@xbeHZZ18OUjN, 
+        <Apply
+          <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+          [
+            <Apply
+              <BData>@xzuvg9nZuSx [<"foo" :: Bytestring>@kAink8gYthuN]
+            >@sjZuOF9daDzN, 
+            <[] :: [Data]>@rcJtquzh7RfN
+          ]
+        >@lIsCZaLQgJsN
+      ]
+    >@jnK7BCttiQvN
+  ]
+>@mnut34OHYvi

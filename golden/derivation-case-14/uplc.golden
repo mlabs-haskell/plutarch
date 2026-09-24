@@ -1,0 +1,10 @@
+\ ->
+  let forced_pb = !MkCons
+  in ConstrData
+     # (2 :: Integer)
+     # (
+         (\bind_ob ->
+           bind_ob # (2 :: Data) # (bind_ob # (Zm9v :: Data) # ([] :: [Data]))
+         )
+         # forced_pb
+       )

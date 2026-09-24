@@ -1,0 +1,29 @@
+ANF Hashes:
+ #0 := zd9ooDLRiOB
+ #1 := qjJx7b4Msxl
+ #2 := qvDyAVrQ9eg
+ #3 := xpO8bXGXAAbN
+ #4 := lq7M85OSbvc
+ #5 := xbeHZZ18OUjN
+ #6 := xzuvg9nZuSx
+ #7 := kAink8gYthuN
+ #8 := sjZuOF9daDzN
+ #9 := rcJtquzh7RfN
+ #10 := lIsCZaLQgJsN
+ #11 := jnK7BCttiQvN
+ #12 := mnut34OHYvi
+
+ANF Binds:
+ #0 := ConstrData
+ #1 := 2 :: Integer
+ #2 := MkCons
+ #3 := Force #2
+ #4 := IData
+ #5 := Apply #4 [#1]
+ #6 := BData
+ #7 := "foo" :: Bytestring
+ #8 := Apply #6 [#7]
+ #9 := [] :: [Data]
+ #10 := Apply #3 [#8, #9]
+ #11 := Apply #3 [#5, #10]
+ #12 := Apply #0 [#1, #11]
