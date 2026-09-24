@@ -26,15 +26,20 @@ import Plutarch.Primitive.BuiltinFun
     punIData,
     punListData,
   )
-import Plutarch.Primitive.Composite (PBList, PBPair)
+import Plutarch.Primitive.Composite (PBList, PBPair (PBPair))
+import Plutarch.Primitive.DerivedFun (pfalse, pif, ptrue)
+import Plutarch.Primitive.Liftable (pconstant)
+import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Representation
   ( PlutarchType (PRepresentation),
     pfundamental,
+    punsafeSecondary,
     (#),
     (#$),
   )
 import Plutarch.Primitive.Singular
   ( PAsData,
+    PBool,
     PByte,
     PByteString,
     PInteger,
@@ -68,6 +73,15 @@ class (PlutarchType a) => PCanData (a :: S -> Type) where
     (PCanData (PRepresentation a)) =>
     Term s a -> Term s (PAsData a)
   ptoData = punsafeCoerce . ptoData . pfundamental
+
+-- | Booleans on chain are represented as @Constr 0 []@ for false, @Constr 1 []@
+-- for true. Thus, the change between 'PBool' and 'PAsData PBool' is nontrivial.
+--
+-- @since 2.0.0
+instance PCanData PBool where
+  pfromData t = pmatch (punConstrData # pfundamental t) $ \(PBPair tag _) ->
+    punsafeCase tag . NEVector.cons (toSomeTerm pfalse) . NEVector.singleton . toSomeTerm $ ptrue
+  ptoData t = punsafeSecondary $ pconstrData # pif t (pconstant 0) (pconstant 1) # pnilData
 
 -- | @since 2.0.0
 instance PCanData PInteger where

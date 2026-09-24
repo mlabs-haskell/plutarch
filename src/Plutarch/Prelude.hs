@@ -25,6 +25,7 @@ module Plutarch.Prelude
     Match.pmatch,
     Con.PCon (..),
     Con.pcon,
+    CanData.PCanData (..),
 
     -- * Lifting
     Lift.pconstant,
@@ -75,6 +76,9 @@ module Plutarch.Prelude
     -- *** Type marker
     S.PString,
 
+    -- *** Primitive operations
+    BF.pappendString,
+
     -- ** Builtin list
 
     -- *** Type marker
@@ -110,6 +114,7 @@ where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Primitive.BuiltinFun qualified as BF
+import Plutarch.Primitive.CanData qualified as CanData
 import Plutarch.Primitive.Composite qualified as C
 import Plutarch.Primitive.Con qualified as Con
 import Plutarch.Primitive.Debug qualified as Debug

@@ -15,7 +15,7 @@ module Plutarch.Primitive.Representation
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (PDelayed, S, Term)
 import Plutarch.Primitive.Composite as C
 import Plutarch.Primitive.Singular ((:-->))
 import Plutarch.Primitive.Singular qualified as S
@@ -64,6 +64,10 @@ class
 -- | @since 2.0.0
 instance (PlutarchType a, PlutarchType b) => PlutarchType (a :--> b) where
   type PRepresentation (a :--> b) = a :--> PRepresentation b
+
+-- | @since 2.0.0
+instance (PlutarchType a) => PlutarchType (PDelayed a) where
+  type PRepresentation (PDelayed a) = PDelayed (PRepresentation a)
 
 -- | @since 2.0.0
 instance PlutarchType S.PBool

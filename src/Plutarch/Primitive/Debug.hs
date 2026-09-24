@@ -35,7 +35,7 @@ import Plutarch.Primitive.Representation
   )
 import Plutarch.Primitive.Singular (PInteger, PNatural, PString, (:-->))
 import Plutarch.Primitive.Singular qualified as S
-import Plutarch.Primitive.Term (pfix, plam', punsafeCase)
+import Plutarch.Primitive.Term (pdelay, pfix, pforce, plam', punsafeCase)
 
 -- | A way of displaying a value of a Plutarch type (for debugging purposes).
 -- This is designed primarily for debugging: thus, release builds of scripts
@@ -159,13 +159,14 @@ instance PDebug S.PData where
     where
       go :: Term s (S.PData :--> PString)
       go = pfix $ \self -> plam' $ \dat ->
-        BF.pchooseData
-          # dat
-          # (formatPair (plam' pshow) (formatList self) #$ BF.punConstrData # dat)
-          # (formatList (formatPair self self) #$ BF.punMapData # dat)
-          # (formatList self #$ BF.punListData # dat)
-          # pshow (BF.punIData # dat)
-          # pshow (BF.punBData # dat)
+        pforce $
+          BF.pchooseData
+            # dat
+            # pdelay (formatPair (plam' pshow) (formatList self) #$ BF.punConstrData # dat)
+            # pdelay (formatList (formatPair self self) #$ BF.punMapData # dat)
+            # pdelay (formatList self #$ BF.punListData # dat)
+            # pdelay (pshow (BF.punIData # dat))
+            # pdelay (pshow (BF.punBData # dat))
 
 -- | Will display the 'S.PData' encoding rather than the wrapped type @a@.
 --

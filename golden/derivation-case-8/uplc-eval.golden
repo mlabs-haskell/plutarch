@@ -1,0 +1,11 @@
+("PSOPCons {
+, 3
+, PSOPCons {
+, 2
+, PSOPCons {
+, 1
+, PSOPNil {
+}
+}
+}
+}" :: String)

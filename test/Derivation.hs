@@ -1,9 +1,17 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Derivation (goldens) where
 
 import Plutarch.Prelude
-import Plutarch.Test.Golden (Evaluation (EvaluateUPLC), releaseGolden)
-import TH.MS (PTheseMS)
-import TH.SOP (PEither, PSOPList (PSOPCons, PSOPNil), PThese)
+import Plutarch.Test.Golden
+  ( Evaluation (EvaluateUPLC),
+    debugGolden,
+    releaseGolden,
+  )
+import TH.Data (PTheseData (PTheseData), PTriple (PTriple))
+import TH.Enum (PColour (PRed))
+import TH.MS (PTheseMS (PTheseMS))
+import TH.SOP (PEither (PLeft), PSOPList (PSOPCons, PSOPNil), PThese)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
@@ -29,7 +37,37 @@ goldens =
         EvaluateUPLC
         "peq @(PSOPList PInteger)"
         "Derivation Case 4"
-        case4
+        case4,
+      debugGolden
+        EvaluateUPLC
+        "pshow @PColour"
+        "Derivation Case 5"
+        (pshow @PColour . pcon $ PRed),
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PTriple PBool)"
+        "Derivation Case 6"
+        case6,
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PEither PInteger PByteString)"
+        "Derivation Case 7"
+        case7,
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PSOPList PInteger)"
+        "Derivation Case 8"
+        case8,
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PTheseData PInteger PByteString)"
+        "Derivation Case 9"
+        case9,
+      debugGolden
+        EvaluateUPLC
+        "pshow @(PTheseMS PInteger PBool)"
+        "Derivation Case 10"
+        case10
     ]
 
 -- Cases
@@ -40,14 +78,52 @@ case4 = peq # ell1 # ell2
     ell1 :: Term s (PSOPList PInteger)
     ell1 = pcon PSOPNil
     ell2 :: Term s (PSOPList PInteger)
-    ell2 =
-      pcon
+    ell2 = pcon sopList
+
+case6 :: forall (s :: S). Term s PString
+case6 =
+  pshow . pcon $
+    PTriple
+      (ptoData pfalse)
+      (ptoData pfalse)
+      (ptoData pfalse)
+
+case7 :: forall (s :: S). Term s PString
+case7 =
+  pshow
+    . pcon @(PEither PInteger PByteString)
+    . PLeft
+    . pconstant @PInteger
+    $ 2
+
+case8 :: forall (s :: S). Term s PString
+case8 = pshow . pcon $ sopList
+
+case9 :: forall (s :: S). Term s PString
+case9 =
+  pshow
+    . pcon @(PTheseData PInteger PByteString)
+    . PTheseData (ptoData . pconstant $ 2)
+    . ptoData
+    . pconstant
+    $ "foo"
+
+case10 :: forall (s :: S). Term s PString
+case10 =
+  pshow
+    . pcon @(PTheseMS PInteger PBool)
+    . PTheseMS (pconstant 2)
+    $ pfalse
+
+-- Helpers
+
+sopList :: forall (s :: S). PSOPList PInteger s
+sopList =
+  PSOPCons
+    (pconstant @PInteger 3)
+    ( pcon
         ( PSOPCons
-            (pconstant @PInteger 3)
-            ( pcon
-                ( PSOPCons
-                    (pconstant @PInteger 2)
-                    (pcon (PSOPCons (pconstant @PInteger 1) (pcon PSOPNil)))
-                )
-            )
+            (pconstant @PInteger 2)
+            (pcon (PSOPCons (pconstant @PInteger 1) (pcon PSOPNil)))
         )
+    )
