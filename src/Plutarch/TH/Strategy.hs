@@ -113,7 +113,7 @@ deriveFor tyName strat insts = do
         Just (tvbs, _) -> case strat of
           Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
           DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
-          DataPlutus -> deriveDataPlutus tvbs name typeStructure
+          DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
           SOP -> deriveSOP tvbs name typeStructure
           MogensenScott -> deriveMS tvbs name typeStructure
     NewtypeD {} -> fail "Newtype derivations not supported at present."
