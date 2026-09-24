@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module TH.Data (PTheseData (..), PTriple (..)) where
+module TH.Data (PTheseData (..), PTriple (..), PPairData (..)) where
 
 import Data.Kind (Type)
 import Plutarch.Prelude
@@ -18,3 +18,8 @@ data PTriple (a :: S -> Type) (s :: S)
   = PTriple (Term s (PAsData a)) (Term s (PAsData a)) (Term s (PAsData a))
 
 deriveFor ''PTriple DataList AllInstances
+
+data PPairData (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PPairData (Term s (PAsData a)) (Term s (PAsData b))
+
+deriveFor ''PPairData DataList NoEqDebug

@@ -112,7 +112,7 @@ deriveFor tyName strat insts = do
         Nothing -> fail "Types must have an s :: S type parameter in last position."
         Just (tvbs, _) -> case strat of
           Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
-          DataList -> deriveDataList tvbs name typeStructure
+          DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
           DataPlutus -> deriveDataPlutus tvbs name typeStructure
           SOP -> deriveSOP tvbs name typeStructure
           MogensenScott -> deriveMS tvbs name typeStructure

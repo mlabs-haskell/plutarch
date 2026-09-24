@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module TH.Enum (PColour (..)) where
+module TH.Enum (PColour (..), PTimeOfDay (..)) where
 
 import Plutarch.Prelude
 import Plutarch.Prelude qualified as P
