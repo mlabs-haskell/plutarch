@@ -6,6 +6,7 @@ module Plutarch.Helpers.TH
     bindToName,
     fullTypeName,
     mkContextOf,
+    mkContextOfExtended,
     mkUncons,
     toSomeTermE,
     punsafeCaseE,
@@ -111,11 +112,14 @@ mkContextOf tyClassNames tyVars =
       varNames = [AppT (ConT tcn) . VarT . bindToName $ bn | tcn <- tyClassNames, bn <- Vector.toList tyVars]
    in foldl' AppT (TupleT (varLen * classesLen)) varNames
 
-{-
-  let len = Vector.length tyVars
-      varNames = fmap (AppT (ConT tyClassName) . VarT . bindToName) tyVars
-   in foldl' AppT (TupleT len) varNames
--}
+-- | @since 2.0.0
+mkContextOfExtended :: [Name] -> Vector (TyVarBndr BndrVis) -> Type -> Type
+mkContextOfExtended tyClassNames tyVars fieldTy =
+  let varLen = Vector.length tyVars
+      classesLen = length tyClassNames
+      varNames = [AppT (ConT tcn) . VarT . bindToName $ bn | tcn <- tyClassNames, bn <- Vector.toList tyVars]
+      fieldTyNames = [AppT (ConT tcn) fieldTy | tcn <- tyClassNames]
+   in foldl' AppT (TupleT (varLen * classesLen + 1)) $ fieldTyNames <> varNames
 
 -- | Given a name @ell@ corresponding to a @PDList@ variable, constructs the
 -- equivalent of:
