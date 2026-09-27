@@ -8,8 +8,12 @@ module Plutarch.Unsafe
     PrimTerm.punsafeCase,
     PrimTerm.punsafeConstr,
     PrimTerm.punsafeCoerce,
+
+    -- * Unsafe representation conversions
+    Representation.punsafeSecondary,
   )
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
+import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Term qualified as PrimTerm

@@ -17,6 +17,7 @@ import Plutarch.TH.DataList (deriveDataList)
 import Plutarch.TH.DataPlutus (deriveDataPlutus)
 import Plutarch.TH.Enum (deriveEnum)
 import Plutarch.TH.MS (deriveMS)
+import Plutarch.TH.Newtype (deriveNewtype)
 import Plutarch.TH.SOP (deriveSOP)
 
 -- | Specifies a representation choice for the data type you want derivations
@@ -56,6 +57,18 @@ data Strategy
     --
     --    @since 2.0.0
     MogensenScott
+  | -- | \'Reuses\' instances from the \'underlying\' type of a @newtype@.
+    -- Intended for use with @newtype@s over 'Term's, and won't work for
+    -- anything else. This strategy derives whichever of 'PlutarchType',
+    -- 'PMatch', 'PCon', 'PEq', and 'PDebug', providing the \'underlying\' type
+    -- supports them.
+    --
+    -- @since 2.0.0
+    Newtype
+  | -- | As 'Newtype', but derives 'PCanData' as well.
+    --
+    -- @since 2.0.0
+    NewtypeData
 
 -- | Specifies which instances to derive. Currently only has two options.
 --
@@ -84,6 +97,7 @@ data WhichInstances
 --
 -- * @ConstraintKinds@
 -- * @OverloadedStrings@
+-- * @UndecidableInstances@
 --
 -- = Important note
 --
@@ -118,6 +132,8 @@ deriveFor tyName strat insts = do
           DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
           SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
           MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
+          Newtype -> fail "Cannot use the Newtype strategy on a non-newtype."
+          NewtypeData -> fail "Cannot use the NewtypeData strategy on a non-newtype."
     NewtypeD _ name tyVarBinds _ con _ -> do
       let tvbAsVec = Vector.fromList tyVarBinds
       let conAsVec = Vector.singleton con
@@ -133,5 +149,7 @@ deriveFor tyName strat insts = do
           DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
           SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
           MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
+          Newtype -> deriveNewtype tvbs name typeStructure deriveEqDebug False
+          NewtypeData -> deriveNewtype tvbs name typeStructure deriveEqDebug True
     TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
     _ -> fail $ "Not a valid type name: " <> show tyName
