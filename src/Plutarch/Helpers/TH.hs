@@ -20,6 +20,7 @@ module Plutarch.Helpers.TH
     pmkConsE,
     pconstrDataE,
     pequalsDataE,
+    punIDataE,
     mkPLam,
     mkAnonPLam,
     PType (..),
@@ -62,6 +63,7 @@ import Plutarch.Primitive.BuiltinFun
     pmkCons,
     pnilData,
     punConstrData,
+    punIData,
   )
 import Plutarch.Primitive.Singular (PAsData, (:-->))
 import Plutarch.Primitive.Term
@@ -188,6 +190,10 @@ pconstrDataE = pure $ VarE 'pconstrData
 -- | @since 2.0.0
 pequalsDataE :: Q Exp
 pequalsDataE = pure $ VarE 'pequalsData
+
+-- | @since 2.0.0
+punIDataE :: Q Exp
+punIDataE = pure $ VarE 'punIData
 
 -- | Given a \'handler\' taking the named argument, constructs a new @plam'@
 -- with a fresh argument.

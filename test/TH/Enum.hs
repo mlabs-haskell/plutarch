@@ -14,8 +14,6 @@ data PColour (s :: S)
 
 deriveFor ''PColour P.Enum AllInstances
 
-instance PCanData PColour
-
 data PTimeOfDay (s :: S)
   = PDay
   | PNight

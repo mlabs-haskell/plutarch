@@ -88,7 +88,12 @@ goldens =
         EvaluateUPLC
         "ptoData @(PTheseData PInteger PByteString)"
         "Derivation Case 14"
-        (ptoData pthese)
+        (ptoData pthese),
+      debugGolden
+        EvaluateUPLC
+        "pvalidateData @PColour"
+        "Derivation Case 15"
+        (pvalidateData @PColour $ pfundamental (piData # pconstant 1))
     ]
 
 -- Cases

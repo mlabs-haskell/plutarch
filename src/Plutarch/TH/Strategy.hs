@@ -40,8 +40,7 @@ data Strategy
     --    @since 2.0.0
     DataPlutus
   | -- | Use an onchain @Integer@ as the representation. This strategy derives
-    --    'PlutarchType', 'PMatch', 'PCon', 'PEq' and 'PDebug' instances.
-    --   'PCanData' can be derived using the default instance.
+    --    'PlutarchType', 'PMatch', 'PCon', 'PEq', 'PDebug' and 'PCanData' instances.
     --
     --    @since 2.0.0
     Enum
