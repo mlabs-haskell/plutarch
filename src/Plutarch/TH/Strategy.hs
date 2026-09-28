@@ -45,14 +45,13 @@ data Strategy
     --    @since 2.0.0
     Enum
   | -- | Use a @'PBList'@ as the representation. This strategy derives
-    --    'PlutarchType', 'PMatch', 'PCon' and 'PDebug' instances. 'PEq' can
-    --    be derived using the default instance.
+    --    'PlutarchType', 'PMatch', 'PCon', 'PDebug', 'PCanData' and
+    --    'PValidateData' instances. 'PEq' can be derived using the default instance.
     --
     --    @since 2.0.0
     DataList
   | -- | Use a final-encoding lambda as the representation. This strategy
     --    derives 'PlutarchType', 'PMatch', 'PCon', 'PEq' and 'PDebug' instances.
-    --   `PCanData` can be derived using the default instance.
     --
     --    @since 2.0.0
     MogensenScott

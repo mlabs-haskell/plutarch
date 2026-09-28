@@ -86,6 +86,9 @@ module Plutarch.Prelude
     -- *** Type marker
     C.PBList (..),
 
+    -- *** Operations
+    DF.pheadTailList,
+
     -- ** Builtin pair
 
     -- *** Type marker

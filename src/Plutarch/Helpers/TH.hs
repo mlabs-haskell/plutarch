@@ -16,6 +16,7 @@ module Plutarch.Helpers.TH
     plam'E,
     punsafeCoerceE,
     punConstrDataE,
+    punListDataE,
     pnilDataE,
     pmkConsE,
     pconstrDataE,
@@ -64,6 +65,7 @@ import Plutarch.Primitive.BuiltinFun
     pnilData,
     punConstrData,
     punIData,
+    punListData,
   )
 import Plutarch.Primitive.Singular (PAsData, (:-->))
 import Plutarch.Primitive.Term
@@ -174,6 +176,10 @@ punsafeCoerceE = pure $ VarE 'punsafeCoerce
 -- | @since 2.0.0
 punConstrDataE :: Q Exp
 punConstrDataE = pure $ VarE 'punConstrData
+
+-- | @since 2.0.0
+punListDataE :: Q Exp
+punListDataE = pure $ VarE 'punListData
 
 -- | @since 2.0.0
 pnilDataE :: Q Exp
