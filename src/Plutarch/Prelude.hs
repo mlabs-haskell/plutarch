@@ -94,6 +94,11 @@ module Plutarch.Prelude
     -- *** Type marker
     C.PBPair (..),
 
+    -- ** Builtin array
+
+    -- *** Type marker
+    S.PBArray,
+
     -- ** Tracing
     Trace.ptraceDebug,
     Trace.ptraceError,

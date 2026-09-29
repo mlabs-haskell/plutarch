@@ -1,0 +1,29 @@
+(\forced_cr forced_dr ->
+  (\bind_tq ->
+    (\bind_uq ->
+      (\vq ->
+        (\wq ->
+          (\xq ->
+            (\yq zq ->
+              zq
+              # (case (LessThanEqualsInteger # vq # xq) [xq, vq])
+              # (\ar ->
+                  AddInteger
+                  # (AddInteger # (wq # ar) # (1 :: Integer))
+                  # ((\br -> MultiplyInteger # br # br) # (yq # ar))
+                )
+            )
+            # (bind_uq # ([4, 6, 8] :: Array Integer))
+          )
+          # (bind_tq # ([4, 6, 8] :: Array Integer))
+        )
+        # (bind_uq # ([1, 2, 3] :: Array Integer))
+      )
+      # (bind_tq # ([1, 2, 3] :: Array Integer))
+    )
+    # forced_dr
+  )
+  # forced_cr
+)
+# !LengthOfArray
+# !IndexArray

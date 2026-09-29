@@ -1,0 +1,35 @@
+(\forced_tp forced_up ->
+  (\bind_jp ->
+    (\bind_kp ->
+      (\lp ->
+        (\mp ->
+          (\np ->
+            (\op pp ->
+              pp
+              # (case (LessThanEqualsInteger # lp # np) [np, lp])
+              # (\qp ->
+                  (\rp ->
+                    (\sp ->
+                      AddInteger
+                      # (AddInteger # rp # (1 :: Integer))
+                      # (MultiplyInteger # sp # sp)
+                    )
+                    # (op # qp)
+                  )
+                  # (mp # qp)
+                )
+            )
+            # (bind_kp # ([4, 6, 8] :: Array Integer))
+          )
+          # (bind_jp # ([4, 6, 8] :: Array Integer))
+        )
+        # (bind_kp # ([1, 2, 3] :: Array Integer))
+      )
+      # (bind_jp # ([1, 2, 3] :: Array Integer))
+    )
+    # forced_up
+  )
+  # forced_tp
+)
+# !LengthOfArray
+# !IndexArray

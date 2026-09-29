@@ -1,0 +1,14 @@
+(\a ->
+  a
+  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+  # (!IndexArray # [1, 2, 3] :: Array Integer)
+)
+# (\b c d ->
+    d
+    # b
+    # (
+        (\e -> MultiplyInteger # e # e)
+        . (\f -> AddInteger # f # 1 :: Integer)
+        . c
+      )
+  )
