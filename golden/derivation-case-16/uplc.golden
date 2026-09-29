@@ -1,0 +1,61 @@
+\ ->
+  let bind_q = !MkCons
+  let bind_w = ([] :: [Data])
+  let bind_x = ConstrData
+               # (case (False :: Bool) [(1 :: Integer), (0 :: Integer)])
+               # bind_w
+  let bind_bb = ListData
+                  # (
+                      bind_q
+                      # bind_x
+                      # (bind_q # bind_x # (bind_q # bind_x # bind_w))
+                    )
+  in case 
+       (UnListData # bind_bb)
+       [ \a b ->
+           case 
+             (UnConstrData # a)
+             [ \c d ->
+                 (\bind_gb ->
+                   case d
+                     [ bind_gb
+                     , (\bind_vb -> case c [bind_vb, bind_vb])
+                       # (case b
+                           [ \g h ->
+                               case 
+                                 (UnConstrData # g)
+                                 [ \i j ->
+                                     case j
+                                       [ bind_gb
+                                       , (\bind_pb -> case i [bind_pb, bind_pb])
+                                         # (case h
+                                             [ \m n ->
+                                                 case 
+                                                   (UnConstrData # m)
+                                                   [ \o p ->
+                                                       case p
+                                                         [ bind_gb
+                                                         , (\bind_jb ->
+                                                             case o
+                                                               [ bind_jb
+                                                               , bind_jb
+                                                               ]
+                                                           )
+                                                           # (case n
+                                                               [ bind_gb
+                                                               , bind_bb
+                                                               ]
+                                                             )
+                                                         ]
+                                                   ]
+                                             ]
+                                           )
+                                       ]
+                                 ]
+                           ]
+                         )
+                     ]
+                 )
+                 # (\unused_e unused_e -> ERROR)
+             ]
+       ]

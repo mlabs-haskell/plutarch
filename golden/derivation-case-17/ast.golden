@@ -1,0 +1,174 @@
+<case
+  <Apply
+    <UnConstrData>@pOsZYZKxq5BN
+    [
+      <Apply
+        <ConstrData>@zd9ooDLRiOB
+        [
+          <2 :: Integer>@qjJx7b4Msxl, 
+          <Apply
+            <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+            [
+              <Apply
+                <IData>@lq7M85OSbvc [<2 :: Integer>@qjJx7b4Msxl]
+              >@xbeHZZ18OUjN, 
+              <Apply
+                <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+                [
+                  <Apply
+                    <BData>@xzuvg9nZuSx [<"foo" :: Bytestring>@kAink8gYthuN]
+                  >@sjZuOF9daDzN, 
+                  <[] :: [Data]>@rcJtquzh7RfN
+                ]
+              >@lIsCZaLQgJsN
+            ]
+          >@jnK7BCttiQvN
+        ]
+      >@mnut34OHYvi
+    ]
+  >@rOXorFuTBsmN 
+  [
+    <\a b -> 
+      <case
+        b 
+        [
+          <\c d -> 
+            <case
+              a 
+              [
+                <Apply
+                  <\_ -> 
+                    <case
+                      d 
+                      [
+                        <\_ _ -> <ERROR>@lIzn7o4VJpd>@oqwUyxiUPpy, 
+                        <Apply
+                          <ConstrData>@zd9ooDLRiOB
+                          [
+                            <2 :: Integer>@qjJx7b4Msxl, 
+                            <Apply
+                              <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+                              [
+                                <Apply
+                                  <IData>@lq7M85OSbvc
+                                  [<2 :: Integer>@qjJx7b4Msxl]
+                                >@xbeHZZ18OUjN, 
+                                <Apply
+                                  <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+                                  [
+                                    <Apply
+                                      <BData>@xzuvg9nZuSx
+                                      [<"foo" :: Bytestring>@kAink8gYthuN]
+                                    >@sjZuOF9daDzN, 
+                                    <[] :: [Data]>@rcJtquzh7RfN
+                                  ]
+                                >@lIsCZaLQgJsN
+                              ]
+                            >@jnK7BCttiQvN
+                          ]
+                        >@mnut34OHYvi
+                      ]
+                    >@ykZT8KbsIYN
+                  >@uBz5uyzt5PwN
+                  [<Apply<UnIData>@odtykDZ33Rd [c]>@qz1xkBjEhTi]
+                >@zji33oFn7jf, 
+                <Apply
+                  <\_ -> 
+                    <case
+                      d 
+                      [
+                        <\_ _ -> <ERROR>@lIzn7o4VJpd>@oqwUyxiUPpy, 
+                        <Apply
+                          <ConstrData>@zd9ooDLRiOB
+                          [
+                            <2 :: Integer>@qjJx7b4Msxl, 
+                            <Apply
+                              <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+                              [
+                                <Apply
+                                  <IData>@lq7M85OSbvc
+                                  [<2 :: Integer>@qjJx7b4Msxl]
+                                >@xbeHZZ18OUjN, 
+                                <Apply
+                                  <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+                                  [
+                                    <Apply
+                                      <BData>@xzuvg9nZuSx
+                                      [<"foo" :: Bytestring>@kAink8gYthuN]
+                                    >@sjZuOF9daDzN, 
+                                    <[] :: [Data]>@rcJtquzh7RfN
+                                  ]
+                                >@lIsCZaLQgJsN
+                              ]
+                            >@jnK7BCttiQvN
+                          ]
+                        >@mnut34OHYvi
+                      ]
+                    >@ykZT8KbsIYN
+                  >@uBz5uyzt5PwN
+                  [<Apply<UnBData>@wVKZOhVLmRzN [c]>@nfmiJ7AV7mC]
+                >@f5GjZRoZIClN, 
+                <Apply
+                  <\_ -> 
+                    <case
+                      d 
+                      [
+                        <\l m -> 
+                          <Apply
+                            <\_ -> 
+                              <case
+                                m 
+                                [
+                                  <\_ _ -> <ERROR>@lIzn7o4VJpd>@oqwUyxiUPpy, 
+                                  <Apply
+                                    <ConstrData>@zd9ooDLRiOB
+                                    [
+                                      <2 :: Integer>@qjJx7b4Msxl, 
+                                      <Apply
+                                        <
+                                          force <MkCons>@qvDyAVrQ9eg
+                                        >@xpO8bXGXAAbN
+                                        [
+                                          <Apply
+                                            <IData>@lq7M85OSbvc
+                                            [<2 :: Integer>@qjJx7b4Msxl]
+                                          >@xbeHZZ18OUjN, 
+                                          <Apply
+                                            <
+                                              force <MkCons>@qvDyAVrQ9eg
+                                            >@xpO8bXGXAAbN
+                                            [
+                                              <Apply
+                                                <BData>@xzuvg9nZuSx
+                                                [
+                                                  <
+                                                    "foo" :: Bytestring
+                                                  >@kAink8gYthuN
+                                                ]
+                                              >@sjZuOF9daDzN, 
+                                              <[] :: [Data]>@rcJtquzh7RfN
+                                            ]
+                                          >@lIsCZaLQgJsN
+                                        ]
+                                      >@jnK7BCttiQvN
+                                    ]
+                                  >@mnut34OHYvi
+                                ]
+                              >@ydI12qk2Rlx
+                            >@zoEOPlLWT4s
+                            [<Apply<UnBData>@wVKZOhVLmRzN [l]>@qwSyqryCz1sN]
+                          >@uA8Z01j7AAkN
+                        >@uEPFRs88ozcN
+                      ]
+                    >@bwgib59brfjN
+                  >@ljikdO5JDKhN
+                  [<Apply<UnIData>@odtykDZ33Rd [c]>@qz1xkBjEhTi]
+                >@ovw8w2YlnuDN
+              ]
+            >@t2pw7zKls1j
+          >@k0u4Pqznk4iN
+        ]
+      >@n3bDp47BvGg
+    >@inCUHiaJKve
+  ]
+>@sS0ZIBub7oxN

@@ -31,16 +31,19 @@ import Plutarch.Helpers.TH
     fullTypeName,
     pequalsIntegerE,
     plam'E,
+    punIDataE,
     punsafeCaseE,
     punsafeConstantE,
     toSomeTermE,
   )
+import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Con (PCon (pcon'))
 import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
 import Plutarch.Primitive.Singular (PInteger, PString)
+import Plutarch.Primitive.Validate (PValidateData (pwithValidated))
 import PlutusCore qualified as PLC
 
 -- | @since 2.0.0
@@ -57,7 +60,16 @@ deriveEnum tvbs name (PTypeSum typeStructure) deriveEqDebug = do
   pconDec <- derivePCon tvbs name skeleton
   peqDec <- if deriveEqDebug then derivePEq tvbs name else pure []
   pdebugDec <- if deriveEqDebug then derivePDebug tvbs name skeleton else pure []
-  pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
+  pcanDataDec <- derivePCanData tvbs name
+  pvalidateDataDec <- derivePValidateData tvbs name skeleton
+  pure $
+    plutarchTypeDec
+      <> pmatchDec
+      <> pconDec
+      <> peqDec
+      <> pdebugDec
+      <> pcanDataDec
+      <> pvalidateDataDec
 
 -- Helpers
 
@@ -144,3 +156,29 @@ derivePDebug tyVars tyName constructorNames =
       let conNameLit = LitE . StringL . nameBase $ conName
       constantE <- [e|pconstant @PString $(pure conNameLit)|]
       pure . Match conMatchPat (NormalB constantE) $ []
+
+derivePCanData :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
+derivePCanData tyVars tyName =
+  [d|
+    instance PCanData $name
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+
+derivePValidateData :: Vector (TyVarBndr BndrVis) -> Name -> NonEmptyVector Name -> Q [Dec]
+derivePValidateData tyVars tyName constructorNames =
+  [d|
+    instance PValidateData $name where
+      pwithValidated d res = $(punsafeCaseE) ($(punIDataE) # d) $(mkMatches 'res)
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    mkMatches :: Name -> Q Exp
+    mkMatches contName = do
+      let (namesRest, _) = NEVector.unsnoc constructorNames
+      let handlerLast = VarE contName
+      let handlersRest = fmap (\_ -> VarE contName) namesRest
+      start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
+      foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest

@@ -52,9 +52,7 @@ import Plutarch.Primitive.Term
   ( plam',
     punsafeCase,
     punsafeCoerce,
-    punsafeConstant,
   )
-import PlutusCore qualified as PLC
 
 -- | @since 2.0.0
 class (PlutarchType a) => PCanData (a :: S -> Type) where
@@ -130,16 +128,47 @@ instance (PCanData a, PCanData b) => PCanData (PBPair (PAsData a) (PAsData b)) w
   pfromData x =
     let asConstr = punConstrData # pfundamental x
         fields = psndPair # asConstr
-     in punsafeCase fields handlers
+     in punsafeCase fields handler
     where
-      handlers :: NonEmptyVector (SomeTerm s)
-      handlers =
+      handler :: NonEmptyVector (SomeTerm s)
+      handler =
         let t = plam' $ \h1 -> plam' $ \rest ->
               pmkPairData # h1 #$ pheadList # rest
          in NEVector.singleton (toSomeTerm t)
   ptoData x =
     punsafeCoerce
-      (pconstrData # i0 #$ pmkCons # pfundamental (pfstPair # x) #$ pmkCons # pfundamental (psndPair # x) # pnilData)
+      ( pconstrData
+          # pconstant 0
+          #$ pmkCons
+          # pfundamental (pfstPair # x)
+          #$ pmkCons
+          # pfundamental (psndPair # x)
+          # pnilData
+      )
+
+-- | @since 2.0.0
+instance PCanData (PBPair PData PData) where
+  pfromData ::
+    forall (s :: S).
+    Term s (PAsData (PBPair PData PData)) ->
+    Term s (PBPair PData PData)
+  pfromData x =
+    let asConstr = punConstrData # pfundamental x
+        fields = psndPair # asConstr
+     in punsafeCase fields handler
     where
-      i0 :: forall (s :: S). Term s PInteger
-      i0 = punsafeConstant . PLC.someValue @Integer $ 0
+      handler :: NonEmptyVector (SomeTerm s)
+      handler =
+        let t = plam' $ \h1 -> plam' $ \rest ->
+              pmkPairData # h1 #$ pheadList # rest
+         in NEVector.singleton (toSomeTerm t)
+  ptoData x =
+    punsafeCoerce
+      ( pconstrData
+          # pconstant 0
+          #$ pmkCons
+          # (pfstPair # x)
+          #$ pmkCons
+          # (psndPair # x)
+          # pnilData
+      )

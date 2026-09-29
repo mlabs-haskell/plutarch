@@ -10,6 +10,10 @@ module Plutarch.Primitive.DerivedFun
 
     -- * Numeric
     pisNegative,
+    pisPositive,
+
+    -- * List
+    pheadTailList,
   )
 where
 
@@ -17,13 +21,18 @@ import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.Term (S, Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun qualified as BF
+import Plutarch.Primitive.Composite (PBList)
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Representation
   ( PlutarchType (PRepresentation),
     pfundamental,
     (#),
   )
-import Plutarch.Primitive.Singular (PBool, PInteger)
+import Plutarch.Primitive.Singular
+  ( PBool,
+    PInteger,
+    (:-->),
+  )
 import Plutarch.Primitive.Term (punsafeCase, punsafeConstant)
 import PlutusCore qualified as PLC
 
@@ -96,3 +105,24 @@ pisNegative ::
   Term s a ->
   Term s PBool
 pisNegative t = BF.plessThanEqualsInteger # pfundamental t # pconstant (-1)
+
+-- | Checks if a given numeric type is positive.
+--
+-- @since 2.0.0
+pisPositive ::
+  forall (a :: S -> Type) (s :: S).
+  (PlutarchType a, PRepresentation a ~ PInteger) =>
+  Term s a ->
+  Term s PBool
+pisPositive t = BF.plessThanEqualsInteger # pconstant 1 # pfundamental t
+
+-- | If a 'PBList' is known non-empty, and you need both the head and tail, this
+-- is cheaper than a pattern match or builtins.
+--
+-- @since 2.0.0
+pheadTailList ::
+  forall (a :: S -> Type) (r :: S -> Type) (s :: S).
+  Term s (PBList a) ->
+  Term s (a :--> PBList a :--> r) ->
+  Term s r
+pheadTailList ell = punsafeCase ell . NEVector.singleton . toSomeTerm
