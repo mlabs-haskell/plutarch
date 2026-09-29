@@ -9,6 +9,7 @@ where
 import Control.Monad (when)
 import Data.Coerce (coerce)
 import Data.Foldable (foldrM)
+import Data.Ord (comparing)
 import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
@@ -18,7 +19,14 @@ import Language.Haskell.TH
   ( BndrVis,
     Body (NormalB),
     Dec,
-    Exp (AppE, CaseE, ConE, LitE, VarE),
+    Exp
+      ( AppE,
+        AppTypeE,
+        CaseE,
+        ConE,
+        LitE,
+        VarE
+      ),
     Lit (IntegerL, StringL),
     Match (Match),
     Name,
@@ -46,18 +54,23 @@ import Plutarch.Helpers.TH
     punsafeCaseE,
     punsafeCoerceE,
     punsafeConstantE,
+    terminateList,
     toSomeTermE,
     unwrapField,
   )
 import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
-import Plutarch.Primitive.Composite (PBPair (PBPair))
+import Plutarch.Primitive.Composite
+  ( -- PBList (PBCons, PBNil),
+    PBPair (PBPair),
+  )
 import Plutarch.Primitive.Con (PCon (pcon'))
 import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
 import Plutarch.Primitive.Singular (PData, PString)
+import Plutarch.Primitive.Validate (PValidateData (pwithValidated))
 import PlutusCore qualified as PLC
 
 -- | @since wip
@@ -90,7 +103,16 @@ deriveDataPlutus tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVecto
     pconDec <- derivePCon tvbs name allConFields
     peqDec <- if deriveEqDebug then derivePEq tvbs name else pure []
     pdebugDec <- if deriveEqDebug then derivePDebug tvbs name markedAll else pure []
-    pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec <> pdebugDec
+    pcanDataDec <- derivePCanData tvbs name
+    pvalidateDataDec <- derivePValidateData tvbs name allConFields
+    pure $
+      plutarchTypeDec
+        <> pmatchDec
+        <> pconDec
+        <> peqDec
+        <> pdebugDec
+        <> pcanDataDec
+        <> pvalidateDataDec
 
 -- Helpers
 
@@ -191,7 +213,7 @@ derivePMatch tyVars tyName cs (nameLast, fieldsLast) =
         start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
         handlers <- foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest
         [e|$punsafeCaseE $(pure (VarE tagName)) $(pure handlers)|]
-      n -> mkUncons lastTail $ \headName tailName ->
+      n -> mkUncons (VarE lastTail) $ \headName tailName ->
         -- We accumulate all preloaded names so that we can apply them to the
         -- appropriate data constructor 'all at once' at the end.
         withPreload contName tagName (arityLast, nameLast') (aritiesRest, namesRest) (headName : preloadNamesBackwards) tailName (n - 1)
@@ -216,7 +238,7 @@ derivePMatch tyVars tyName cs (nameLast, fieldsLast) =
         conAppE <- AppE conAppButLast <$> [e|$punsafeCoerceE (pheadList @PData # $(pure (VarE lastTailName)))|]
         -- Hit it with the continuation internally.
         pure . AppE (VarE contName) $ conAppE
-      n -> mkUncons lastTailName $ \headName tailName ->
+      n -> mkUncons (VarE lastTailName) $ \headName tailName ->
         -- We accumulate the needed names of all the heads we have to take
         -- so that we can apply them to the constructor 'all at once' at
         -- the end.
@@ -337,3 +359,77 @@ derivePDebug tyVars tyName constructors =
     go acc = \case
       [] -> pure acc
       (e : es) -> [e|pappendString # $(pure acc) # $(go e es)|]
+
+derivePCanData :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
+derivePCanData tyVars tyName =
+  [d|
+    instance ($ctx) => PCanData $name
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
+
+derivePValidateData ::
+  Vector (TyVarBndr BndrVis) ->
+  Name ->
+  NonEmptyVector (Name, Vector Type) ->
+  Q [Dec]
+derivePValidateData tyVars tyName cs =
+  [d|
+    instance ($ctx) => PValidateData $name where
+      pwithValidated d res = pmatch ($punConstrDataE # d) $ \(PBPair tag fields) ->
+        $(mkCases 'res 'tag 'fields)
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf [''PValidateData] $ tyVars
+    mkCases :: Name -> Name -> Name -> Q Exp
+    mkCases contName tagName fieldsName = do
+      -- Calculate our preload by finding the minimum number of fields we have
+      -- to extract regardless of 'arm'.
+      let minArity = Vector.length . snd . NEVector.minimumBy (comparing (Vector.length . snd)) $ cs
+      -- Construct the code that will extract minArity fields, leaving behind
+      -- an `Exp` referring to the 'remaining tail' if any, as well as all the
+      -- 'preloaded' names. Because of silly TH reasons, we have to do this
+      -- using CPS.
+      withPreload tagName contName minArity (VarE fieldsName) []
+    withPreload :: Name -> Name -> Int -> Exp -> [Name] -> Q Exp
+    withPreload tagName contName remaining lastTailE fieldNamesBackwards
+      | remaining == 0 = do
+          let preloadedNames = reverse fieldNamesBackwards
+          [e|$punsafeCaseE $(pure . VarE $ tagName) $(mkHandlers contName lastTailE preloadedNames)|]
+      | otherwise = mkUncons lastTailE $ \headName tailName -> do
+          let remaining' = remaining - 1
+          let lastTail' = VarE tailName
+          -- This is why they're backwards - accumulating at the end
+          -- makes this quadratic, but we can reverse once we're
+          -- done in linear time.
+          let fieldNamesBackwards' = headName : fieldNamesBackwards
+          withPreload tagName contName remaining' lastTail' fieldNamesBackwards'
+    mkHandlers :: Name -> Exp -> [Name] -> Q Exp
+    mkHandlers contName lastTailE preloadedFieldNames = do
+      handlerEs <- traverse (mkHandlerE contName lastTailE preloadedFieldNames . snd) cs
+      case NEVector.unsnoc handlerEs of
+        (es, e) -> do
+          startE <- [e|NEVector.singleton ($toSomeTermE $(pure e))|]
+          foldrM (\h acc -> [e|NEVector.cons ($toSomeTermE $(pure h)) $(pure acc)|]) startE es
+    mkHandlerE :: Name -> Exp -> [Name] -> Vector Type -> Q Exp
+    mkHandlerE contName lastTailE namesLeft fieldTys = case Vector.uncons fieldTys of
+      -- We've generated validation code for every field in this 'arm', so
+      -- terminate the expression by checking that `lastTailE` is indeed empty.
+      Nothing -> terminateList lastTailE contName
+      Just (ty, fieldTys') -> do
+        let validateE = AppTypeE (VarE 'pwithValidated) ty
+        case namesLeft of
+          -- We've validated every preloaded name, so we have to do more unconses.
+          [] -> mkUncons lastTailE $ \headName tailName -> do
+            restE <- mkHandlerE contName (VarE tailName) [] fieldTys'
+            [e|$(pure validateE) $(pure . VarE $ headName) ($(pure restE))|]
+          -- Some preloaded names remain to validate.
+          (n : namesLeft') -> do
+            restE <- mkHandlerE contName lastTailE namesLeft' fieldTys'
+            [e|$(pure validateE) $(pure . VarE $ n) ($(pure restE))|]

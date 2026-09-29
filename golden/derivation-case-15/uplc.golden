@@ -1,0 +1,3 @@
+\ ->
+  let bind_e = IData # (1 :: Integer)
+  in case (UnIData # bind_e) [bind_e, bind_e, bind_e]

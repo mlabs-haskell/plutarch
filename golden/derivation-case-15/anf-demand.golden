@@ -1,0 +1,23 @@
+ANF Hashes:
+ #0 := odtykDZ33Rd
+ #1 := lq7M85OSbvc
+ #2 := vyRIuwDii3A
+ #3 := i0Dt1dpdPKq
+ #4 := oVoageyiLBr
+ #5 := ccUZ9g2FVAq
+
+ANF Binds:
+ #0 := UnIData
+ #1 := IData
+ #2 := 1 :: Integer
+ #3 := Apply #1 [#2]
+ #4 := Apply #0 [#3]
+ #5 := Case #4 [#3, #3, #3]
+
+ANF Annotations:
+ #0 := Trivial
+ #1 := Trivial
+ #2 := Trivial
+ #3 := Demanded (Id 5) 4
+ #4 := Demanded (Id 4) 1
+ #5 := NeverDemanded

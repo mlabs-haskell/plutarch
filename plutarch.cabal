@@ -79,6 +79,7 @@ library
     Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
     Plutarch.Primitive.Trace
+    Plutarch.Primitive.Validate
     Plutarch.Test.Golden
     Plutarch.Test.Size
     Plutarch.TH.DataList

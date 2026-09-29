@@ -16,10 +16,12 @@ module Plutarch.Helpers.TH
     plam'E,
     punsafeCoerceE,
     punConstrDataE,
+    punListDataE,
     pnilDataE,
     pmkConsE,
     pconstrDataE,
     pequalsDataE,
+    punIDataE,
     mkPLam,
     mkAnonPLam,
     PType (..),
@@ -29,6 +31,7 @@ module Plutarch.Helpers.TH
     unwrapField,
     isTypeRecursive,
     checkAndMark,
+    terminateList,
   )
 where
 
@@ -62,7 +65,10 @@ import Plutarch.Primitive.BuiltinFun
     pmkCons,
     pnilData,
     punConstrData,
+    punIData,
+    punListData,
   )
+import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
 import Plutarch.Primitive.Singular (PAsData, (:-->))
 import Plutarch.Primitive.Term
   ( plam',
@@ -132,14 +138,14 @@ mkContextOfExtended tyClassNames tyVars fieldTy =
 -- locally).
 --
 -- @since 2.0.0
-mkUncons :: Name -> (Name -> Name -> Q Exp) -> Q Exp
-mkUncons listName f = do
+mkUncons :: Exp -> (Name -> Name -> Q Exp) -> Q Exp
+mkUncons listE f = do
   hName <- newName "h"
   tName <- newName "t"
   body <- f hName tName
   let innerLam = AppE (VarE 'plam') . LamE [VarP tName] $ body
   let outerLam = AppE (VarE 'plam') . LamE [VarP hName] $ innerLam
-  [e|punsafeCase $(pure (VarE listName)) (NEVector.singleton (toSomeTerm $(pure outerLam)))|]
+  [e|pheadTailList $(pure listE) $(pure outerLam)|]
 
 -- | @since 2.0.0
 toSomeTermE :: Q Exp
@@ -174,6 +180,10 @@ punConstrDataE :: Q Exp
 punConstrDataE = pure $ VarE 'punConstrData
 
 -- | @since 2.0.0
+punListDataE :: Q Exp
+punListDataE = pure $ VarE 'punListData
+
+-- | @since 2.0.0
 pnilDataE :: Q Exp
 pnilDataE = pure $ VarE 'pnilData
 
@@ -188,6 +198,10 @@ pconstrDataE = pure $ VarE 'pconstrData
 -- | @since 2.0.0
 pequalsDataE :: Q Exp
 pequalsDataE = pure $ VarE 'pequalsData
+
+-- | @since 2.0.0
+punIDataE :: Q Exp
+punIDataE = pure $ VarE 'punIData
 
 -- | Given a \'handler\' taking the named argument, constructs a new @plam'@
 -- with a fresh argument.
@@ -278,6 +292,15 @@ checkAndMark deriveEqDebug name t = case t of
       else pure (False, t')
   PTypeData t' -> pure (isTypeRecursive name t, AppT (ConT ''PAsData) t')
   PTypeNotData t' -> pure (isTypeRecursive name t, t')
+
+-- | @since 2.0.0
+terminateList :: Exp -> Name -> Q Exp
+terminateList ellE contName =
+  [e|
+    pmatch $(pure ellE) $ \case
+      PBNil -> $(pure . VarE $ contName)
+      PBCons _ _ -> perror
+    |]
 
 -- Helpers
 

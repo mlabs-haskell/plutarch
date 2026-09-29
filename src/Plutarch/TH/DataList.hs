@@ -16,7 +16,14 @@ import Language.Haskell.TH
   ( BndrVis,
     Body (NormalB),
     Dec,
-    Exp (AppE, CaseE, ConE, LitE, VarE),
+    Exp
+      ( AppE,
+        AppTypeE,
+        CaseE,
+        ConE,
+        LitE,
+        VarE
+      ),
     Lit (StringL),
     Match (Match),
     Name,
@@ -36,7 +43,9 @@ import Plutarch.Helpers.TH
     mkUncons,
     pmkConsE,
     pnilDataE,
+    punListDataE,
     punsafeCoerceE,
+    terminateList,
     unwrapField,
   )
 import Plutarch.Primitive.BuiltinFun (pheadList)
@@ -47,6 +56,7 @@ import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
 import Plutarch.Primitive.Singular (PData, PString)
+import Plutarch.Primitive.Validate (PValidateData (pwithValidated))
 
 -- | @since 2.0.0
 deriveDataList ::
@@ -69,7 +79,15 @@ deriveDataList tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVector.
         pmatchDec <- derivePMatch tvbs name conName unwrapped
         pconDec <- derivePCon tvbs name conName unwrapped
         pdebugDec <- if deriveEqDebug then derivePDebug tvbs name conName unwrapped else pure []
-        pure $ plutarchTypeDec <> pmatchDec <> pconDec <> pdebugDec
+        pcanDataDec <- derivePCanData tvbs name
+        pvalidateDataDec <- derivePValidateData tvbs name unwrapped
+        pure $
+          plutarchTypeDec
+            <> pmatchDec
+            <> pconDec
+            <> pdebugDec
+            <> pcanDataDec
+            <> pvalidateDataDec
 
 -- Helpers
 
@@ -118,7 +136,7 @@ derivePMatch tyVars tyName cName fieldTypes =
         conAppE <- AppE conAppButLast <$> [e|$punsafeCoerceE (pheadList @PData # $(pure (VarE lastTailName)))|]
         -- Hit it with the continuation internally.
         pure . AppE (VarE contName) $ conAppE
-      n -> mkUncons lastTailName $ \headName tailName ->
+      n -> mkUncons (VarE lastTailName) $ \headName tailName ->
         -- We accumulate the needed names of all the heads we have to take
         -- so that we can apply them to the constructor 'all at once' at
         -- the end.
@@ -177,3 +195,38 @@ derivePDebug tyVars tyName cName fieldTypes =
     go acc = \case
       [] -> pure acc
       (e : es) -> [e|pappendString # $(pure acc) # $(go e es)|]
+
+derivePCanData :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
+derivePCanData tyVars tyName =
+  [d|
+    instance ($ctx) => PCanData $name
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf [''PCanData] $ tyVars
+
+derivePValidateData :: Vector (TyVarBndr BndrVis) -> Name -> NonEmptyVector Type -> Q [Dec]
+derivePValidateData tyVars tyName fieldTypes =
+  [d|
+    instance ($ctx) => PValidateData $name where
+      pwithValidated d res = $(mkPlams 'd 'res)
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf [''PValidateData] $ tyVars
+    mkPlams :: Name -> Name -> Q Exp
+    mkPlams dataVarName contName = do
+      unpackE <- [e|$(punListDataE) # $(pure . VarE $ dataVarName)|]
+      go contName unpackE 0
+    go :: Name -> Exp -> Int -> Q Exp
+    go contName acc fieldIx
+      -- We're at the end, so check there's no items left
+      | fieldIx == NEVector.length fieldTypes = terminateList acc contName
+      | otherwise = mkUncons acc $ \headName tailName -> do
+          let validateE = AppTypeE (VarE 'pwithValidated) (fieldTypes NEVector.! fieldIx)
+          rec <- go contName (VarE tailName) (fieldIx + 1)
+          [e|$(pure validateE) $(pure . VarE $ headName) ($(pure rec))|]

@@ -26,6 +26,8 @@ module Plutarch.Prelude
     Con.PCon (..),
     Con.pcon,
     CanData.PCanData (..),
+    Validate.PValidateData (..),
+    Validate.pvalidateData,
 
     -- * Lifting
     Lift.pconstant,
@@ -84,6 +86,9 @@ module Plutarch.Prelude
     -- *** Type marker
     C.PBList (..),
 
+    -- *** Operations
+    DF.pheadTailList,
+
     -- ** Builtin pair
 
     -- *** Type marker
@@ -133,4 +138,5 @@ import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term qualified as PrimTerm
 import Plutarch.Primitive.Trace qualified as Trace
+import Plutarch.Primitive.Validate qualified as Validate
 import Plutarch.TH.Strategy qualified as Strategy
