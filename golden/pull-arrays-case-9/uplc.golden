@@ -1,0 +1,14 @@
+\ ->
+  let forced_dj = !IndexArray
+  let mArg_xi = \yi zi ->
+                  case 
+                    (EqualsInteger # zi # (3 :: Integer))
+                    [ AddInteger
+                      # (
+                          (\aj -> MultiplyInteger # aj # aj)
+                          # (forced_dj # ([1, 2, 3] :: Array Integer) # zi)
+                        )
+                      # (yi # yi # (AddInteger # zi # (1 :: Integer)))
+                    , (5 :: Integer)
+                    ]
+  in mArg_xi # mArg_xi # (0 :: Integer)

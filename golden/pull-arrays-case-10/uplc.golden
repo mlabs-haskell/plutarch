@@ -1,0 +1,13 @@
+\ ->
+  let forced_sk = !IndexArray
+  let mArg_jk = \kk lk ->
+                  case 
+                    (EqualsInteger # lk # (3 :: Integer))
+                    [ (\mk ->
+                        (\nk -> AddInteger # (MultiplyInteger # mk # mk) # nk)
+                        # (kk # kk # (AddInteger # lk # (1 :: Integer)))
+                      )
+                      # (forced_sk # ([1, 2, 3] :: Array Integer) # lk)
+                    , (5 :: Integer)
+                    ]
+  in mArg_jk # mArg_jk # (0 :: Integer)

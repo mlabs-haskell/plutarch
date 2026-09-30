@@ -1,0 +1,15 @@
+\a ->
+  a
+  # (case 
+      (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
+      [(3 :: Integer), (3 :: Integer)]
+    )
+  # (\b ->
+      MultiplyInteger
+      # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
+      # (
+          AddInteger
+          # (!IndexArray # ([4, 6, 8] :: Array Integer) # b)
+          # (!IndexArray # ([3, 6, 9] :: Array Integer) # b)
+        )
+    )

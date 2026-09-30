@@ -290,6 +290,20 @@ instance (PLiftable a, PLiftable b) => PLiftable (C.PBPair a b) where
           PLC.EvaluationFailure -> Left WrongConstantType
   reprToPlut = punsafeConstant . PLC.someValue @(AsPlutus (AsHaskell a), AsPlutus (AsHaskell b))
 
+-- | @since 2.0.0
+instance (PLiftable a) => PLiftable (S.PBArray a) where
+  type AsHaskell (S.PBArray a) = Vector (AsHaskell a)
+  plutToRepr t = case peval t of
+    Left err -> Left . DidNotEvaluate $ err
+    Right (Right _) -> Left NotAConstant
+    Right (Left c) -> case c of
+      PLC.Some (PLC.ValueOf actualProof x) -> do
+        let expectedProof = PLC.knownUni @_ @PLC.DefaultUni @(Vector (AsPlutus (AsHaskell a)))
+        case geqL expectedProof actualProof of
+          PLC.EvaluationSuccess PLC.Refl -> pure x
+          PLC.EvaluationFailure -> Left WrongConstantType
+  reprToPlut = punsafeConstant . PLC.someValue @(Vector (AsPlutus (AsHaskell a)))
+
 -- | Given the Haskell representation of a type, produce a 'Term' containing the
 -- equivalent constant.
 --

@@ -1,0 +1,8 @@
+\ ->
+  let forced_ye = !IndexArray
+  in \we ->
+       we
+       # (3 :: Integer)
+       # (\xe ->
+           MultiplyInteger# xe# (forced_ye # ([1, 2, 3] :: Array Integer) # xe)
+         )

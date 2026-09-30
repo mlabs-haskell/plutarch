@@ -1,0 +1,43 @@
+ANF Hashes:
+ #0 := eQ6unk7E1ym
+ #1 := lKEChdc2zXp
+ #2 := b7GJTk7BU1b
+ #3 := qjFIJsP6RSx
+ #4 := sgF3BQM7H8dN
+ #5 := gYGahX1Fexy
+ #6 := xtEEU6sFD4wN
+ #7 := qtgTPfRLZaqN
+ #8 := sWv7W7CySku
+ #9 := m5XKL3leqWoN
+ #10 := vyRIuwDii3A
+ #11 := eCRM9j6bM7e
+ #12 := zxEynBHlFbA
+ #13 := eKLXIG4uWxi
+ #14 := i3H6bIxlWYBN
+ #15 := oMPK7j939Wk
+ #16 := zsBbWAjb91u
+ #17 := iAsGLBSzaZBN
+ #18 := r0viIomPn4cN
+ #19 := hI9dDW6ZZKdN
+
+ANF Binds:
+ #0 := LengthOfArray
+ #1 := Force #0
+ #2 := [1, 2, 3] :: Array Integer
+ #3 := Apply #1 [#2]
+ #4 := IndexArray
+ #5 := Force #4
+ #6 := Apply #5 [#2]
+ #7 := Apply a [#3, #6]
+ #8 := \a:1 -> #7
+ #9 := AddInteger
+ #10 := 1 :: Integer
+ #11 := Apply #9 [f, #10]
+ #12 := \f:1 -> #11
+ #13 := Apply #12 [e]
+ #14 := Apply #9 [#13, #13]
+ #15 := \e:1 -> #14
+ #16 := #15 <<< c
+ #17 := Apply d [b, #16]
+ #18 := \b:1 c:1 d:1 -> #17
+ #19 := Apply #8 [#18]

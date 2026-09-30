@@ -51,6 +51,7 @@ common lang
 library
   import:          lang
   exposed-modules:
+    Plutarch.Array
     Plutarch.Backend.ANF
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
@@ -130,6 +131,7 @@ test-suite tests
     Derivation
     Error
     Pretty
+    PullArray
     Term
     TH.Data
     TH.Enum

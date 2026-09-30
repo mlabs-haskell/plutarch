@@ -1,0 +1,66 @@
+<Apply
+  <\a -> 
+    <Apply
+      a
+      [
+        <Apply
+          <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@qjFIJsP6RSx, 
+        <Apply
+          <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@xtEEU6sFD4wN
+      ]
+    >@qtgTPfRLZaqN
+  >@sWv7W7CySku
+  [
+    <\b c d -> 
+      <Apply
+        d
+        [
+          b, 
+          <Compose
+            [
+              <\e -> 
+                <Apply<MultiplyInteger>@vjMEhbkCp9cN [e, e]>@nyExy8nvfaB
+              >@gqkffdFA6vnN, 
+              c
+            ]
+          >@eioL1IdEE0s
+        ]
+      >@cmdQZIYCDqpN
+    >@ju1OuX8rjle, 
+    <\f g -> 
+      <Apply
+        <Fix
+          [h]
+          <\i -> 
+            <case
+              <Apply<EqualsInteger>@dr5yy9ULU5j [i, f]>@ewRJq7SoVXyN 
+              [
+                <Apply
+                  <AddInteger>@m5XKL3leqWoN
+                  [
+                    <Applyg [i]>@rlinakMzoMgN, 
+                    <Apply
+                      h
+                      [
+                        <Apply
+                          <AddInteger>@m5XKL3leqWoN
+                          [i, <1 :: Integer>@vyRIuwDii3A]
+                        >@sWazTgM0d8x
+                      ]
+                    >@wxoUwMLm5tp
+                  ]
+                >@lLObMd0sugdN, 
+                <5 :: Integer>@hF9c7g4Bb9pN
+              ]
+            >@wybP86xAWvnN
+          >@jgtekFxvPQgN
+        >@oHkDPr68CafN
+        [<0 :: Integer>@mqE7eqJLvgvN]
+      >@kjLVgpU0Icp
+    >@v1zw92i8lXkN
+  ]
+>@aUuOCpJHxBwN
