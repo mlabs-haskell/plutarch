@@ -1,0 +1,93 @@
+<Apply
+  <\a -> 
+    <Apply
+      a
+      [
+        <Apply
+          <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@qjFIJsP6RSx, 
+        <Apply
+          <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@xtEEU6sFD4wN
+      ]
+    >@qtgTPfRLZaqN
+  >@sWv7W7CySku
+  [
+    <\b c d -> 
+      <Apply
+        d
+        [
+          b, 
+          <Compose
+            [
+              <\e -> 
+                <Apply
+                  <AddInteger>@m5XKL3leqWoN [e, <1 :: Integer>@vyRIuwDii3A]
+                >@lh2HS7l1K3h
+              >@zxEynBHlFbA, 
+              c
+            ]
+          >@tsdxcCOJ6ib
+        ]
+      >@lXASyJmLqFgN
+    >@tzauPj1o2Fs, 
+    <\f g -> 
+      <Apply
+        <\h -> 
+          <Apply
+            h
+            [
+              <Apply
+                <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+                [<[4, 6, 8] :: Array Integer>@fwWoZIoBoeo]
+              >@nn9mysjEubvN, 
+              <Apply
+                <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+                [<[4, 6, 8] :: Array Integer>@fwWoZIoBoeo]
+              >@sskw1wrD1kr
+            ]
+          >@aY2wZmDPKuN
+        >@eiaHtHDnqBAN
+        [
+          <\i j k -> 
+            <Apply
+              k
+              [
+                i, 
+                <Compose
+                  [
+                    <\l -> 
+                      <Apply<MultiplyInteger>@vjMEhbkCp9cN [l, l]>@u1EOXITAHKd
+                    >@gqkffdFA6vnN, 
+                    j
+                  ]
+                >@sSI6Gl7Duwn
+              ]
+            >@rDIwL4m2JipN
+          >@ju1OuX8rjle, 
+          <\m n o -> 
+            <Apply
+              o
+              [
+                <case
+                  <Apply
+                    <LessThanEqualsInteger>@khwRaGmJyGyN [f, m]
+                  >@nuhRL7y5bYpN 
+                  [m, f]
+                >@zaMTbD1X3gy, 
+                <\p -> 
+                  <Apply
+                    <AddInteger>@m5XKL3leqWoN
+                    [<Applyg [p]>@c67ssYbmZOjN, <Applyn [p]>@dL7DTUdJIPo]
+                  >@tCYHZyPwh6p
+                >@epnTfg1QhDv
+              ]
+            >@t4r4wnvd90lN
+          >@pF7aFHWqcJq
+        ]
+      >@i5UiFOkWBHuN
+    >@wTMnPKp924wN
+  ]
+>@dJn0ua8PsBoN

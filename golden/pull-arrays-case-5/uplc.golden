@@ -1,0 +1,9 @@
+\ ->
+  let forced_dg = !IndexArray
+  in \ag ->
+       ag
+       # (3 :: Integer)
+       # (\bg ->
+           (\cse_cg -> AddInteger # cse_cg # cse_cg)
+           # (forced_dg # ([1, 2, 3] :: Array Integer) # bg)
+         )

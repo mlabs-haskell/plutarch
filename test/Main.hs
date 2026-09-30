@@ -8,6 +8,7 @@ import Derivation qualified
 import Error qualified
 -- import Numeric qualified
 import Pretty qualified
+import PullArray qualified
 import Term qualified
 import Test.Tasty (defaultMain, testGroup)
 import Trace qualified
@@ -24,5 +25,6 @@ main =
       Pretty.goldens,
       Derivation.goldens,
       Trace.goldens,
-      Debug.goldens
+      Debug.goldens,
+      PullArray.goldens
     ]

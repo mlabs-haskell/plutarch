@@ -1,0 +1,22 @@
+\a ->
+  a
+  # (
+      (\bind_b ->
+        case 
+          (LessThanEqualsInteger # bind_b # (3 :: Integer))
+          [(3 :: Integer), bind_b]
+      )
+      # (case 
+          (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
+          [(3 :: Integer), (3 :: Integer)]
+        )
+    )
+  # (\c ->
+      MultiplyInteger
+      # (!IndexArray # ([1, 2, 3] :: Array Integer) # c)
+      # (
+          AddInteger
+          # (!IndexArray # ([4, 6, 8] :: Array Integer) # c)
+          # (!IndexArray # ([3, 6, 9] :: Array Integer) # c)
+        )
+    )

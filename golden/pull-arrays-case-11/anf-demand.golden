@@ -1,0 +1,53 @@
+ANF Hashes:
+ #0 := eQ6unk7E1ym
+ #1 := lKEChdc2zXp
+ #2 := b7GJTk7BU1b
+ #3 := qjFIJsP6RSx
+ #4 := sgF3BQM7H8dN
+ #5 := gYGahX1Fexy
+ #6 := xtEEU6sFD4wN
+ #7 := qtgTPfRLZaqN
+ #8 := sWv7W7CySku
+ #9 := vjMEhbkCp9cN
+ #10 := ovP3uIwefww
+ #11 := pnhF6m3Vi6w
+ #12 := ynDdva74VyAN
+ #13 := pMSwezPEYmf
+ #14 := uBkGuVpz51c
+ #15 := l9UU6qaCZzxN
+
+ANF Binds:
+ #0 := LengthOfArray
+ #1 := Force #0
+ #2 := [1, 2, 3] :: Array Integer
+ #3 := Apply #1 [#2]
+ #4 := IndexArray
+ #5 := Force #4
+ #6 := Apply #5 [#2]
+ #7 := Apply a [#3, #6]
+ #8 := \a:1 -> #7
+ #9 := MultiplyInteger
+ #10 := Apply c [e]
+ #11 := Apply #9 [e, #10]
+ #12 := \e:2 -> #11
+ #13 := Apply d [b, #12]
+ #14 := \b:1 c:1 d:1 -> #13
+ #15 := Apply #8 [#14]
+
+ANF Annotations:
+ #0 := Trivial
+ #1 := Demanded (Id 1) 1
+ #2 := Demanded (Id 7) 2
+ #3 := Demanded (Id 3) 1
+ #4 := Trivial
+ #5 := Demanded (Id 5) 1
+ #6 := Demanded (Id 6) 1
+ #7 := Demanded (Id 7) 1
+ #8 := Demanded (Id 8) 1
+ #9 := Trivial
+ #10 := Demanded (Id 10) 1
+ #11 := Demanded (Id 11) 1
+ #12 := Demanded (Id 12) 1
+ #13 := Demanded (Id 13) 1
+ #14 := Demanded (Id 14) 1
+ #15 := NeverDemanded

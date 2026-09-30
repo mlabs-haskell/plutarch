@@ -1,0 +1,11 @@
+\a ->
+  a
+  # (3 :: Integer)
+  # (\b ->
+      (\cse_c -> AddInteger # cse_c # cse_c)
+      # (
+          AddInteger
+          # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
+          # (1 :: Integer)
+        )
+    )

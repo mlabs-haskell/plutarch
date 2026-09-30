@@ -1,0 +1,19 @@
+(\a ->
+  a
+  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+  # (!IndexArray # [1, 2, 3] :: Array Integer)
+)
+# (\b c ->
+    (
+      fix (\d_self e ->
+            case 
+              (EqualsInteger # e # b)
+              [ (\f g -> AddInteger # ((\h -> MultiplyInteger # h # h) # f) # g)
+                # (c # e)
+                # (d_self # (AddInteger # e # 1 :: Integer))
+              , 5 :: Integer
+              ]
+          )
+    )
+    # 0 :: Integer
+  )

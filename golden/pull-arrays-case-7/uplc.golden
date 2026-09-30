@@ -1,0 +1,13 @@
+\ ->
+  let forced_bi = !IndexArray
+  in \yh ->
+       yh
+       # (3 :: Integer)
+       # (\zh ->
+           (\cse_ai -> AddInteger # cse_ai # cse_ai)
+           # (
+               AddInteger
+               # (forced_bi # ([1, 2, 3] :: Array Integer) # zh)
+               # (1 :: Integer)
+             )
+         )

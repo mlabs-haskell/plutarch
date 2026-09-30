@@ -1,0 +1,38 @@
+(\forced_hw forced_iw ->
+  (\bind_wv ->
+    (\bind_xv ->
+      (\yv ->
+        (\zv ->
+          (\aw ->
+            (\bw ->
+              (\cw ->
+                (\dw ->
+                  (\ew fw ->
+                    fw
+                    # (case (LessThanEqualsInteger # cw # dw) [dw, cw])
+                    # (\gw ->
+                        MultiplyInteger
+                        # (zv # gw)
+                        # (AddInteger # (bw # gw) # (ew # gw))
+                      )
+                  )
+                  # (bind_xv # ([3, 6, 9] :: Array Integer))
+                )
+                # (bind_wv # ([3, 6, 9] :: Array Integer))
+              )
+              # (case (LessThanEqualsInteger # yv # aw) [aw, yv])
+            )
+            # (bind_xv # ([4, 6, 8] :: Array Integer))
+          )
+          # (bind_wv # ([4, 6, 8] :: Array Integer))
+        )
+        # (bind_xv # ([1, 2, 3] :: Array Integer))
+      )
+      # (bind_wv # ([1, 2, 3] :: Array Integer))
+    )
+    # forced_iw
+  )
+  # forced_hw
+)
+# !LengthOfArray
+# !IndexArray

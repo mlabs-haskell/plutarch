@@ -1,0 +1,47 @@
+<Apply
+  <\a -> 
+    <Applya [<3 :: Integer>@fBzj0GfC2ns, <\b -> b>@iOyZofoEVXk]>@vMqSHvzHoDuN
+  >@b5QmKltI4zrN
+  [
+    <\c d -> 
+      <Apply
+        <\e -> 
+          <Apply
+            e
+            [
+              <Apply
+                <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+                [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+              >@qjFIJsP6RSx, 
+              <Apply
+                <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+                [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+              >@xtEEU6sFD4wN
+            ]
+          >@efJfIp6kewe
+        >@sWv7W7CySku
+        [
+          <\f g h -> 
+            <Apply
+              h
+              [
+                <case
+                  <Apply
+                    <LessThanEqualsInteger>@khwRaGmJyGyN [c, f]
+                  >@xL5HfPRU5py 
+                  [f, c]
+                >@lVVREiDrcLpN, 
+                <\i -> 
+                  <Apply
+                    <MultiplyInteger>@vjMEhbkCp9cN
+                    [<Applyd [i]>@rQq1v64JUrk, <Applyg [i]>@rlinakMzoMgN]
+                  >@pzBZZzrB1ICN
+                >@sjyqRGPYFTBN
+              ]
+            >@gf5Y4TKRXndN
+          >@pus0TqRv1ln
+        ]
+      >@gTZ0KnJs1Ox
+    >@btcyjsVb8rgN
+  ]
+>@zCOdwQHAYMn

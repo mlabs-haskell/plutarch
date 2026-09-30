@@ -1,0 +1,8 @@
+\ ->
+  let forced_td = !IndexArray
+  in \rd ->
+       rd
+       # (3 :: Integer)
+       # (\sd ->
+           MultiplyInteger# sd# (forced_td # ([1, 2, 3] :: Array Integer) # sd)
+         )
