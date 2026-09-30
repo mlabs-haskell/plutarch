@@ -1,0 +1,111 @@
+<Apply
+  <\a -> 
+    <Apply
+      a
+      [
+        <Apply
+          <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@qjFIJsP6RSx, 
+        <Apply
+          <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@xtEEU6sFD4wN
+      ]
+    >@qtgTPfRLZaqN
+  >@sWv7W7CySku
+  [
+    <\b c -> 
+      <Apply
+        <\d -> 
+          <Apply
+            d
+            [
+              <Apply
+                <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+                [<[4, 6, 8] :: Array Integer>@fwWoZIoBoeo]
+              >@nn9mysjEubvN, 
+              <Apply
+                <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+                [<[4, 6, 8] :: Array Integer>@fwWoZIoBoeo]
+              >@sskw1wrD1kr
+            ]
+          >@hS0hW3mUpmy
+        >@eiaHtHDnqBAN
+        [
+          <\e f -> 
+            <Apply
+              <\g -> 
+                <Apply
+                  g
+                  [
+                    <Apply
+                      <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+                      [<[3, 6, 9] :: Array Integer>@m93Ub3diPhm]
+                    >@cjv4fWUmXtoN, 
+                    <Apply
+                      <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+                      [<[3, 6, 9] :: Array Integer>@m93Ub3diPhm]
+                    >@oFFdaaskQGpN
+                  ]
+                >@otFDeVUpoqgN
+              >@fF8JH8hi0Ww
+              [
+                <\h i j -> 
+                  <Apply
+                    j
+                    [
+                      <case
+                        <Apply
+                          <LessThanEqualsInteger>@khwRaGmJyGyN
+                          [
+                            <case
+                              <Apply
+                                <LessThanEqualsInteger>@khwRaGmJyGyN [b, e]
+                              >@sQ5gOXF8L1oN 
+                              [e, b]
+                            >@sfEXq4Vz3pf, 
+                            h
+                          ]
+                        >@kemWp3TPoSi 
+                        [
+                          h, 
+                          <case
+                            <Apply
+                              <LessThanEqualsInteger>@khwRaGmJyGyN [b, e]
+                            >@sQ5gOXF8L1oN 
+                            [e, b]
+                          >@sfEXq4Vz3pf
+                        ]
+                      >@bKlYWcHi5au, 
+                      <\k -> 
+                        <Apply
+                          <\l m n -> 
+                            <Apply
+                              <MultiplyInteger>@vjMEhbkCp9cN
+                              [
+                                l, 
+                                <Apply
+                                  <AddInteger>@m5XKL3leqWoN [m, n]
+                                >@naaxAtqduSe
+                              ]
+                            >@jEsd6BqEAZe
+                          >@n7EhHHyo95tN
+                          [
+                            <Applyc [k]>@gxMOvVGtYXiN, 
+                            <Applyf [k]>@zT7meyYEoGv, 
+                            <Applyi [k]>@q85F9dRV8vmN
+                          ]
+                        >@cORf6Of7VslN
+                      >@ewKyLaOV0lh
+                    ]
+                  >@jTCO2c3lRIs
+                >@y4GJm6vo7bp
+              ]
+            >@j6zx7y4aykb
+          >@wXt3t5uvAfdN
+        ]
+      >@t1zgGfXZLIfN
+    >@ntAEZjbGIXxN
+  ]
+>@rnIxA2YrCrtN

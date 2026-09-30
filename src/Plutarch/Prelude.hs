@@ -64,9 +64,15 @@ module Plutarch.Prelude
 
     -- *** Primitive operations
     BF.pequalsInteger,
+    BF.plessThanEqualsInteger,
     BF.paddInteger,
     BF.psubtractInteger,
     BF.pmultiplyInteger,
+
+    -- ** Natural
+
+    -- *** Type marker
+    S.PNatural,
 
     -- ** ByteString
 

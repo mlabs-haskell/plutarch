@@ -1,0 +1,42 @@
+(\forced_es forced_fs ->
+  (\bind_tr ->
+    (\bind_ur ->
+      (\vr ->
+        (\wr ->
+          (\xr ->
+            (\yr ->
+              (\zr ->
+                (\as bs ->
+                  bs
+                  # (
+                      (\bind_cs ->
+                        case 
+                          (LessThanEqualsInteger # bind_cs # zr)
+                          [zr, bind_cs]
+                      )
+                      # (case (LessThanEqualsInteger # vr # xr) [xr, vr])
+                    )
+                  # (\ds ->
+                      MultiplyInteger
+                      # (wr # ds)
+                      # (AddInteger # (yr # ds) # (as # ds))
+                    )
+                )
+                # (bind_ur # ([3, 6, 9] :: Array Integer))
+              )
+              # (bind_tr # ([3, 6, 9] :: Array Integer))
+            )
+            # (bind_ur # ([4, 6, 8] :: Array Integer))
+          )
+          # (bind_tr # ([4, 6, 8] :: Array Integer))
+        )
+        # (bind_ur # ([1, 2, 3] :: Array Integer))
+      )
+      # (bind_tr # ([1, 2, 3] :: Array Integer))
+    )
+    # forced_fs
+  )
+  # forced_es
+)
+# !LengthOfArray
+# !IndexArray

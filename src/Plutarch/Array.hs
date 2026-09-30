@@ -1,5 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+-- | = Note
+--
+-- This module should be imported qualified, as some of its identifiers will
+-- clash with some Plutarch prelude operations.
+--
+-- @since 2.0.0
 module Plutarch.Array
   ( -- * Type
     PPullArray (..),
@@ -11,17 +17,22 @@ module Plutarch.Array
     pfromByteString,
     pfromList,
     pgenerate,
+    piota,
 
     -- ** Transformation
     pmap,
+    pimap,
     pzipWith,
+    pizipWith,
 
     -- ** Elimination
     plength,
     ptoList,
     ptoArray,
     pfoldr,
+    pifoldr,
     pfoldl,
+    pifoldl,
   )
 where
 
@@ -88,6 +99,12 @@ pgenerate ::
 pgenerate len = pcon . PPullArray len
 
 -- | @since 2.0.0
+piota ::
+  forall (s :: S).
+  Term s PNatural -> Term s (PPullArray PNatural)
+piota len = pcon . PPullArray len . plam' $ id
+
+-- | @since 2.0.0
 ptoList ::
   forall (a :: S -> Type) (s :: S).
   (PLiftable a) =>
@@ -127,6 +144,29 @@ pfoldr f acc t = pmatch t $ \(PPullArray len getIx) -> go (pfundamental len) get
         )
 
 -- | @since 2.0.0
+pifoldr ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PlutarchType a, PlutarchType b) =>
+  Term s (PNatural :--> a :--> b :--> b) ->
+  Term s b ->
+  Term s (PPullArray a) ->
+  Term s b
+pifoldr f acc t = pmatch t $ \(PPullArray len getIx) -> go (pfundamental len) getIx # pconstant 0
+  where
+    go ::
+      Term s S.PInteger ->
+      Term s (PNatural :--> a) ->
+      Term s (S.PInteger :--> b)
+    go len getIx = pfix $ \self -> plam' $ \currIx ->
+      pif
+        (currIx #== len)
+        acc
+        ( let currE = getIx # punsafeSecondary currIx
+              nextIx = BF.paddInteger # currIx # pconstant 1
+           in f # punsafeSecondary currIx # currE #$ self # nextIx
+        )
+
+-- | @since 2.0.0
 pfoldl ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (PlutarchType a, PlutarchType b) =>
@@ -151,6 +191,30 @@ pfoldl f acc t = pmatch t $ \(PPullArray len getIx) ->
         )
 
 -- | @since 2.0.0
+pifoldl ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PlutarchType a, PlutarchType b) =>
+  Term s (PNatural :--> b :--> a :--> b) ->
+  Term s b ->
+  Term s (PPullArray a) ->
+  Term s b
+pifoldl f acc t = pmatch t $ \(PPullArray len getIx) ->
+  let lastIx = BF.psubtractInteger # pfundamental len # pconstant 1
+   in go getIx # lastIx
+  where
+    go ::
+      Term s (PNatural :--> a) ->
+      Term s (S.PInteger :--> b)
+    go getIx = pfix $ \self -> plam' $ \currIx ->
+      pif
+        (pisNegative currIx)
+        acc
+        ( let currE = getIx # punsafeSecondary currIx
+              nextIx = BF.psubtractInteger # currIx # pconstant 1
+           in f # punsafeSecondary currIx # (self # nextIx) # currE
+        )
+
+-- | @since 2.0.0
 plength ::
   forall (a :: S -> Type) (s :: S).
   (PlutarchType a) =>
@@ -169,6 +233,16 @@ pmap f t = pmatch t $ \(PPullArray len g) ->
   pcon . PPullArray len . pcompose f $ g
 
 -- | @since 2.0.0
+pimap ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PlutarchType a, PlutarchType b) =>
+  Term s (PNatural :--> a :--> b) ->
+  Term s (PPullArray a) ->
+  Term s (PPullArray b)
+pimap f t = pmatch t $ \(PPullArray len g) ->
+  pcon . PPullArray len $ plam' $ \i -> f # i #$ g # i
+
+-- | @since 2.0.0
 pzipWith ::
   forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
   (PlutarchType a, PlutarchType b, PlutarchType c) =>
@@ -180,3 +254,16 @@ pzipWith f t1 t2 = pmatch t1 $ \(PPullArray len1 g1) ->
   pmatch t2 $ \(PPullArray len2 g2) ->
     let len = pif (BF.plessThanEqualsInteger # pfundamental len1 # pfundamental len2) len1 len2
      in pcon . PPullArray len . plam' $ \i -> f # (g1 # i) # (g2 # i)
+
+-- | @since 2.0.0
+pizipWith ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  (PlutarchType a, PlutarchType b, PlutarchType c) =>
+  Term s (PNatural :--> a :--> b :--> c) ->
+  Term s (PPullArray a) ->
+  Term s (PPullArray b) ->
+  Term s (PPullArray c)
+pizipWith f t1 t2 = pmatch t1 $ \(PPullArray len1 g1) ->
+  pmatch t2 $ \(PPullArray len2 g2) ->
+    let len = pif (BF.plessThanEqualsInteger # pfundamental len1 # pfundamental len2) len1 len2
+     in pcon . PPullArray len . plam' $ \i -> f # i # (g1 # i) # (g2 # i)
