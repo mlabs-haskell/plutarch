@@ -1,0 +1,9 @@
+\ ->
+  let forced_ff = !IndexArray
+  in \cf ->
+       cf
+       # (3 :: Integer)
+       # (\compArg_df ->
+           (\ef -> AddInteger # ef # ef)
+           # (forced_ff # ([1, 2, 3] :: Array Integer) # compArg_df)
+         )

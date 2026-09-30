@@ -1,0 +1,17 @@
+(\a ->
+  a
+  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+  # (!IndexArray # [1, 2, 3] :: Array Integer)
+)
+# (\b c ->
+    (\d ->
+      d
+      # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+      # (!IndexArray # [1, 2, 3] :: Array Integer)
+    )
+    # (\e f g ->
+        g
+        # (case (LessThanEqualsInteger # b # e) [e, b])
+        # (\h -> AddInteger # (c # h) # (f # h))
+      )
+  )

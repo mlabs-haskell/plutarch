@@ -1,0 +1,35 @@
+<Apply
+  <\a -> 
+    <Apply
+      a
+      [
+        <Apply
+          <force <LengthOfArray>@eQ6unk7E1ym>@lKEChdc2zXp
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@qjFIJsP6RSx, 
+        <Apply
+          <force <IndexArray>@sgF3BQM7H8dN>@gYGahX1Fexy
+          [<[1, 2, 3] :: Array Integer>@b7GJTk7BU1b]
+        >@xtEEU6sFD4wN
+      ]
+    >@qtgTPfRLZaqN
+  >@sWv7W7CySku
+  [
+    <\b c d -> 
+      <Apply
+        d
+        [
+          b, 
+          <Compose
+            [
+              <\e -> 
+                <Apply<AddInteger>@m5XKL3leqWoN [e, e]>@hzUq59mr9rm
+              >@dViasIdX6cAN, 
+              c
+            ]
+          >@onC3iZLEJnfN
+        ]
+      >@y90EHxJsxaA
+    >@qHqESVrMXKc
+  ]
+>@q0yORvgY6lA
