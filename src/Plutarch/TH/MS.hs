@@ -151,7 +151,7 @@ derivePMatch tyVars tyName cs c =
     mkHandler contName (cName, fields) = do
       let cArity = Vector.length fields
       case cArity of
-        0 -> [e|$(pure . VarE $ contName) $(pure . VarE $ cName)|]
+        0 -> [e|$(pure . VarE $ contName) $(pure . ConE $ cName)|]
         _ -> go contName cName [] cArity
     go :: Name -> Name -> [Name] -> Int -> Q Exp
     go contName cName bindsNames = \case

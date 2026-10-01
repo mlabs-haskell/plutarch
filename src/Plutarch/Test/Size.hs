@@ -45,13 +45,13 @@ import UntypedPlutusCore qualified as UPLC
 --
 -- @since 2.0.0
 noLargerThan ::
-  forall (a :: S -> Type).
-  (Typeable a) =>
+  forall (a :: S -> Type) (b :: S -> Type).
+  (Typeable a, Typeable b) =>
   String ->
   -- | Computation of interest
   (forall (s :: S). Term s a) ->
   -- | Computation whose size is an upper bound
-  (forall (s :: S). Term s a) ->
+  (forall (s :: S). Term s b) ->
   TestTree
 noLargerThan name t bound = singleTest name (CmpTermSize t bound)
 
@@ -72,7 +72,9 @@ noLargerThanUPLC name t bound = singleTest name (CmpUPLCSize t bound)
 -- Helpers
 
 data CmpTermSize :: Type where
-  CmpTermSize :: (Typeable a) => (forall (s :: S). Term s a) -> (forall (s :: S). Term s a) -> CmpTermSize
+  CmpTermSize ::
+    (Typeable a, Typeable b) =>
+    (forall (s :: S). Term s a) -> (forall (s :: S). Term s b) -> CmpTermSize
   CmpUPLCSize :: UPLCTerm -> UPLCTerm -> CmpTermSize
 
 instance IsTest CmpTermSize where
