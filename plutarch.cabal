@@ -67,6 +67,7 @@ library
     Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
     Plutarch.Prelude
+    Plutarch.Prelude.List
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
     Plutarch.Primitive.Composite
