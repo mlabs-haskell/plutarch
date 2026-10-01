@@ -93,7 +93,12 @@ module Plutarch.Prelude
     C.PBList (..),
 
     -- *** Operations
-    DF.pheadTailList,
+    List.pindex,
+    List.plength,
+    List.pfind,
+    List.pcount,
+    List.pfoldr,
+    List.pfoldl,
 
     -- ** Builtin pair
 
@@ -136,6 +141,7 @@ module Plutarch.Prelude
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
+import Plutarch.Prelude.List qualified as List
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.CanData qualified as CanData
 import Plutarch.Primitive.Composite qualified as C
