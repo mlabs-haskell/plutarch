@@ -3,10 +3,13 @@ module Main (main) where
 import Maybe
   ( PMSMaybe (PMSJust, PMSNothing),
     PSOPMaybe (PSOPJust, PSOPNothing),
+    pfindMS,
+    pfindSOP,
   )
 import Plutarch.Prelude
 import Plutarch.Test.Size (noLargerThan)
 import Test.Tasty (defaultMain, testGroup)
+import Test.Tasty.ExpectedFailure (expectFail)
 
 main :: IO ()
 main =
@@ -30,5 +33,21 @@ main =
         ( plam' $ \x -> pmatch x $ \case
             PMSNothing -> pconstant @PInteger 0
             PMSJust y -> y
-        )
+        ),
+      expectFail $
+        noLargerThan
+          "SOP pfind vs CPS pfind"
+          ( plam' $ \ell -> pmatch (pfindSOP (plam' $ \e -> e #== pconstant 3) ell) $ \case
+              PSOPNothing -> pconstant @PInteger (-1)
+              PSOPJust x -> x
+          )
+          (plam' $ \ell -> pfind (plam' $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam' id)),
+      expectFail $
+        noLargerThan
+          "MS pfind vs CPS pfind"
+          ( plam' $ \ell -> pmatch (pfindMS (plam' $ \e -> e #== pconstant 3) ell) $ \case
+              PMSNothing -> pconstant @PInteger (-1)
+              PMSJust x -> x
+          )
+          (plam' $ \ell -> pfind (plam' $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam' id))
     ]

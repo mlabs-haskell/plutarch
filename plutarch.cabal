@@ -159,3 +159,4 @@ benchmark benches
   build-depends:
     , plutarch
     , tasty
+    , tasty-expected-failure
