@@ -1,38 +1,47 @@
-(\forced_hw forced_iw ->
-  (\bind_wv ->
-    (\bind_xv ->
-      (\yv ->
-        (\zv ->
-          (\aw ->
-            (\bw ->
-              (\cw ->
-                (\dw ->
-                  (\ew fw ->
-                    fw
-                    # (case (LessThanEqualsInteger # cw # dw) [dw, cw])
-                    # (\gw ->
-                        MultiplyInteger
-                        # (zv # gw)
-                        # (AddInteger # (bw # gw) # (ew # gw))
+(\forced_fB forced_gB ->
+  (\bind_rA ->
+    (\bind_sA ->
+      (\bind_tA ->
+        (\uA ->
+          (\vA ->
+            (\bind_wA ->
+              (\xA ->
+                (\yA ->
+                  (\zA ->
+                    (\bind_aB ->
+                      (\bB ->
+                        (\cB dB ->
+                          dB
+                          # (case (LessThanEqualsInteger # zA # bB) [bB, zA])
+                          # (\eB ->
+                              MultiplyInteger
+                              # (vA # eB)
+                              # (AddInteger # (yA # eB) # (cB # eB))
+                            )
+                        )
+                        # (bind_sA # bind_aB)
                       )
+                      # (bind_rA # bind_aB)
+                    )
+                    # ([3, 6, 9] :: Array Integer)
                   )
-                  # (bind_xv # ([3, 6, 9] :: Array Integer))
+                  # (case (LessThanEqualsInteger # uA # xA) [xA, uA])
                 )
-                # (bind_wv # ([3, 6, 9] :: Array Integer))
+                # (bind_sA # bind_wA)
               )
-              # (case (LessThanEqualsInteger # yv # aw) [aw, yv])
+              # (bind_rA # bind_wA)
             )
-            # (bind_xv # ([4, 6, 8] :: Array Integer))
+            # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_wv # ([4, 6, 8] :: Array Integer))
+          # (bind_sA # bind_tA)
         )
-        # (bind_xv # ([1, 2, 3] :: Array Integer))
+        # (bind_rA # bind_tA)
       )
-      # (bind_wv # ([1, 2, 3] :: Array Integer))
+      # ([1, 2, 3] :: Array Integer)
     )
-    # forced_iw
+    # forced_gB
   )
-  # forced_hw
+  # forced_fB
 )
 # !LengthOfArray
 # !IndexArray

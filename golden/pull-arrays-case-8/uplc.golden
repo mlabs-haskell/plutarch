@@ -1,13 +1,16 @@
-\ ->
-  let forced_vf = !IndexArray
-  in \sf ->
-       sf
-       # (3 :: Integer)
-       # (\compArg_tf ->
-           (\bind_uf -> AddInteger # bind_uf # bind_uf)
-           # (
-               AddInteger
-               # (forced_vf # ([1, 2, 3] :: Array Integer) # compArg_tf)
-               # (1 :: Integer)
-             )
-         )
+(\forced_ji forced_ki ->
+  (\bind_ei ->
+    (\fi gi ->
+      gi
+      # fi
+      # (\compArg_hi ->
+          (\bind_ii -> AddInteger # bind_ii # bind_ii)
+          # (AddInteger # (forced_ki # bind_ei # compArg_hi) # (1 :: Integer))
+        )
+    )
+    # (forced_ji # bind_ei)
+  )
+  # ([1, 2, 3] :: Array Integer)
+)
+# !LengthOfArray
+# !IndexArray

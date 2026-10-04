@@ -1,13 +1,16 @@
-\ ->
-  let forced_if = !IndexArray
-  in \ff ->
-       ff
-       # (3 :: Integer)
-       # (\compArg_gf ->
-           (\hf -> MultiplyInteger # hf # hf)
-           # (
-               AddInteger
-               # (forced_if # ([1, 2, 3] :: Array Integer) # compArg_gf)
-               # (1 :: Integer)
-             )
-         )
+(\forced_wh forced_xh ->
+  (\bind_rh ->
+    (\sh th ->
+      th
+      # sh
+      # (\compArg_uh ->
+          (\vh -> MultiplyInteger # vh # vh)
+          # (AddInteger # (forced_xh # bind_rh # compArg_uh) # (1 :: Integer))
+        )
+    )
+    # (forced_wh # bind_rh)
+  )
+  # ([1, 2, 3] :: Array Integer)
+)
+# !LengthOfArray
+# !IndexArray

@@ -1,1 +1,11 @@
-\cd -> case cd [(60 :: Integer), (500 :: Integer)]
+\wh ->
+  case wh
+    [ (\bind_xh ->
+        AddInteger # (bind_xh # (10 :: Integer)) # (bind_xh # (20 :: Integer))
+      )
+      # (\yh -> AddInteger # yh # yh)
+    , (\bind_zh ->
+        AddInteger # (bind_zh # (10 :: Integer)) # (bind_zh # (20 :: Integer))
+      )
+      # (\ai -> MultiplyInteger # ai # ai)
+    ]
