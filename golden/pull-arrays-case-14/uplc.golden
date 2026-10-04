@@ -1,42 +1,51 @@
-(\forced_es forced_fs ->
-  (\bind_tr ->
-    (\bind_ur ->
-      (\vr ->
-        (\wr ->
-          (\xr ->
-            (\yr ->
-              (\zr ->
-                (\as bs ->
-                  bs
-                  # (
-                      (\bind_cs ->
-                        case 
-                          (LessThanEqualsInteger # bind_cs # zr)
-                          [zr, bind_cs]
+(\forced_fw forced_gw ->
+  (\bind_rv ->
+    (\bind_sv ->
+      (\bind_tv ->
+        (\uv ->
+          (\vv ->
+            (\bind_wv ->
+              (\xv ->
+                (\yv ->
+                  (\bind_zv ->
+                    (\aw ->
+                      (\bw cw ->
+                        cw
+                        # (
+                            (\bind_dw ->
+                              case 
+                                (LessThanEqualsInteger # bind_dw # aw)
+                                [aw, bind_dw]
+                            )
+                            # (case (LessThanEqualsInteger # uv # xv) [xv, uv])
+                          )
+                        # (\ew ->
+                            MultiplyInteger
+                            # (vv # ew)
+                            # (AddInteger # (yv # ew) # (bw # ew))
+                          )
                       )
-                      # (case (LessThanEqualsInteger # vr # xr) [xr, vr])
+                      # (bind_sv # bind_zv)
                     )
-                  # (\ds ->
-                      MultiplyInteger
-                      # (wr # ds)
-                      # (AddInteger # (yr # ds) # (as # ds))
-                    )
+                    # (bind_rv # bind_zv)
+                  )
+                  # ([3, 6, 9] :: Array Integer)
                 )
-                # (bind_ur # ([3, 6, 9] :: Array Integer))
+                # (bind_sv # bind_wv)
               )
-              # (bind_tr # ([3, 6, 9] :: Array Integer))
+              # (bind_rv # bind_wv)
             )
-            # (bind_ur # ([4, 6, 8] :: Array Integer))
+            # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_tr # ([4, 6, 8] :: Array Integer))
+          # (bind_sv # bind_tv)
         )
-        # (bind_ur # ([1, 2, 3] :: Array Integer))
+        # (bind_rv # bind_tv)
       )
-      # (bind_tr # ([1, 2, 3] :: Array Integer))
+      # ([1, 2, 3] :: Array Integer)
     )
-    # forced_fs
+    # forced_gw
   )
-  # forced_es
+  # forced_fw
 )
 # !LengthOfArray
 # !IndexArray

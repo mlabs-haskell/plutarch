@@ -1,7 +1,10 @@
 \ ->
-  let forced_ec = !MkCons
+  let forced_je = !MkCons
   in ListData
        # (
-           (\cse_dc -> cse_dc # (cse_dc # (cse_dc # ([] :: [Data]))))
-           # (forced_ec # (<> :: Data))
+           (\bind_he ->
+             (\cse_ie -> cse_ie # (cse_ie # (cse_ie # bind_he)))
+             # (forced_je # (ConstrData # (1 :: Integer) # bind_he))
+           )
+           # ([] :: [Data])
          )

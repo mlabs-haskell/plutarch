@@ -20,6 +20,7 @@ module Plutarch.Backend.UPLC
     uplcMCombinator,
     rewriteUniques,
     substituteVarFor,
+    optimizeUplc,
   )
 where
 
@@ -31,6 +32,7 @@ import Control.Monad.State.Strict
   )
 import Data.Bifunctor (bimap)
 import Data.Coerce (coerce)
+import Data.Default (def)
 import Data.Hashable (Hashable (hash))
 import Data.Kind (Type)
 import Data.Map.Strict (Map)
@@ -44,6 +46,7 @@ import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import Plutarch.Helpers.Pretty (prettyUPLC)
 import PlutusCore (Some, ValueOf)
+import PlutusCore qualified as PLC
 import Prettyprinter (Pretty (pretty))
 import UntypedPlutusCore qualified as UPLC
 
@@ -225,6 +228,22 @@ substituteVarFor name (UPLCTerm toSub) (UPLCTerm t) = UPLCTerm . go $ t
       t'@(UPLC.Error ()) -> t'
       UPLC.Constr () tag fields -> UPLC.Constr () tag (fmap go fields)
       UPLC.Case () scrut handlers -> UPLC.Case () (go scrut) (fmap go handlers)
+
+-- | @since 2.0.0
+optimizeUplc :: UPLCTerm -> Either UPLC.FreeVariableError UPLCTerm
+optimizeUplc (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm optimizeOpts def $ t of
+  -- Note (Koz, 05/10/2026): For some ungodly reason, only an explicit pattern
+  -- match works here. Probably something overly-polymorphic on Plutus' end.
+  Left err -> Left err
+  Right optimized -> Right . UPLCTerm $ optimized
+  where
+    -- Note (Koz, 05/10/2026): The full list is in
+    -- UntypedPlutusCore.Optimize.Opts. The defaults are fine, but re-inlining
+    -- of constants blows out code size by no small margin, so we disable it.
+    optimizeOpts :: UPLC.OptimizeOpts UPLC.Name ()
+    optimizeOpts = UPLC.defaultOptimizeOpts {UPLC._ooInlineConstants = False}
+
+-- Helpers
 
 doUntilM ::
   forall (a :: Type) (m :: Type -> Type).

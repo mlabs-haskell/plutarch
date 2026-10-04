@@ -1,35 +1,41 @@
-(\forced_tp forced_up ->
-  (\bind_jp ->
-    (\bind_kp ->
-      (\lp ->
-        (\mp ->
-          (\np ->
-            (\op pp ->
-              pp
-              # (case (LessThanEqualsInteger # lp # np) [np, lp])
-              # (\qp ->
-                  (\rp ->
-                    (\sp ->
-                      AddInteger
-                      # (AddInteger # rp # (1 :: Integer))
-                      # (MultiplyInteger # sp # sp)
+(\forced_ks forced_ls ->
+  (\bind_yr ->
+    (\bind_zr ->
+      (\bind_as ->
+        (\bs ->
+          (\cs ->
+            (\bind_ds ->
+              (\es ->
+                (\fs gs ->
+                  gs
+                  # (case (LessThanEqualsInteger # bs # es) [es, bs])
+                  # (\hs ->
+                      (\is ->
+                        (\js ->
+                          AddInteger
+                          # (AddInteger # is # (1 :: Integer))
+                          # (MultiplyInteger # js # js)
+                        )
+                        # (fs # hs)
+                      )
+                      # (cs # hs)
                     )
-                    # (op # qp)
-                  )
-                  # (mp # qp)
                 )
+                # (bind_zr # bind_ds)
+              )
+              # (bind_yr # bind_ds)
             )
-            # (bind_kp # ([4, 6, 8] :: Array Integer))
+            # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_jp # ([4, 6, 8] :: Array Integer))
+          # (bind_zr # bind_as)
         )
-        # (bind_kp # ([1, 2, 3] :: Array Integer))
+        # (bind_yr # bind_as)
       )
-      # (bind_jp # ([1, 2, 3] :: Array Integer))
+      # ([1, 2, 3] :: Array Integer)
     )
-    # forced_up
+    # forced_ls
   )
-  # forced_tp
+  # forced_ks
 )
 # !LengthOfArray
 # !IndexArray

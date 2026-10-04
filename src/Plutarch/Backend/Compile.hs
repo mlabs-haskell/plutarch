@@ -21,7 +21,6 @@ import Control.Monad.RWS.CPS
 import Control.Monad.Reader (MonadReader)
 import Control.Monad.ST (runST)
 import Control.Monad.State.Strict (gets, put, runStateT)
-import Data.Default (def)
 import Data.Foldable (foldl', for_)
 import Data.Kind (Type)
 import Data.List.NonEmpty qualified as NEList
@@ -70,7 +69,8 @@ import Plutarch.Backend.AST
   ( Hash (Hash),
   )
 import Plutarch.Backend.UPLC
-  ( UPLCTerm (UPLCTerm),
+  ( UPLCTerm,
+    optimizeUplc,
     rewriteUniques,
     substituteVarFor,
     uplcApply,
@@ -143,9 +143,13 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
    in if
         | not runExternalOpts -> compiled
         -- If there are no `let`-binds, we can pre-evaluate safely
-        | isAffine binds -> uplcOptimize . preEval $ compiled
+        | isAffine binds -> case optimizeUplc . preEval $ compiled of
+            Left err -> freeVarErr err
+            Right res -> res
         -- Only run UPLC optimizations
-        | otherwise -> uplcOptimize compiled
+        | otherwise -> case optimizeUplc compiled of
+            Left err -> freeVarErr err
+            Right res -> res
   where
     preEval :: UPLCTerm -> UPLCTerm
     preEval t = case evalUPLC maxBudget t of
@@ -153,10 +157,12 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
         Left err -> error $ "Pre-evaluation errored. If you see this, report a bug: " <> show err
         Right (Left c) -> uplcConstant c
         Right (Right t') -> t'
-    uplcOptimize :: UPLCTerm -> UPLCTerm
-    uplcOptimize (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm UPLC.defaultOptimizeOpts def $ t of
-      Left err -> error $ "Optimization errored. If you see this, report a bug: " <> show @UPLC.FreeVariableError err
-      Right optimized -> UPLCTerm optimized
+    freeVarErr :: forall (a :: Type). UPLC.FreeVariableError -> a
+    freeVarErr err =
+      error $
+        "Free variable found when optimizing: "
+          <> show err
+          <> "\nIf you see this, report it as a bug."
     collectVarName :: Set Int -> ANFBind ann -> Set Int
     collectVarName acc = \case
       ANFLeaf _ -> acc
