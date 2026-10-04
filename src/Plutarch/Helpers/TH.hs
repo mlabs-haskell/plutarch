@@ -21,6 +21,7 @@ module Plutarch.Helpers.TH
     pmkConsE,
     pconstrDataE,
     pequalsDataE,
+    pheadTailListE,
     punIDataE,
     mkPLam,
     mkAnonPLam,
@@ -69,6 +70,7 @@ import Plutarch.Primitive.BuiltinFun
     punListData,
   )
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
+import Plutarch.Primitive.DerivedFun (pheadTailList)
 import Plutarch.Primitive.Singular (PAsData, (:-->))
 import Plutarch.Primitive.Term
   ( plam',
@@ -202,6 +204,10 @@ pequalsDataE = pure $ VarE 'pequalsData
 -- | @since 2.0.0
 punIDataE :: Q Exp
 punIDataE = pure $ VarE 'punIData
+
+-- | @since 2.0.0
+pheadTailListE :: Q Exp
+pheadTailListE = pure $ VarE 'pheadTailList
 
 -- | Given a \'handler\' taking the named argument, constructs a new @plam'@
 -- with a fresh argument.
