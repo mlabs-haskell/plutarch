@@ -1,8 +1,16 @@
-\ ->
-  let forced_ye = !IndexArray
-  in \we ->
-       we
-       # (3 :: Integer)
-       # (\xe ->
-           MultiplyInteger# xe# (forced_ye # ([1, 2, 3] :: Array Integer) # xe)
-         )
+(\forced_ti forced_ui ->
+  (\oi ->
+    (\bind_pi ->
+      (\qi ri ->
+        ri
+        # (case (LessThanEqualsInteger # oi # qi) [qi, oi])
+        # (\si -> MultiplyInteger # si # (forced_ui # bind_pi # si))
+      )
+      # (forced_ti # bind_pi)
+    )
+    # ([1, 2, 3] :: Array Integer)
+  )
+  # (3 :: Integer)
+)
+# !LengthOfArray
+# !IndexArray

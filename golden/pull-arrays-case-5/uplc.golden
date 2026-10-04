@@ -1,9 +1,19 @@
-\ ->
-  let forced_dg = !IndexArray
-  in \ag ->
-       ag
-       # (3 :: Integer)
-       # (\bg ->
-           (\cse_cg -> AddInteger # cse_cg # cse_cg)
-           # (forced_dg # ([1, 2, 3] :: Array Integer) # bg)
-         )
+(\forced_ht forced_it ->
+  (\bind_os ->
+    (\bind_ps ->
+      bind_ps
+        # (\qs rs ->
+            bind_ps
+              # (\ss ts us ->
+                  us
+                  # (case (LessThanEqualsInteger # qs # ss) [ss, qs])
+                  # (\vs -> AddInteger # (rs # vs) # (ts # vs))
+                )
+          )
+    )
+    # (\ws -> ws # (forced_ht # bind_os) # (forced_it # bind_os))
+  )
+  # ([1, 2, 3] :: Array Integer)
+)
+# !LengthOfArray
+# !IndexArray
