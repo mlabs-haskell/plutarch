@@ -128,6 +128,17 @@ module Plutarch.Prelude
     BF.piData,
     BF.plistData,
 
+    -- ** Maybe
+
+    -- *** Type marker
+    Maybe.PMaybe (..),
+
+    -- *** Operations
+    Maybe.pnothing,
+    Maybe.pjust,
+    Maybe.pisNothing,
+    Maybe.pisJust,
+
     -- ** Equality
     Eq.PEq (..),
     (Eq.#==),
@@ -142,6 +153,7 @@ where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Prelude.List qualified as List
+import Plutarch.Prelude.Maybe qualified as Maybe
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.CanData qualified as CanData
 import Plutarch.Primitive.Composite qualified as C
