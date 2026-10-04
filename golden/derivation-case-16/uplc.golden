@@ -1,6 +1,6 @@
 \ ->
-  let bind_q = !MkCons
   let bind_w = ([] :: [Data])
+  let bind_q = !MkCons
   let bind_x = ConstrData
                # (case (False :: Bool) [(1 :: Integer), (0 :: Integer)])
                # bind_w

@@ -1,7 +1,7 @@
 case 
   (
-    (\bind_h ->
-      (\bind_n ->
+    (\bind_n ->
+      (\bind_h ->
         (\bind_o ->
           bind_h # bind_o # (bind_h # bind_o # (bind_h # bind_o # bind_n))
         )
@@ -11,9 +11,9 @@ case
             # bind_n
           )
       )
-      # ([] :: [Data])
+      # !MkCons
     )
-    # !MkCons
+    # ([] :: [Data])
   )
   [ \a b ->
       case b
@@ -21,12 +21,31 @@ case
             AppendString
             # ("PTriple {
             " :: String)
-            # (
-                (\bind_u ->
-                  (\bind_z ->
-                    (\bind_bb ->
-                      (\bind_cb ->
-                        (\bind_eb ->
+            # (case 
+                (constr 0
+                  [ (", " :: String)
+                  , ("false" :: String)
+                  , ("true" :: String)
+                  , ("
+                  " :: String)
+                  ]
+                )
+                [ \bind_u bind_bb bind_cb bind_eb ->
+                    (\bind_z ->
+                      AppendString
+                      # (
+                          AppendString
+                          # bind_u
+                          # (
+                              AppendString
+                              # (case 
+                                  (case (UnConstrData # c) [bind_z])
+                                  [bind_bb, bind_cb]
+                                )
+                              # bind_eb
+                            )
+                        )
+                      # (
                           AppendString
                           # (
                               AppendString
@@ -34,7 +53,7 @@ case
                               # (
                                   AppendString
                                   # (case 
-                                      (case (UnConstrData # c) [bind_z])
+                                      (case (UnConstrData # a) [bind_z])
                                       [bind_bb, bind_cb]
                                     )
                                   # bind_eb
@@ -48,43 +67,21 @@ case
                                   # (
                                       AppendString
                                       # (case 
-                                          (case (UnConstrData # a) [bind_z])
+                                          (case 
+                                            (UnConstrData # (!HeadList # d))
+                                            [bind_z]
+                                          )
                                           [bind_bb, bind_cb]
                                         )
                                       # bind_eb
                                     )
                                 )
-                              # (
-                                  AppendString
-                                  # (
-                                      AppendString
-                                      # bind_u
-                                      # (
-                                          AppendString
-                                          # (case 
-                                              (case 
-                                                (UnConstrData # (!HeadList # d))
-                                                [bind_z]
-                                              )
-                                              [bind_bb, bind_cb]
-                                            )
-                                          # bind_eb
-                                        )
-                                    )
-                                  # ("}" :: String)
-                                )
+                              # ("}" :: String)
                             )
                         )
-                        # ("
-                        " :: String)
-                      )
-                      # ("true" :: String)
                     )
-                    # ("false" :: String)
-                  )
-                  # (\e unused_f -> case e [(False :: Bool), (True :: Bool)])
-                )
-                # (", " :: String)
+                    # (\e unused_f -> case e [(False :: Bool), (True :: Bool)])
+                ]
               )
         ]
   ]
