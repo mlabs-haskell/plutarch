@@ -13,14 +13,6 @@ where
 import Data.Kind (Type)
 import Plutarch.Prelude
 
-newtype OurPMaybe (a :: S -> Type) (s :: S) = OurPMaybe (forall (r :: S -> Type). Term s r -> Term s (a :--> r) -> Term s r)
-
-instance (PlutarchType a) => PlutarchType (OurPMaybe a) where
-  type PRepresentation (OurPMaybe a) = OurPMaybe (PRepresentation a)
-
-instance (PlutarchType a) => PMatch (OurPMaybe a) where
-  pmatch' = _
-
 data PSOPMaybe (a :: S -> Type) (s :: S)
   = PSOPNothing
   | PSOPJust (Term s a)
