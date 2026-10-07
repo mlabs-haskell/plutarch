@@ -3,6 +3,7 @@ module Main (main) where
 import Maybe
   ( PMSMaybe (PMSJust, PMSNothing),
     PSOPMaybe (PSOPJust, PSOPNothing),
+    pfindCPS,
     pfindMS,
     pfindSOP,
   )
@@ -41,7 +42,7 @@ main =
               PSOPNothing -> pconstant @PInteger (-1)
               PSOPJust x -> x
           )
-          (plam' $ \ell -> pfind (plam' $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam' id)),
+          (plam' $ \ell -> pfindCPS (plam' $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam' id)),
       expectFail $
         noLargerThan
           "MS pfind vs CPS pfind"
@@ -49,5 +50,5 @@ main =
               PMSNothing -> pconstant @PInteger (-1)
               PMSJust x -> x
           )
-          (plam' $ \ell -> pfind (plam' $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam' id))
+          (plam' $ \ell -> pfindCPS (plam' $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam' id))
     ]

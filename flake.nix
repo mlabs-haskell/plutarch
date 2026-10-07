@@ -36,7 +36,7 @@
                 || builtins.elem baseName [ "plutarch.cabal" "cabal.project" "CHANGELOG.md" "README.md" "LICENSE" ];
             };
             compiler-nix-name = "ghc984";
-            index-state = "2026-08-07T15:03:01Z";
+            index-state = "2026-09-29T22:14:46Z";
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };
