@@ -11,7 +11,7 @@ ANF Binds:
  #3 := Case #0 [#1, #2]
 
 ANF Annotations:
- #0 := Trivial
- #1 := OneShot
- #2 := OneShot
- #3 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}

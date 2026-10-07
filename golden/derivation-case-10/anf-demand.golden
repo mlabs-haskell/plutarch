@@ -187,95 +187,113 @@ ANF Binds:
  #91 := Apply #3 [#57, #66, #90]
 
 ANF Annotations:
- #0 := Trivial
- #1 := Trivial
- #2 := OneShot
- #3 := OneShot
- #4 := Trivial
- #5 := OneShot
- #6 := Demanded (Id 91) 4 (Rank 0)
- #7 := Trivial
- #8 := Trivial
- #9 := OneShot
- #10 := Trivial
- #11 := Trivial
- #12 := OneShot
- #13 := OneShot
- #14 := Trivial
- #15 := Trivial
- #16 := OneShot
- #17 := Trivial
- #18 := OneShot
- #19 := OneShot
- #20 := Demanded (Id 91) 5 (Rank 0)
- #21 := OneShot
- #22 := OneShot
- #23 := OneShot
- #24 := OneShot
- #25 := OneShot
- #26 := OneShot
- #27 := OneShot
- #28 := OneShot
- #29 := OneShot
- #30 := OneShot
- #31 := OneShot
- #32 := Demanded (Id 34) 2 (Rank 3)
- #33 := OneShot
- #34 := OneShot
- #35 := OneShot
- #36 := Demanded (Id 91) 4 (Rank 7)
- #37 := OneShot
- #38 := OneShot
- #39 := OneShot
- #40 := OneShot
- #41 := Demanded (Id 91) 2 (Rank 0)
- #42 := Trivial
- #43 := Demanded (Id 48) 3 (Rank 1)
- #44 := OneShot
- #45 := OneShot
- #46 := OneShot
- #47 := OneShot
- #48 := OneShot
- #49 := OneShot
- #50 := OneShot
- #51 := Demanded (Id 91) 4 (Rank 0)
- #52 := OneShot
- #53 := OneShot
- #54 := Demanded (Id 91) 3 (Rank 0)
- #55 := OneShot
- #56 := OneShot
- #57 := OneShot
- #58 := OneShot
- #59 := Demanded (Id 91) 2 (Rank 0)
- #60 := Demanded (Id 91) 2 (Rank 0)
- #61 := OneShot
- #62 := OneShot
- #63 := OneShot
- #64 := OneShot
- #65 := OneShot
- #66 := OneShot
- #67 := OneShot
- #68 := OneShot
- #69 := OneShot
- #70 := OneShot
- #71 := OneShot
- #72 := OneShot
- #73 := OneShot
- #74 := Demanded (Id 79) 3 (Rank 1)
- #75 := OneShot
- #76 := OneShot
- #77 := OneShot
- #78 := OneShot
- #79 := OneShot
- #80 := OneShot
- #81 := OneShot
- #82 := OneShot
- #83 := OneShot
- #84 := OneShot
- #85 := OneShot
- #86 := OneShot
- #87 := OneShot
- #88 := OneShot
- #89 := OneShot
- #90 := OneShot
- #91 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Let-bound, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {}
+ #10 := Inlined, required let-binds here: {}
+ #11 := Inlined, required let-binds here: {}
+ #12 := Inlined, required let-binds here: {}
+ #13 := Inlined, required let-binds here: {}
+ #14 := Inlined, required let-binds here: {}
+ #15 := Inlined, required let-binds here: {}
+ #16 := Inlined, required let-binds here: {}
+ #17 := Inlined, required let-binds here: {}
+ #18 := Inlined, required let-binds here: {}
+ #19 := Inlined, required let-binds here: {}
+ #20 := Let-bound, required let-binds here: {}
+ #21 := Inlined, required let-binds here: {}
+ #22 := Inlined, required let-binds here: {}
+ #23 := Inlined, required let-binds here: {}
+ #24 := Inlined, required let-binds here: {}
+ #25 := Inlined, required let-binds here: {}
+ #26 := Inlined, required let-binds here: {}
+ #27 := Inlined, required let-binds here: {}
+ #28 := Inlined, required let-binds here: {}
+ #29 := Inlined, required let-binds here: {}
+ #30 := Inlined, required let-binds here: {}
+ #31 := Inlined, required let-binds here: {}
+ #32 := Let-bound, required let-binds here: {}
+ #33 := Inlined, required let-binds here: {}
+ #34 := Inlined, required let-binds here: {Rank 0 -> {#32}}
+ #35 := Inlined, required let-binds here: {}
+ #36 := Let-bound, required let-binds here: {}
+ #37 := Inlined, required let-binds here: {}
+ #38 := Inlined, required let-binds here: {}
+ #39 := Inlined, required let-binds here: {}
+ #40 := Inlined, required let-binds here: {}
+ #41 := Let-bound, required let-binds here: {}
+ #42 := Inlined, required let-binds here: {}
+ #43 := Let-bound, required let-binds here: {}
+ #44 := Inlined, required let-binds here: {}
+ #45 := Inlined, required let-binds here: {}
+ #46 := Inlined, required let-binds here: {}
+ #47 := Inlined, required let-binds here: {}
+ #48 := Inlined, required let-binds here: {Rank 0 -> {#43}}
+ #49 := Inlined, required let-binds here: {}
+ #50 := Inlined, required let-binds here: {}
+ #51 := Let-bound, required let-binds here: {}
+ #52 := Inlined, required let-binds here: {}
+ #53 := Inlined, required let-binds here: {}
+ #54 := Let-bound, required let-binds here: {}
+ #55 := Inlined, required let-binds here: {}
+ #56 := Inlined, required let-binds here: {}
+ #57 := Inlined, required let-binds here: {}
+ #58 := Inlined, required let-binds here: {}
+ #59 := Let-bound, required let-binds here: {}
+ #60 := Let-bound, required let-binds here: {}
+ #61 := Inlined, required let-binds here: {}
+ #62 := Inlined, required let-binds here: {}
+ #63 := Inlined, required let-binds here: {}
+ #64 := Inlined, required let-binds here: {}
+ #65 := Inlined, required let-binds here: {}
+ #66 := Inlined, required let-binds here: {}
+ #67 := Inlined, required let-binds here: {}
+ #68 := Inlined, required let-binds here: {}
+ #69 := Inlined, required let-binds here: {}
+ #70 := Inlined, required let-binds here: {}
+ #71 := Inlined, required let-binds here: {}
+ #72 := Inlined, required let-binds here: {}
+ #73 := Inlined, required let-binds here: {}
+ #74 := Let-bound, required let-binds here: {}
+ #75 := Inlined, required let-binds here: {}
+ #76 := Inlined, required let-binds here: {}
+ #77 := Inlined, required let-binds here: {}
+ #78 := Inlined, required let-binds here: {}
+ #79 := Inlined, required let-binds here: {Rank 0 -> {#74}}
+ #80 := Inlined, required let-binds here: {}
+ #81 := Inlined, required let-binds here: {}
+ #82 := Inlined, required let-binds here: {}
+ #83 := Inlined, required let-binds here: {}
+ #84 := Inlined, required let-binds here: {}
+ #85 := Inlined, required let-binds here: {}
+ #86 := Inlined, required let-binds here: {}
+ #87 := Inlined, required let-binds here: {}
+ #88 := Inlined, required let-binds here: {}
+ #89 := Inlined, required let-binds here: {}
+ #90 := Inlined, required let-binds here: {}
+ #91 := Inlined, required let-binds here: { Rank 0 -> { #4
+                                                      ,  #6
+                                                      ,  #7
+                                                      ,  #8
+                                                      ,  #10
+                                                      ,  #11
+                                                      ,  #14
+                                                      ,  #15
+                                                      ,  #17
+                                                      ,  #20
+                                                      ,  #41
+                                                      ,  #42
+                                                      ,  #51
+                                                      ,  #54
+                                                      ,  #59
+                                                      ,  #60
+                                                      }
+                                          ,  Rank 1 -> {#36}
+                                          }

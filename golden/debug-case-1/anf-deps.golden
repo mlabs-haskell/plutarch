@@ -1,0 +1,17 @@
+ANF Hashes:
+ #0 := nAyEnYBEW9k
+ #1 := bCkXPqc92pCN
+ #2 := mCiXmXbySDe
+ #3 := xBJJkjWCEalN
+
+ANF Binds:
+ #0 := True :: Bool
+ #1 := "false" :: String
+ #2 := "true" :: String
+ #3 := Case #0 [#1, #2]
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := No dependencies
+ #2 := No dependencies
+ #3 := Direct: {#0, #1, #2}, indirect: {}

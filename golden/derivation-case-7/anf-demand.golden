@@ -222,105 +222,127 @@ ANF Binds:
  #101 := Case #1 [#55, #100]
 
 ANF Annotations:
- #0 := Trivial
- #1 := OneShot
- #2 := Trivial
- #3 := OneShot
- #4 := Demanded (Id 101) 3 (Rank 0)
- #5 := Trivial
- #6 := Trivial
- #7 := OneShot
- #8 := Trivial
- #9 := Trivial
- #10 := OneShot
- #11 := OneShot
- #12 := Trivial
- #13 := Trivial
- #14 := OneShot
- #15 := Trivial
- #16 := OneShot
- #17 := OneShot
- #18 := Demanded (Id 101) 4 (Rank 0)
- #19 := Demanded (Id 101) 2 (Rank 0)
- #20 := Demanded (Id 101) 2 (Rank 0)
- #21 := Demanded (Id 101) 2 (Rank 0)
- #22 := Demanded (Id 101) 2 (Rank 0)
- #23 := Demanded (Id 101) 2 (Rank 0)
- #24 := Demanded (Id 101) 2 (Rank 0)
- #25 := Demanded (Id 101) 2 (Rank 0)
- #26 := Demanded (Id 101) 2 (Rank 0)
- #27 := Demanded (Id 101) 2 (Rank 0)
- #28 := OneShot
- #29 := OneShot
- #30 := Demanded (Id 32) 2 (Rank 3)
- #31 := OneShot
- #32 := OneShot
- #33 := OneShot
- #34 := Demanded (Id 48) 2 (Rank 7)
- #35 := OneShot
- #36 := OneShot
- #37 := OneShot
- #38 := OneShot
- #39 := OneShot
- #40 := Trivial
- #41 := Demanded (Id 46) 3 (Rank 1)
- #42 := OneShot
- #43 := OneShot
- #44 := OneShot
- #45 := OneShot
- #46 := OneShot
- #47 := OneShot
- #48 := OneShot
- #49 := Demanded (Id 101) 2 (Rank 0)
- #50 := OneShot
- #51 := OneShot
- #52 := Demanded (Id 101) 2 (Rank 0)
- #53 := OneShot
- #54 := OneShot
- #55 := OneShot
- #56 := OneShot
- #57 := Trivial
- #58 := Demanded (Id 95) 2 (Rank 1)
- #59 := OneShot
- #60 := OneShot
- #61 := OneShot
- #62 := OneShot
- #63 := OneShot
- #64 := OneShot
- #65 := OneShot
- #66 := OneShot
- #67 := OneShot
- #68 := OneShot
- #69 := OneShot
- #70 := Demanded (Id 86) 2 (Rank 2)
- #71 := Trivial
- #72 := Demanded (Id 86) 2 (Rank 1)
- #73 := Trivial
- #74 := OneShot
- #75 := OneShot
- #76 := OneShot
- #77 := OneShot
- #78 := OneShot
- #79 := Demanded (Id 86) 2 (Rank 5)
- #80 := OneShot
- #81 := Trivial
- #82 := Trivial
- #83 := OneShot
- #84 := OneShot
- #85 := OneShot
- #86 := OneShot
- #87 := OneShot
- #88 := OneShot
- #89 := OneShot
- #90 := OneShot
- #91 := OneShot
- #92 := OneShot
- #93 := OneShot
- #94 := OneShot
- #95 := OneShot
- #96 := OneShot
- #97 := OneShot
- #98 := OneShot
- #99 := OneShot
- #100 := OneShot
- #101 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Let-bound, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {}
+ #10 := Inlined, required let-binds here: {}
+ #11 := Inlined, required let-binds here: {}
+ #12 := Inlined, required let-binds here: {}
+ #13 := Inlined, required let-binds here: {}
+ #14 := Inlined, required let-binds here: {}
+ #15 := Inlined, required let-binds here: {}
+ #16 := Inlined, required let-binds here: {}
+ #17 := Inlined, required let-binds here: {}
+ #18 := Let-bound, required let-binds here: {}
+ #19 := Let-bound, required let-binds here: {}
+ #20 := Let-bound, required let-binds here: {}
+ #21 := Let-bound, required let-binds here: {}
+ #22 := Let-bound, required let-binds here: {}
+ #23 := Let-bound, required let-binds here: {}
+ #24 := Let-bound, required let-binds here: {}
+ #25 := Let-bound, required let-binds here: {}
+ #26 := Let-bound, required let-binds here: {}
+ #27 := Let-bound, required let-binds here: {}
+ #28 := Inlined, required let-binds here: {}
+ #29 := Inlined, required let-binds here: {}
+ #30 := Let-bound, required let-binds here: {}
+ #31 := Inlined, required let-binds here: {}
+ #32 := Inlined, required let-binds here: {Rank 0 -> {#30}}
+ #33 := Inlined, required let-binds here: {}
+ #34 := Let-bound, required let-binds here: {}
+ #35 := Inlined, required let-binds here: {}
+ #36 := Inlined, required let-binds here: {}
+ #37 := Inlined, required let-binds here: {}
+ #38 := Inlined, required let-binds here: {}
+ #39 := Inlined, required let-binds here: {}
+ #40 := Inlined, required let-binds here: {}
+ #41 := Let-bound, required let-binds here: {}
+ #42 := Inlined, required let-binds here: {}
+ #43 := Inlined, required let-binds here: {}
+ #44 := Inlined, required let-binds here: {}
+ #45 := Inlined, required let-binds here: {}
+ #46 := Inlined, required let-binds here: {Rank 0 -> {#41}}
+ #47 := Inlined, required let-binds here: {}
+ #48 := Inlined, required let-binds here: {Rank 0 -> {#13}, Rank 1 -> {#34}}
+ #49 := Let-bound, required let-binds here: {}
+ #50 := Inlined, required let-binds here: {}
+ #51 := Inlined, required let-binds here: {}
+ #52 := Let-bound, required let-binds here: {}
+ #53 := Inlined, required let-binds here: {}
+ #54 := Inlined, required let-binds here: {}
+ #55 := Inlined, required let-binds here: {}
+ #56 := Inlined, required let-binds here: {}
+ #57 := Inlined, required let-binds here: {}
+ #58 := Let-bound, required let-binds here: {}
+ #59 := Inlined, required let-binds here: {}
+ #60 := Inlined, required let-binds here: {}
+ #61 := Inlined, required let-binds here: {}
+ #62 := Inlined, required let-binds here: {}
+ #63 := Inlined, required let-binds here: {}
+ #64 := Inlined, required let-binds here: {}
+ #65 := Inlined, required let-binds here: {}
+ #66 := Inlined, required let-binds here: {}
+ #67 := Inlined, required let-binds here: {}
+ #68 := Inlined, required let-binds here: {}
+ #69 := Inlined, required let-binds here: {}
+ #70 := Let-bound, required let-binds here: {}
+ #71 := Inlined, required let-binds here: {}
+ #72 := Let-bound, required let-binds here: {}
+ #73 := Inlined, required let-binds here: {}
+ #74 := Inlined, required let-binds here: {}
+ #75 := Inlined, required let-binds here: {}
+ #76 := Inlined, required let-binds here: {}
+ #77 := Inlined, required let-binds here: {}
+ #78 := Inlined, required let-binds here: {}
+ #79 := Let-bound, required let-binds here: {}
+ #80 := Inlined, required let-binds here: {}
+ #81 := Inlined, required let-binds here: {}
+ #82 := Inlined, required let-binds here: {}
+ #83 := Inlined, required let-binds here: {}
+ #84 := Inlined, required let-binds here: {}
+ #85 := Inlined, required let-binds here: {}
+ #86 := Inlined, required let-binds here: { Rank 0 -> {#70, #72, #73}
+                                          ,  Rank 1 -> {#79}
+                                          }
+ #87 := Inlined, required let-binds here: {}
+ #88 := Inlined, required let-binds here: {}
+ #89 := Inlined, required let-binds here: {}
+ #90 := Inlined, required let-binds here: {Rank 0 -> {#82}}
+ #91 := Inlined, required let-binds here: {}
+ #92 := Inlined, required let-binds here: {}
+ #93 := Inlined, required let-binds here: {}
+ #94 := Inlined, required let-binds here: {}
+ #95 := Inlined, required let-binds here: {Rank 0 -> {#58}}
+ #96 := Inlined, required let-binds here: {}
+ #97 := Inlined, required let-binds here: {}
+ #98 := Inlined, required let-binds here: {}
+ #99 := Inlined, required let-binds here: {}
+ #100 := Inlined, required let-binds here: {}
+ #101 := Inlined, required let-binds here: { Rank 0 -> { #2
+                                                       ,  #4
+                                                       ,  #8
+                                                       ,  #9
+                                                       ,  #12
+                                                       ,  #15
+                                                       ,  #18
+                                                       ,  #19
+                                                       ,  #20
+                                                       ,  #21
+                                                       ,  #22
+                                                       ,  #23
+                                                       ,  #24
+                                                       ,  #25
+                                                       ,  #26
+                                                       ,  #27
+                                                       ,  #40
+                                                       ,  #49
+                                                       ,  #52
+                                                       }
+                                           }

@@ -13,8 +13,8 @@ ANF Binds:
  #4 := \a:1 b:1 -> #3
 
 ANF Annotations:
- #0 := Trivial
- #1 := Trivial
- #2 := OneShot
- #3 := OneShot
- #4 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {Rank 0 -> {#0}}
+ #4 := Inlined, required let-binds here: {}

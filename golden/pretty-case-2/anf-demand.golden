@@ -7,5 +7,5 @@ ANF Binds:
  #1 := \_ _ -> #0
 
 ANF Annotations:
- #0 := OneShot
- #1 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}

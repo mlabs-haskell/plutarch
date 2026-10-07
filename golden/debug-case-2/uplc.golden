@@ -1,6 +1,16 @@
 case 
-  (constr 0 [(-12345 :: Integer), ("0" :: String)])
-  [ \bind_h bind_v ->
+  (constr 0
+    [ (-12345 :: Integer)
+    , EqualsInteger
+    , (0 :: Integer)
+    , AppendString
+    , QuotientInteger
+    , (10 :: Integer)
+    , RemainderInteger
+    , ("0" :: String)
+    ]
+  )
+  [ \bind_h bind_k bind_l bind_o bind_p bind_q bind_s bind_v ->
       (\bind_lb ->
         case 
           (LessThanEqualsInteger # bind_h # (-1 :: Integer))

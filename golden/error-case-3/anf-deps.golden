@@ -1,0 +1,11 @@
+ANF Hashes:
+ #0 := qgs9PVUJo0d
+ #1 := xabC6jkVM5f
+
+ANF Binds:
+ #0 := ERROR
+ #1 := \a:0 -> #0
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := Direct: {#0}, indirect: {}

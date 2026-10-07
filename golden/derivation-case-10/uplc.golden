@@ -1,8 +1,17 @@
 case 
   (constr 0
-    [ (", " :: String)
+    [ AppendString
+    , (", " :: String)
+    , LessThanEqualsInteger
+    , (-1 :: Integer)
+    , EqualsInteger
+    , (0 :: Integer)
+    , QuotientInteger
+    , (10 :: Integer)
+    , RemainderInteger
     , ("0" :: String)
     , ("-" :: String)
+    , SubtractInteger
     , ("
     " :: String)
     , ("}" :: String)
@@ -10,7 +19,7 @@ case
     , ("true" :: String)
     ]
   )
-  [ \bind_r bind_fb bind_ac bind_kc bind_nc bind_sc bind_tc ->
+  [ \bind_m bind_r bind_s bind_t bind_v bind_w bind_z bind_ab bind_cb bind_fb bind_ac bind_bc bind_kc bind_nc bind_sc bind_tc ->
       (\bind_vb ->
         case 
           (constr 0

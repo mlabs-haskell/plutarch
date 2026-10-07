@@ -19,11 +19,11 @@ ANF Binds:
  #7 := \a:4 -> #6
 
 ANF Annotations:
- #0 := Trivial
- #1 := Demanded (Id 6) 2 (Rank 1)
- #2 := Trivial
- #3 := Demanded (Id 6) 2 (Rank 1)
- #4 := OneShot
- #5 := OneShot
- #6 := OneShot
- #7 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Let-bound, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Let-bound, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {Rank 0 -> {#0, #3}, Rank 1 -> {#1}}
+ #7 := Inlined, required let-binds here: {}

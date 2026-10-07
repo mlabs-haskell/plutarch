@@ -95,49 +95,59 @@ ANF Binds:
  #45 := Case #3 [#35, #44]
 
 ANF Annotations:
- #0 := Trivial
- #1 := Demanded (Id 45) 5 (Rank 0)
- #2 := Trivial
- #3 := OneShot
- #4 := Trivial
- #5 := Trivial
- #6 := OneShot
- #7 := OneShot
- #8 := Trivial
- #9 := Trivial
- #10 := Trivial
- #11 := OneShot
- #12 := Trivial
- #13 := OneShot
- #14 := OneShot
- #15 := Demanded (Id 45) 3 (Rank 0)
- #16 := OneShot
- #17 := OneShot
- #18 := OneShot
- #19 := OneShot
- #20 := OneShot
- #21 := OneShot
- #22 := OneShot
- #23 := OneShot
- #24 := OneShot
- #25 := OneShot
- #26 := OneShot
- #27 := Demanded (Id 29) 2 (Rank 3)
- #28 := OneShot
- #29 := OneShot
- #30 := OneShot
- #31 := Demanded (Id 45) 2 (Rank 7)
- #32 := OneShot
- #33 := OneShot
- #34 := OneShot
- #35 := OneShot
- #36 := OneShot
- #37 := Trivial
- #38 := Demanded (Id 43) 3 (Rank 1)
- #39 := OneShot
- #40 := OneShot
- #41 := OneShot
- #42 := OneShot
- #43 := OneShot
- #44 := OneShot
- #45 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Let-bound, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {}
+ #10 := Inlined, required let-binds here: {}
+ #11 := Inlined, required let-binds here: {}
+ #12 := Inlined, required let-binds here: {}
+ #13 := Inlined, required let-binds here: {}
+ #14 := Inlined, required let-binds here: {}
+ #15 := Let-bound, required let-binds here: {}
+ #16 := Inlined, required let-binds here: {}
+ #17 := Inlined, required let-binds here: {}
+ #18 := Inlined, required let-binds here: {}
+ #19 := Inlined, required let-binds here: {}
+ #20 := Inlined, required let-binds here: {}
+ #21 := Inlined, required let-binds here: {}
+ #22 := Inlined, required let-binds here: {}
+ #23 := Inlined, required let-binds here: {}
+ #24 := Inlined, required let-binds here: {}
+ #25 := Inlined, required let-binds here: {}
+ #26 := Inlined, required let-binds here: {}
+ #27 := Let-bound, required let-binds here: {}
+ #28 := Inlined, required let-binds here: {}
+ #29 := Inlined, required let-binds here: {Rank 0 -> {#27}}
+ #30 := Inlined, required let-binds here: {}
+ #31 := Let-bound, required let-binds here: {}
+ #32 := Inlined, required let-binds here: {}
+ #33 := Inlined, required let-binds here: {}
+ #34 := Inlined, required let-binds here: {}
+ #35 := Inlined, required let-binds here: {}
+ #36 := Inlined, required let-binds here: {}
+ #37 := Inlined, required let-binds here: {}
+ #38 := Let-bound, required let-binds here: {}
+ #39 := Inlined, required let-binds here: {}
+ #40 := Inlined, required let-binds here: {}
+ #41 := Inlined, required let-binds here: {}
+ #42 := Inlined, required let-binds here: {}
+ #43 := Inlined, required let-binds here: {Rank 0 -> {#38}}
+ #44 := Inlined, required let-binds here: {}
+ #45 := Inlined, required let-binds here: { Rank 0 -> { #1
+                                                      ,  #4
+                                                      ,  #5
+                                                      ,  #8
+                                                      ,  #9
+                                                      ,  #10
+                                                      ,  #12
+                                                      ,  #15
+                                                      }
+                                          ,  Rank 1 -> {#31}
+                                          }

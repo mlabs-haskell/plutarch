@@ -1,51 +1,51 @@
-(\forced_fw forced_gw ->
-  (\bind_rv ->
-    (\bind_sv ->
-      (\bind_tv ->
-        (\uv ->
-          (\vv ->
-            (\bind_wv ->
-              (\xv ->
-                (\yv ->
-                  (\bind_zv ->
-                    (\aw ->
-                      (\bw cw ->
-                        cw
+(\forced_hw forced_iw ->
+  (\bind_tv ->
+    (\bind_uv ->
+      (\bind_vv ->
+        (\wv ->
+          (\xv ->
+            (\bind_yv ->
+              (\zv ->
+                (\aw ->
+                  (\bind_bw ->
+                    (\cw ->
+                      (\dw ew ->
+                        ew
                         # (
-                            (\bind_dw ->
+                            (\bind_fw ->
                               case 
-                                (LessThanEqualsInteger # bind_dw # aw)
-                                [aw, bind_dw]
+                                (LessThanEqualsInteger # bind_fw # cw)
+                                [cw, bind_fw]
                             )
-                            # (case (LessThanEqualsInteger # uv # xv) [xv, uv])
+                            # (case (LessThanEqualsInteger # wv # zv) [zv, wv])
                           )
-                        # (\ew ->
+                        # (\gw ->
                             MultiplyInteger
-                            # (vv # ew)
-                            # (AddInteger # (yv # ew) # (bw # ew))
+                            # (xv # gw)
+                            # (AddInteger # (aw # gw) # (dw # gw))
                           )
                       )
-                      # (bind_sv # bind_zv)
+                      # (bind_uv # bind_bw)
                     )
-                    # (bind_rv # bind_zv)
+                    # (bind_tv # bind_bw)
                   )
                   # ([3, 6, 9] :: Array Integer)
                 )
-                # (bind_sv # bind_wv)
+                # (bind_uv # bind_yv)
               )
-              # (bind_rv # bind_wv)
+              # (bind_tv # bind_yv)
             )
             # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_sv # bind_tv)
+          # (bind_uv # bind_vv)
         )
-        # (bind_rv # bind_tv)
+        # (bind_tv # bind_vv)
       )
       # ([1, 2, 3] :: Array Integer)
     )
-    # forced_gw
+    # forced_iw
   )
-  # forced_fw
+  # forced_hw
 )
 # !LengthOfArray
 # !IndexArray

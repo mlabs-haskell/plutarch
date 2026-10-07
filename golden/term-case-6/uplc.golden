@@ -1,6 +1,6 @@
-\he ->
-  let bind_ie = AddInteger # he # he
-  let bind_je = MultiplyInteger # he # he
+\je ->
+  let bind_ke = MultiplyInteger # je # je
+  let bind_le = AddInteger # je # je
   in AddInteger
-     # (AddInteger # bind_ie # bind_je)
-     # (AddInteger # bind_je # bind_ie)
+     # (AddInteger # bind_le # bind_ke)
+     # (AddInteger # bind_ke # bind_le)

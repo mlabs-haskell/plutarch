@@ -1,25 +1,25 @@
-\px qx ->
-  let bind_rx = \unused_ey unused_fy -> (False :: Bool)
-  in case px
-       [ \sx ->
-           case qx
-             [ \tx -> EqualsInteger # sx # tx
-             , \unused_ux -> (False :: Bool)
-             , bind_rx
+\tx ux ->
+  let bind_vx = \unused_iy unused_jy -> (False :: Bool)
+  in case tx
+       [ \wx ->
+           case ux
+             [ \xx -> EqualsInteger # wx # xx
+             , \unused_yx -> (False :: Bool)
+             , bind_vx
              ]
-       , \vx ->
-           case qx
-             [ \unused_wx -> (False :: Bool)
-             , \xx -> EqualsInteger # vx # xx
-             , bind_rx
-             ]
-       , \yx zx ->
-           case qx
+       , \zx ->
+           case ux
              [ \unused_ay -> (False :: Bool)
-             , \unused_by -> (False :: Bool)
-             , \cy dy ->
+             , \by -> EqualsInteger # zx # by
+             , bind_vx
+             ]
+       , \cy dy ->
+           case ux
+             [ \unused_ey -> (False :: Bool)
+             , \unused_fy -> (False :: Bool)
+             , \gy hy ->
                  case 
-                   (EqualsInteger # zx # dy)
-                   [(False :: Bool), EqualsInteger # yx # cy]
+                   (EqualsInteger # dy # hy)
+                   [(False :: Bool), EqualsInteger # cy # gy]
              ]
        ]

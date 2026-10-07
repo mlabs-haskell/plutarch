@@ -1,22 +1,22 @@
 \ ->
-  let mArg_wy = \xy yy zy ->
-                  case yy
-                    [ case zy
+  let mArg_yy = \zy az bz ->
+                  case az
+                    [ case bz
                         [ (True :: Bool)
-                        , \unused_az unused_bz -> (False :: Bool)
+                        , \unused_cz unused_dz -> (False :: Bool)
                         ]
-                    , \cz dz ->
-                        case zy
+                    , \ez fz ->
+                        case bz
                           [ (False :: Bool)
-                          , \ez fz ->
+                          , \gz hz ->
                               case 
-                                (case (constr 0 [xy, dz, fz]) [xy])
-                                [(False :: Bool), EqualsInteger # cz # ez]
+                                (case (constr 0 [zy, fz, hz]) [zy])
+                                [(False :: Bool), EqualsInteger # ez # gz]
                           ]
                     ]
   in case 
        (constr 0
-         [ mArg_wy
+         [ mArg_yy
          , constr 0 []
          , constr 1
              [ (3 :: Integer)
@@ -24,4 +24,4 @@
              ]
          ]
        )
-       [mArg_wy]
+       [mArg_yy]

@@ -43,23 +43,25 @@ ANF Binds:
  #19 := \a:1 b:3 -> #18
 
 ANF Annotations:
- #0 := Trivial
- #1 := OneShot
- #2 := OneShot
- #3 := Trivial
- #4 := Demanded (Id 18) 4 (Rank 1)
- #5 := Demanded (Id 18) 2 (Rank 1)
- #6 := OneShot
- #7 := OneShot
- #8 := OneShot
- #9 := OneShot
- #10 := OneShot
- #11 := OneShot
- #12 := OneShot
- #13 := OneShot
- #14 := OneShot
- #15 := OneShot
- #16 := OneShot
- #17 := OneShot
- #18 := OneShot
- #19 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Let-bound, required let-binds here: {}
+ #5 := Let-bound, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {}
+ #10 := Inlined, required let-binds here: {}
+ #11 := Inlined, required let-binds here: {}
+ #12 := Inlined, required let-binds here: {}
+ #13 := Inlined, required let-binds here: {}
+ #14 := Inlined, required let-binds here: {}
+ #15 := Inlined, required let-binds here: {}
+ #16 := Inlined, required let-binds here: {}
+ #17 := Inlined, required let-binds here: {}
+ #18 := Inlined, required let-binds here: { Rank 0 -> {#0, #3}
+                                          ,  Rank 1 -> {#4, #5}
+                                          }
+ #19 := Inlined, required let-binds here: {}

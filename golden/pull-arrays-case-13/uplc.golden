@@ -1,47 +1,47 @@
-(\forced_fB forced_gB ->
-  (\bind_rA ->
-    (\bind_sA ->
-      (\bind_tA ->
-        (\uA ->
-          (\vA ->
-            (\bind_wA ->
-              (\xA ->
-                (\yA ->
-                  (\zA ->
-                    (\bind_aB ->
-                      (\bB ->
-                        (\cB dB ->
-                          dB
-                          # (case (LessThanEqualsInteger # zA # bB) [bB, zA])
-                          # (\eB ->
+(\forced_hB forced_iB ->
+  (\bind_tA ->
+    (\bind_uA ->
+      (\bind_vA ->
+        (\wA ->
+          (\xA ->
+            (\bind_yA ->
+              (\zA ->
+                (\aB ->
+                  (\bB ->
+                    (\bind_cB ->
+                      (\dB ->
+                        (\eB fB ->
+                          fB
+                          # (case (LessThanEqualsInteger # bB # dB) [dB, bB])
+                          # (\gB ->
                               MultiplyInteger
-                              # (vA # eB)
-                              # (AddInteger # (yA # eB) # (cB # eB))
+                              # (xA # gB)
+                              # (AddInteger # (aB # gB) # (eB # gB))
                             )
                         )
-                        # (bind_sA # bind_aB)
+                        # (bind_uA # bind_cB)
                       )
-                      # (bind_rA # bind_aB)
+                      # (bind_tA # bind_cB)
                     )
                     # ([3, 6, 9] :: Array Integer)
                   )
-                  # (case (LessThanEqualsInteger # uA # xA) [xA, uA])
+                  # (case (LessThanEqualsInteger # wA # zA) [zA, wA])
                 )
-                # (bind_sA # bind_wA)
+                # (bind_uA # bind_yA)
               )
-              # (bind_rA # bind_wA)
+              # (bind_tA # bind_yA)
             )
             # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_sA # bind_tA)
+          # (bind_uA # bind_vA)
         )
-        # (bind_rA # bind_tA)
+        # (bind_tA # bind_vA)
       )
       # ([1, 2, 3] :: Array Integer)
     )
-    # forced_gB
+    # forced_iB
   )
-  # forced_fB
+  # forced_hB
 )
 # !LengthOfArray
 # !IndexArray

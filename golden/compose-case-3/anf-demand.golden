@@ -17,10 +17,10 @@ ANF Binds:
  #6 := \a:1 -> #5
 
 ANF Annotations:
- #0 := Trivial
- #1 := Trivial
- #2 := OneShot
- #3 := Demanded (Id 4) 3 (Rank 2)
- #4 := OneShot
- #5 := OneShot
- #6 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}

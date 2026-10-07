@@ -1,41 +1,41 @@
-(\forced_ks forced_ls ->
-  (\bind_yr ->
-    (\bind_zr ->
-      (\bind_as ->
-        (\bs ->
-          (\cs ->
-            (\bind_ds ->
-              (\es ->
-                (\fs gs ->
-                  gs
-                  # (case (LessThanEqualsInteger # bs # es) [es, bs])
-                  # (\hs ->
-                      (\is ->
-                        (\js ->
+(\forced_us forced_vs ->
+  (\bind_is ->
+    (\bind_js ->
+      (\bind_ks ->
+        (\ls ->
+          (\ms ->
+            (\bind_ns ->
+              (\os ->
+                (\ps qs ->
+                  qs
+                  # (case (LessThanEqualsInteger # ls # os) [os, ls])
+                  # (\rs ->
+                      (\ss ->
+                        (\ts ->
                           AddInteger
-                          # (AddInteger # is # (1 :: Integer))
-                          # (MultiplyInteger # js # js)
+                          # (AddInteger # ss # (1 :: Integer))
+                          # (MultiplyInteger # ts # ts)
                         )
-                        # (fs # hs)
+                        # (ps # rs)
                       )
-                      # (cs # hs)
+                      # (ms # rs)
                     )
                 )
-                # (bind_zr # bind_ds)
+                # (bind_js # bind_ns)
               )
-              # (bind_yr # bind_ds)
+              # (bind_is # bind_ns)
             )
             # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_zr # bind_as)
+          # (bind_js # bind_ks)
         )
-        # (bind_yr # bind_as)
+        # (bind_is # bind_ks)
       )
       # ([1, 2, 3] :: Array Integer)
     )
-    # forced_ls
+    # forced_vs
   )
-  # forced_ks
+  # forced_us
 )
 # !LengthOfArray
 # !IndexArray
