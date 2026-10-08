@@ -3,6 +3,7 @@ module Main (main) where
 import Bool qualified
 import Compiled qualified
 import Compose qualified
+import Constr qualified
 import Debug qualified
 import Derivation qualified
 import Error qualified
@@ -26,5 +27,6 @@ main =
       Derivation.goldens,
       Trace.goldens,
       Debug.goldens,
-      PullArray.goldens
+      PullArray.goldens,
+      Constr.goldens
     ]

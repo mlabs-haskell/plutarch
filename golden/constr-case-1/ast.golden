@@ -1,0 +1,40 @@
+<case
+  <Apply
+    <UnConstrData>@pOsZYZKxq5BN
+    [
+      <Apply
+        <ConstrData>@zd9ooDLRiOB
+        [
+          <1 :: Integer>@vyRIuwDii3A, 
+          <Apply
+            <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
+            [
+              <Apply
+                <IData>@lq7M85OSbvc [<2 :: Integer>@qjJx7b4Msxl]
+              >@xbeHZZ18OUjN, 
+              <[] :: [Data]>@rcJtquzh7RfN
+            ]
+          >@bS7ZdV04jDcN
+        ]
+      >@gHyDfgcC6uN
+    ]
+  >@puTA1nrvutd 
+  [
+    <\a b -> 
+      <case
+        a 
+        [
+          <-1 :: Integer>@lS5p0LduYncN, 
+          <Apply
+            <UnIData>@odtykDZ33Rd
+            [
+              <Apply
+                <force <HeadList>@p1kM2QYq7MdN>@z4s5d3lE5at [b]
+              >@ioQ25B1UxSAN
+            ]
+          >@tmlmALCupfnN
+        ]
+      >@dwPuJ6MFZ6u
+    >@p2eJwh3m8FqN
+  ]
+>@zq2n9WqlCanN

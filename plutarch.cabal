@@ -129,6 +129,7 @@ test-suite tests
     Bool
     Compiled
     Compose
+    Constr
     Debug
     Derivation
     Error

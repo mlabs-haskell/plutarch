@@ -1,0 +1,15 @@
+case 
+  (
+    ConstrData
+    # 2 :: Integer
+    # (
+        !MkCons
+        # (IData # 1 :: Integer)
+        # (!MkCons # (IData # 2 :: Integer) # [] :: [Data])
+      )
+  )
+  [ \a -> UnIData # (!HeadList # a)
+  , \b -> UnIData # (!HeadList # b)
+  , \c ->
+      case c [\d e -> AddInteger # (UnIData # d) # (UnIData # (!HeadList # e))]
+  ]

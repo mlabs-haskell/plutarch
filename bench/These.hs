@@ -26,12 +26,13 @@ instance (PlutarchType a, PlutarchType b) => PlutarchType (PThese a b) where
 instance (PlutarchType a, PlutarchType b) => PMatch (PThese a b) where
   pmatch' t f =
     punsafeCase t
-      . NEVector.cons (toSomeTerm $ plam' $ \x -> f (PThis (punsafeSecondary x)))
-      . NEVector.cons (toSomeTerm $ plam' $ \y -> f (PThat (punsafeSecondary y)))
+      . NEVector.cons (toSomeTerm $ plam' $ \fields -> f (PThis . punsafeSecondary $ BF.pheadList # fields))
+      . NEVector.cons (toSomeTerm $ plam' $ \fields -> f (PThat . punsafeSecondary $ BF.pheadList # fields))
       . NEVector.singleton
       . toSomeTerm
-      . plam'
-      $ \x -> plam' $ \y -> f (PThese (punsafeSecondary x) (punsafeSecondary y))
+      $ plam'
+      $ \fields -> punsafeUncons fields $ plam' $ \f1 -> plam' $ \t1 ->
+        f (PThese (punsafeSecondary f1) . punsafeSecondary $ BF.pheadList # t1)
 
 instance (PlutarchType a, PlutarchType b) => PCon (PThese a b) where
   pcon' = \case

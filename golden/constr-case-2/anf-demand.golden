@@ -1,0 +1,62 @@
+ANF Hashes:
+ #0 := zd9ooDLRiOB
+ #1 := vyRIuwDii3A
+ #2 := qvDyAVrQ9eg
+ #3 := xpO8bXGXAAbN
+ #4 := lq7M85OSbvc
+ #5 := qjJx7b4Msxl
+ #6 := xbeHZZ18OUjN
+ #7 := rcJtquzh7RfN
+ #8 := bS7ZdV04jDcN
+ #9 := gHyDfgcC6uN
+ #10 := lS5p0LduYncN
+ #11 := y62KgH1he8C
+ #12 := odtykDZ33Rd
+ #13 := p1kM2QYq7MdN
+ #14 := z4s5d3lE5at
+ #15 := ioQ25B1UxSAN
+ #16 := tmlmALCupfnN
+ #17 := lgxQ6kjwWAn
+ #18 := xGkXrWa1O0gN
+
+ANF Binds:
+ #0 := ConstrData
+ #1 := 1 :: Integer
+ #2 := MkCons
+ #3 := Force #2
+ #4 := IData
+ #5 := 2 :: Integer
+ #6 := Apply #4 [#5]
+ #7 := [] :: [Data]
+ #8 := Apply #3 [#6, #7]
+ #9 := Apply #0 [#1, #8]
+ #10 := -1 :: Integer
+ #11 := \_ -> #10
+ #12 := UnIData
+ #13 := HeadList
+ #14 := Force #13
+ #15 := Apply #14 [b]
+ #16 := Apply #12 [#15]
+ #17 := \b:1 -> #16
+ #18 := Case #9 [#11, #17]
+
+ANF Annotations:
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {}
+ #10 := Inlined, required let-binds here: {}
+ #11 := Inlined, required let-binds here: {}
+ #12 := Inlined, required let-binds here: {}
+ #13 := Inlined, required let-binds here: {}
+ #14 := Inlined, required let-binds here: {}
+ #15 := Inlined, required let-binds here: {}
+ #16 := Inlined, required let-binds here: {}
+ #17 := Inlined, required let-binds here: {}
+ #18 := Inlined, required let-binds here: {}

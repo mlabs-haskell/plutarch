@@ -1,0 +1,86 @@
+ANF Hashes:
+ #0 := pOsZYZKxq5BN
+ #1 := zd9ooDLRiOB
+ #2 := vyRIuwDii3A
+ #3 := qvDyAVrQ9eg
+ #4 := xpO8bXGXAAbN
+ #5 := lq7M85OSbvc
+ #6 := qjJx7b4Msxl
+ #7 := xbeHZZ18OUjN
+ #8 := rcJtquzh7RfN
+ #9 := bS7ZdV04jDcN
+ #10 := gHyDfgcC6uN
+ #11 := puTA1nrvutd
+ #12 := lS5p0LduYncN
+ #13 := odtykDZ33Rd
+ #14 := p1kM2QYq7MdN
+ #15 := z4s5d3lE5at
+ #16 := ioQ25B1UxSAN
+ #17 := tmlmALCupfnN
+ #18 := dwPuJ6MFZ6u
+ #19 := p2eJwh3m8FqN
+ #20 := zq2n9WqlCanN
+
+ANF Binds:
+ #0 := UnConstrData
+ #1 := ConstrData
+ #2 := 1 :: Integer
+ #3 := MkCons
+ #4 := Force #3
+ #5 := IData
+ #6 := 2 :: Integer
+ #7 := Apply #5 [#6]
+ #8 := [] :: [Data]
+ #9 := Apply #4 [#7, #8]
+ #10 := Apply #1 [#2, #9]
+ #11 := Apply #0 [#10]
+ #12 := -1 :: Integer
+ #13 := UnIData
+ #14 := HeadList
+ #15 := Force #14
+ #16 := Apply #15 [b]
+ #17 := Apply #13 [#16]
+ #18 := Case a [#12, #17]
+ #19 := \a:1 b:1 -> #18
+ #20 := Case #11 [#19]
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := No dependencies
+ #2 := No dependencies
+ #3 := No dependencies
+ #4 := Direct: {#3}, indirect: {}
+ #5 := No dependencies
+ #6 := No dependencies
+ #7 := Direct: {#5, #6}, indirect: {}
+ #8 := No dependencies
+ #9 := Direct: {#4, #7, #8}, indirect: {#3, #5, #6}
+ #10 := Direct: {#1, #2, #9}, indirect: {#3, #4, #5, #6, #7, #8}
+ #11 := Direct: {#0, #10}, indirect: {#1, #2, #3, #4, #5, #6, #7, #8, #9}
+ #12 := No dependencies
+ #13 := No dependencies
+ #14 := No dependencies
+ #15 := Direct: {#14}, indirect: {}
+ #16 := Direct: {#15}, indirect: {#14}
+ #17 := Direct: {#13, #16}, indirect: {#14, #15}
+ #18 := Direct: {#12, #17}, indirect: {#13, #14, #15, #16}
+ #19 := Direct: {#18}, indirect: {#12, #13, #14, #15, #16, #17}
+ #20 := Direct: {#11, #19}, indirect: { #0
+                                      ,  #1
+                                      ,  #2
+                                      ,  #3
+                                      ,  #4
+                                      ,  #5
+                                      ,  #6
+                                      ,  #7
+                                      ,  #8
+                                      ,  #9
+                                      ,  #10
+                                      ,  #12
+                                      ,  #13
+                                      ,  #14
+                                      ,  #15
+                                      ,  #16
+                                      ,  #17
+                                      ,  #18
+                                      }

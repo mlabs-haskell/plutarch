@@ -1,0 +1,45 @@
+ANF Hashes:
+ #0 := pOsZYZKxq5BN
+ #1 := zd9ooDLRiOB
+ #2 := vyRIuwDii3A
+ #3 := qvDyAVrQ9eg
+ #4 := xpO8bXGXAAbN
+ #5 := lq7M85OSbvc
+ #6 := qjJx7b4Msxl
+ #7 := xbeHZZ18OUjN
+ #8 := rcJtquzh7RfN
+ #9 := bS7ZdV04jDcN
+ #10 := gHyDfgcC6uN
+ #11 := puTA1nrvutd
+ #12 := lS5p0LduYncN
+ #13 := odtykDZ33Rd
+ #14 := p1kM2QYq7MdN
+ #15 := z4s5d3lE5at
+ #16 := ioQ25B1UxSAN
+ #17 := tmlmALCupfnN
+ #18 := dwPuJ6MFZ6u
+ #19 := p2eJwh3m8FqN
+ #20 := zq2n9WqlCanN
+
+ANF Binds:
+ #0 := UnConstrData
+ #1 := ConstrData
+ #2 := 1 :: Integer
+ #3 := MkCons
+ #4 := Force #3
+ #5 := IData
+ #6 := 2 :: Integer
+ #7 := Apply #5 [#6]
+ #8 := [] :: [Data]
+ #9 := Apply #4 [#7, #8]
+ #10 := Apply #1 [#2, #9]
+ #11 := Apply #0 [#10]
+ #12 := -1 :: Integer
+ #13 := UnIData
+ #14 := HeadList
+ #15 := Force #14
+ #16 := Apply #15 [b]
+ #17 := Apply #13 [#16]
+ #18 := Case a [#12, #17]
+ #19 := \a:1 b:1 -> #18
+ #20 := Case #11 [#19]
