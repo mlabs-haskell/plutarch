@@ -1,11 +1,11 @@
-\ci ->
-  case ci
-    [ (\bind_di ->
-        AddInteger # (bind_di # (10 :: Integer)) # (bind_di # (20 :: Integer))
+\wh ->
+  case wh
+    [ (\bind_xh ->
+        AddInteger # (bind_xh # (10 :: Integer)) # (bind_xh # (20 :: Integer))
       )
-      # (\ei -> AddInteger # ei # ei)
-    , (\bind_fi ->
-        AddInteger # (bind_fi # (10 :: Integer)) # (bind_fi # (20 :: Integer))
+      # (\yh -> AddInteger # yh # yh)
+    , (\bind_zh ->
+        AddInteger # (bind_zh # (10 :: Integer)) # (bind_zh # (20 :: Integer))
       )
-      # (\gi -> MultiplyInteger # gi # gi)
+      # (\ai -> MultiplyInteger # ai # ai)
     ]

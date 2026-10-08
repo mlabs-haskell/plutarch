@@ -6,125 +6,122 @@ case
           case 
             (UnListData # bind_bb)
             [ \a b ->
-                (\bind_db ->
-                  case 
-                    (UnConstrData # a)
-                    [ \c d ->
-                        (\bind_gb ->
-                          case d
-                            [ bind_gb
-                            , case c
-                                [ case b
-                                    [ \g h ->
-                                        case 
-                                          (UnConstrData # g)
-                                          [ \i j ->
-                                              case j
-                                                [ bind_gb
-                                                , case i
-                                                    [ case h
-                                                        [ \m n ->
-                                                            case 
-                                                              (UnConstrData # m)
-                                                              [ \o p ->
-                                                                  case p
-                                                                    [ bind_gb
-                                                                    , case o
-                                                                        [ case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        , case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        ]
-                                                                    ]
-                                                              ]
-                                                        ]
-                                                    , case h
-                                                        [ \m n ->
-                                                            case 
-                                                              (UnConstrData # m)
-                                                              [ \o p ->
-                                                                  case p
-                                                                    [ bind_gb
-                                                                    , case o
-                                                                        [ case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        , case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        ]
-                                                                    ]
-                                                              ]
-                                                        ]
-                                                    ]
-                                                ]
-                                          ]
-                                    ]
-                                , case b
-                                    [ \g h ->
-                                        case 
-                                          (UnConstrData # g)
-                                          [ \i j ->
-                                              case j
-                                                [ bind_gb
-                                                , case i
-                                                    [ case h
-                                                        [ \m n ->
-                                                            case 
-                                                              (UnConstrData # m)
-                                                              [ \o p ->
-                                                                  case p
-                                                                    [ bind_gb
-                                                                    , case o
-                                                                        [ case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        , case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        ]
-                                                                    ]
-                                                              ]
-                                                        ]
-                                                    , case h
-                                                        [ \m n ->
-                                                            case 
-                                                              (UnConstrData # m)
-                                                              [ \o p ->
-                                                                  case p
-                                                                    [ bind_gb
-                                                                    , case o
-                                                                        [ case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        , case n
-                                                                            [ bind_gb
-                                                                            , bind_bb
-                                                                            ]
-                                                                        ]
-                                                                    ]
-                                                              ]
-                                                        ]
-                                                    ]
-                                                ]
-                                          ]
-                                    ]
-                                ]
-                            ]
-                        )
-                        # (\unused_e unused_e -> ERROR)
-                    ]
-                )
-                # UnConstrData
+                case 
+                  (UnConstrData # a)
+                  [ \c d ->
+                      (\bind_gb ->
+                        case d
+                          [ bind_gb
+                          , case c
+                              [ case b
+                                  [ \g h ->
+                                      case 
+                                        (UnConstrData # g)
+                                        [ \i j ->
+                                            case j
+                                              [ bind_gb
+                                              , case i
+                                                  [ case h
+                                                      [ \m n ->
+                                                          case 
+                                                            (UnConstrData # m)
+                                                            [ \o p ->
+                                                                case p
+                                                                  [ bind_gb
+                                                                  , case o
+                                                                      [ case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      , case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      ]
+                                                                  ]
+                                                            ]
+                                                      ]
+                                                  , case h
+                                                      [ \m n ->
+                                                          case 
+                                                            (UnConstrData # m)
+                                                            [ \o p ->
+                                                                case p
+                                                                  [ bind_gb
+                                                                  , case o
+                                                                      [ case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      , case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      ]
+                                                                  ]
+                                                            ]
+                                                      ]
+                                                  ]
+                                              ]
+                                        ]
+                                  ]
+                              , case b
+                                  [ \g h ->
+                                      case 
+                                        (UnConstrData # g)
+                                        [ \i j ->
+                                            case j
+                                              [ bind_gb
+                                              , case i
+                                                  [ case h
+                                                      [ \m n ->
+                                                          case 
+                                                            (UnConstrData # m)
+                                                            [ \o p ->
+                                                                case p
+                                                                  [ bind_gb
+                                                                  , case o
+                                                                      [ case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      , case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      ]
+                                                                  ]
+                                                            ]
+                                                      ]
+                                                  , case h
+                                                      [ \m n ->
+                                                          case 
+                                                            (UnConstrData # m)
+                                                            [ \o p ->
+                                                                case p
+                                                                  [ bind_gb
+                                                                  , case o
+                                                                      [ case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      , case n
+                                                                          [ bind_gb
+                                                                          , bind_bb
+                                                                          ]
+                                                                      ]
+                                                                  ]
+                                                            ]
+                                                      ]
+                                                  ]
+                                              ]
+                                        ]
+                                  ]
+                              ]
+                          ]
+                      )
+                      # (\unused_e unused_e -> ERROR)
+                  ]
             ]
         )
         # (ListData

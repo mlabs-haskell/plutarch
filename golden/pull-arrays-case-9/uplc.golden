@@ -1,20 +1,20 @@
-(\forced_mm forced_nm ->
-  (\bind_em ->
-    (\fm ->
-      (\mArg_gm -> mArg_gm # mArg_gm # (0 :: Integer))
-      # (\hm im ->
+(\forced_vl forced_wl ->
+  (\bind_nl ->
+    (\ol ->
+      (\mArg_pl -> mArg_pl # mArg_pl # (0 :: Integer))
+      # (\ql rl ->
           case 
-            (EqualsInteger # im # fm)
+            (EqualsInteger # rl # ol)
             [ AddInteger
               # (
-                  (\jm -> MultiplyInteger # jm # jm)# (forced_nm # bind_em # im)
+                  (\sl -> MultiplyInteger # sl # sl)# (forced_wl # bind_nl # rl)
                 )
-              # (hm # hm # (AddInteger # im # (1 :: Integer)))
+              # (ql # ql # (AddInteger # rl # (1 :: Integer)))
             , (5 :: Integer)
             ]
         )
     )
-    # (forced_mm # bind_em)
+    # (forced_vl # bind_nl)
   )
   # ([1, 2, 3] :: Array Integer)
 )

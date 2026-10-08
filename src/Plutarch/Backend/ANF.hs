@@ -63,7 +63,6 @@ import Data.Vector.Mutable qualified as MVector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
-import Debug.Trace (trace)
 import GHC.Exts qualified as GHC
 import Plutarch.Backend.AST
   ( AST
@@ -487,7 +486,7 @@ fullPipeline (ANF hashes binds) =
       whereDemanded = determineDemandSites onlyDeps
       -- Since we only consider `let`-binding something that needs to be used more
       -- than once, throw out any singleton-valued entries
-      candidates = Map.filter (\ess -> NESet.size ess > 1) whereDemanded
+      candidates = Map.filterWithKey isCandidate whereDemanded
       -- Candidates may need variables in scope to be meaningful, so identify
       -- them.
       candidateNeededVars = Map.mapWithKey (\i _ -> collectVarDeps binds i) candidates
@@ -495,12 +494,12 @@ fullPipeline (ANF hashes binds) =
       -- scope somewhere. Additionally, all variables have unique names, which
       -- means every variable we use anywhere is brought into scope in _exactly_
       -- one place.
-      varIntroLocations = trace ("\nNeeded vars: " <> show candidateNeededVars) $ findVarIntroLocations binds
+      varIntroLocations = findVarIntroLocations binds
       -- Using a combination of what vars are needed where, and what vars get
       -- bound where, we can determine a 'bind site of last resort' for every
       -- candidate. If a candidate doesn't need any variables bound, its 'bind
       -- site of last resort' is the topmost computation.
-      bindSites = trace ("\nVar intro locs: " <> show varIntroLocations) $ findBindSites varIntroLocations (Id $ NEVector.length binds - 1) candidateNeededVars
+      bindSites = findBindSites varIntroLocations (Id $ NEVector.length binds - 1) candidateNeededVars
       -- Bind sites of last resort are rarely optimal, due to the strictness of
       -- UPLC evaluation. Consider the following example:
       --
@@ -542,6 +541,24 @@ fullPipeline (ANF hashes binds) =
       -- depend on future bindings are bound first
       rankedBindings = Map.map (rankBindings onlyDeps) bindingsBySite
    in ANF hashes . NEVector.imap (analyze (Map.keysSet candidates) rankedBindings) $ binds
+  where
+    isCandidate :: Id -> NESet Id -> Bool
+    isCandidate (Id bindIx) whereNeeded =
+      let neededMoreThanOnce = NESet.size whereNeeded > 1
+       in case binds NEVector.! bindIx of
+            ANFLeaf ell -> case ell of
+              -- Small constants should never be considered candidates
+              LConstant _ c -> case c of
+                Some (ValueOf PLC.DefaultUniBool _) -> False
+                Some (ValueOf PLC.DefaultUniUnit _) -> False
+                Some (ValueOf PLC.DefaultUniInteger n) -> abs n >= 256 && neededMoreThanOnce
+                _ -> neededMoreThanOnce
+              -- Builtins should never be considered candidates
+              LBuiltin _ _ -> False
+              -- The error node should never be a candidate
+              LError _ -> False
+              _ -> neededMoreThanOnce
+            _ -> neededMoreThanOnce
 
 -- Helpers
 
@@ -593,37 +610,15 @@ analyze ::
   Int ->
   ANFBind Dependencies ->
   ANFBind Analysis
-analyze candidates rankedBindings bindIx bind = case bind of
-  -- Leaves are never binding sites, and in some cases, might not even be
-  -- candidates irrespective of analysis.
-  ANFLeaf ell -> case ell of
-    LConstant _ c -> Analysis (statusConst c) Map.empty <$ bind
-    LBuiltin _ _ -> Analysis Shouldn'tBind Map.empty <$ bind
-    LError _ -> Analysis Shouldn'tBind Map.empty <$ bind
-    _ -> Analysis status Map.empty <$ bind
-  -- Other nodes may be binding sites. Depending on how things need to be bound
-  -- there, we may have to perform rank analysis.
-  _ -> case Map.lookup (Id bindIx) rankedBindings of
-    -- No binds here.
-    Nothing -> Analysis status Map.empty <$ bind
-    Just toLetBind -> Analysis status (NEMap.toMap toLetBind) <$ bind
+analyze candidates rankedBindings bindIx bind = case Map.lookup (Id bindIx) rankedBindings of
+  Nothing -> Analysis status Map.empty <$ bind
+  Just toLetBind -> Analysis status (NEMap.toMap toLetBind) <$ bind
   where
     status :: BindingStatus
     status =
       if Set.member (Id bindIx) candidates
         then ShouldBind
         else Shouldn'tBind
-    -- Small constants cost more to `let`-bind that to always inline. In such a
-    -- case, we just ignore dependency analysis and inline them always.
-    statusConst :: Some (ValueOf PLC.DefaultUni) -> BindingStatus
-    statusConst = \case
-      Some (ValueOf PLC.DefaultUniBool _) -> Shouldn'tBind
-      Some (ValueOf PLC.DefaultUniUnit _) -> Shouldn'tBind
-      Some (ValueOf PLC.DefaultUniInteger n) ->
-        if abs n < 256
-          then Shouldn'tBind
-          else status
-      _ -> status
 
 optimizeBindSite :: NonEmptyVector Dependencies -> Id -> Id -> Id
 optimizeBindSite allDeps target currSite@(Id siteIx) = case allDeps NEVector.! siteIx of

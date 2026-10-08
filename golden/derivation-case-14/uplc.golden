@@ -1,10 +1,10 @@
 \ ->
-  let forced_rb = !MkCons
+  let forced_pb = !MkCons
   in ConstrData
      # (2 :: Integer)
      # (
-         (\bind_qb ->
-           bind_qb # (2 :: Data) # (bind_qb # (Zm9v :: Data) # ([] :: [Data]))
+         (\bind_ob ->
+           bind_ob # (2 :: Data) # (bind_ob # (Zm9v :: Data) # ([] :: [Data]))
          )
-         # forced_rb
+         # forced_pb
        )

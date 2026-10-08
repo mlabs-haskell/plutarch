@@ -1,3 +1,3 @@
-\rf sf tf uf ->
-  case rf
-    [(False :: Bool), case sf [(False :: Bool), case tf [(False :: Bool), uf]]]
+\of pf qf rf ->
+  case of
+    [(False :: Bool), case pf [(False :: Bool), case qf [(False :: Bool), rf]]]

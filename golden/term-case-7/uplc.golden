@@ -1,4 +1,4 @@
-\jc ->
-  let cse_kc = (\cse_lc -> AddInteger # cse_lc # cse_lc)
-               # (MultiplyInteger # jc # jc)
-  in AddInteger # cse_kc # cse_kc
+\gc ->
+  let cse_hc = (\cse_ic -> AddInteger # cse_ic # cse_ic)
+               # (MultiplyInteger # gc # gc)
+  in AddInteger # cse_hc # cse_hc

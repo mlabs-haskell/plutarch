@@ -57,7 +57,7 @@ ANF Annotations:
  #11 := Inlined, required let-binds here: {}
  #12 := Inlined, required let-binds here: {}
  #13 := Inlined, required let-binds here: {}
- #14 := Inlined, required let-binds here: {Rank 0 -> {#9}}
+ #14 := Inlined, required let-binds here: {}
  #15 := Inlined, required let-binds here: {}
  #16 := Inlined, required let-binds here: {}
  #17 := Inlined, required let-binds here: {}

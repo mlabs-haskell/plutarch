@@ -1,19 +1,16 @@
 case 
   (UnConstrData
     # (
-        (\bind_n ->
-          ConstrData
-          # (2 :: Integer)
-          # (
-              (\bind_u ->
-                bind_u
-                # (IData # (2 :: Integer))
-                # (bind_u # (BData # ("foo" :: Bytestring)) # ([] :: [Data]))
-              )
-              # !MkCons
-            )
-        )
+        ConstrData
         # (2 :: Integer)
+        # (
+            (\bind_u ->
+              bind_u
+              # (IData # (2 :: Integer))
+              # (bind_u # (BData # ("foo" :: Bytestring)) # ([] :: [Data]))
+            )
+            # !MkCons
+          )
       )
   )
   [ \a b ->
@@ -21,14 +18,8 @@ case
         [ \c d ->
             case 
               (constr 0
-                [ AppendString
-                , (", " :: String)
+                [ (", " :: String)
                 , UnIData # c
-                , EqualsInteger
-                , (0 :: Integer)
-                , QuotientInteger
-                , (10 :: Integer)
-                , RemainderInteger
                 , ("0" :: String)
                 , ("1" :: String)
                 , ("2" :: String)
@@ -39,20 +30,15 @@ case
                 , ("7" :: String)
                 , ("8" :: String)
                 , ("9" :: String)
-                , SubtractInteger
                 , ("
                 " :: String)
                 , ("}" :: String)
-                , LengthOfByteString
-                , UnBData
                 , ("[" :: String)
-                , (16 :: Integer)
-                , (1 :: Integer)
                 , ("]" :: String)
                 , ("[]" :: String)
                 ]
               )
-              [ \bind_fb bind_hb bind_kb bind_nb bind_ob bind_rb bind_sb bind_ub bind_xb bind_yb bind_zb bind_ac bind_bc bind_cc bind_dc bind_ec bind_fc bind_gc bind_tc bind_cd bind_fd bind_jd bind_kd bind_od bind_be bind_ke bind_ue bind_we ->
+              [ \bind_hb bind_kb bind_xb bind_yb bind_zb bind_ac bind_bc bind_cc bind_dc bind_ec bind_fc bind_gc bind_cd bind_fd bind_od bind_ue bind_we ->
                   case 
                     (constr 0
                       [ (\mArg_i -> mArg_i # mArg_i)

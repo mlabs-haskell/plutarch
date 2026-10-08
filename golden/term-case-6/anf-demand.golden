@@ -25,5 +25,5 @@ ANF Annotations:
  #3 := Let-bound, required let-binds here: {}
  #4 := Inlined, required let-binds here: {}
  #5 := Inlined, required let-binds here: {}
- #6 := Inlined, required let-binds here: {Rank 0 -> {#0, #3}, Rank 1 -> {#1}}
+ #6 := Inlined, required let-binds here: {Rank 0 -> {#1, #3}}
  #7 := Inlined, required let-binds here: {}

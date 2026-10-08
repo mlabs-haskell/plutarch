@@ -144,16 +144,9 @@ ANF Annotations:
  #40 := Inlined, required let-binds here: {}
  #41 := Inlined, required let-binds here: {}
  #42 := Inlined, required let-binds here: {}
- #43 := Inlined, required let-binds here: { Rank 0 -> { #14
-                                                      ,  #15
-                                                      ,  #19
-                                                      ,  #21
-                                                      ,  #22
-                                                      ,  #24
-                                                      }
-                                          }
- #44 := Inlined, required let-binds here: {Rank 0 -> {#12}}
+ #43 := Inlined, required let-binds here: {Rank 0 -> {#14, #19, #21, #22, #24}}
+ #44 := Inlined, required let-binds here: {}
  #45 := Inlined, required let-binds here: {}
  #46 := Inlined, required let-binds here: {}
  #47 := Inlined, required let-binds here: {}
- #48 := Inlined, required let-binds here: {Rank 0 -> {#3}}
+ #48 := Inlined, required let-binds here: {}

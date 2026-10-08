@@ -1,14 +1,14 @@
-(\forced_ki forced_li ->
-  (\bind_fi ->
-    (\gi hi ->
-      hi
-      # gi
-      # (\compArg_ii ->
-          (\cse_ji -> AddInteger # cse_ji # cse_ji)
-          # (AddInteger # (forced_li # bind_fi # compArg_ii) # (1 :: Integer))
+(\forced_bi forced_ci ->
+  (\bind_wh ->
+    (\xh yh ->
+      yh
+      # xh
+      # (\compArg_zh ->
+          (\cse_ai -> AddInteger # cse_ai # cse_ai)
+          # (AddInteger # (forced_ci # bind_wh # compArg_zh) # (1 :: Integer))
         )
     )
-    # (forced_ki # bind_fi)
+    # (forced_bi # bind_wh)
   )
   # ([1, 2, 3] :: Array Integer)
 )

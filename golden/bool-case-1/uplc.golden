@@ -1,1 +1,1 @@
-\xc yc -> case xc [(True :: Bool), yc]
+\uc vc -> case uc [(True :: Bool), vc]

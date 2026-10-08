@@ -107,4 +107,4 @@ ANF Annotations:
  #26 := Inlined, required let-binds here: {}
  #27 := Inlined, required let-binds here: {}
  #28 := Inlined, required let-binds here: {}
- #29 := Inlined, required let-binds here: {Rank 0 -> {#0, #19, #21, #22}}
+ #29 := Inlined, required let-binds here: {Rank 0 -> {#19}}

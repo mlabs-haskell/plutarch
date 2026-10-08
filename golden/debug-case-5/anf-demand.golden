@@ -188,13 +188,7 @@ ANF Annotations:
  #50 := Inlined, required let-binds here: {}
  #51 := Inlined, required let-binds here: {}
  #52 := Inlined, required let-binds here: {}
- #53 := Inlined, required let-binds here: { Rank 0 -> { #5
-                                                      ,  #6
-                                                      ,  #9
-                                                      ,  #10
-                                                      ,  #12
-                                                      ,  #15
-                                                      }
+ #53 := Inlined, required let-binds here: { Rank 0 -> {#15}
                                           ,  Rank 1 -> {#31}
                                           ,  Rank 2 -> {#47}
                                           }
@@ -203,7 +197,7 @@ ANF Annotations:
  #56 := Inlined, required let-binds here: {}
  #57 := Inlined, required let-binds here: {}
  #58 := Inlined, required let-binds here: {}
- #59 := Inlined, required let-binds here: {Rank 0 -> {#0}}
+ #59 := Inlined, required let-binds here: {}
  #60 := Inlined, required let-binds here: {}
  #61 := Inlined, required let-binds here: {}
  #62 := Inlined, required let-binds here: {}

@@ -1,20 +1,20 @@
-(\forced_rn forced_sn ->
-  (\bind_gn ->
-    (\hn ->
-      (\mArg_in -> mArg_in # mArg_in # (0 :: Integer))
-      # (\jn kn ->
+(\forced_gn forced_hn ->
+  (\bind_vm ->
+    (\wm ->
+      (\mArg_xm -> mArg_xm # mArg_xm # (0 :: Integer))
+      # (\ym zm ->
           case 
-            (EqualsInteger # kn # hn)
-            [ (\ln ->
-                (\mn -> AddInteger # (MultiplyInteger # ln # ln) # mn)
-                # (jn # jn # (AddInteger # kn # (1 :: Integer)))
+            (EqualsInteger # zm # wm)
+            [ (\an ->
+                (\bn -> AddInteger # (MultiplyInteger # an # an) # bn)
+                # (ym # ym # (AddInteger # zm # (1 :: Integer)))
               )
-              # (forced_sn # bind_gn # kn)
+              # (forced_hn # bind_vm # zm)
             , (5 :: Integer)
             ]
         )
     )
-    # (forced_rn # bind_gn)
+    # (forced_gn # bind_vm)
   )
   # ([1, 2, 3] :: Array Integer)
 )

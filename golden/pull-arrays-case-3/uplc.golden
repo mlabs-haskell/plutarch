@@ -1,35 +1,35 @@
-(\forced_lu forced_mu ->
-  (\bind_au ->
-    (\bind_bu ->
-      (\bind_cu ->
-        (\du ->
-          (\eu ->
-            (\bind_fu ->
-              (\gu ->
-                (\hu iu ->
-                  iu
-                  # (case (LessThanEqualsInteger # du # gu) [gu, du])
-                  # (\ju ->
+(\forced_ju forced_ku ->
+  (\bind_yt ->
+    (\bind_zt ->
+      (\bind_au ->
+        (\bu ->
+          (\cu ->
+            (\bind_du ->
+              (\eu ->
+                (\fu gu ->
+                  gu
+                  # (case (LessThanEqualsInteger # bu # eu) [eu, bu])
+                  # (\hu ->
                       AddInteger
-                      # (AddInteger # (eu # ju) # (1 :: Integer))
-                      # ((\ku -> MultiplyInteger # ku # ku) # (hu # ju))
+                      # (AddInteger # (cu # hu) # (1 :: Integer))
+                      # ((\iu -> MultiplyInteger # iu # iu) # (fu # hu))
                     )
                 )
-                # (bind_bu # bind_fu)
+                # (bind_zt # bind_du)
               )
-              # (bind_au # bind_fu)
+              # (bind_yt # bind_du)
             )
             # ([4, 6, 8] :: Array Integer)
           )
-          # (bind_bu # bind_cu)
+          # (bind_zt # bind_au)
         )
-        # (bind_au # bind_cu)
+        # (bind_yt # bind_au)
       )
       # ([1, 2, 3] :: Array Integer)
     )
-    # forced_mu
+    # forced_ku
   )
-  # forced_lu
+  # forced_ju
 )
 # !LengthOfArray
 # !IndexArray
