@@ -29,16 +29,16 @@ ANF Binds:
  #12 := Apply #0 [#1, #11]
 
 ANF Annotations:
- #0 := Trivial
- #1 := Trivial
- #2 := Trivial
- #3 := Demanded (Id 11) 2
- #4 := Trivial
- #5 := Demanded (Id 5) 1
- #6 := Trivial
- #7 := Demanded (Id 7) 1
- #8 := Demanded (Id 8) 1
- #9 := Demanded (Id 9) 1
- #10 := Demanded (Id 10) 1
- #11 := Demanded (Id 11) 1
- #12 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Let-bound, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {}
+ #10 := Inlined, required let-binds here: {}
+ #11 := Inlined, required let-binds here: {Rank 0 -> {#3}}
+ #12 := Inlined, required let-binds here: {}

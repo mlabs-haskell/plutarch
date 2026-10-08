@@ -5,4 +5,4 @@ ANF Binds:
  #0 := \a:1 -> a
 
 ANF Annotations:
- #0 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}

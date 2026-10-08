@@ -15,7 +15,7 @@ import Data.Bifunctor (first)
 import Data.ByteString.Short qualified as Short
 import Data.Kind (Type)
 import Data.Tagged (Tagged (Tagged))
-import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
+import Plutarch.Backend.ANF (analyzeDeps, fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
@@ -102,7 +102,7 @@ instance IsTest CmpTermSize where
           else Left scored
 
 pipeline :: RawTerm () -> UPLCTerm
-pipeline = toUPLCTerm True . fullPipeline . fromHashedAST . fromRawTerm
+pipeline = toUPLCTerm True . fullPipeline . analyzeDeps . fromHashedAST . fromRawTerm
 
 toDB ::
   UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun () ->

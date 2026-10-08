@@ -1,0 +1,4 @@
+\a ->
+  AddInteger
+  # (AddInteger # (AddInteger # a # a) # (MultiplyInteger # a # a))
+  # (AddInteger # (MultiplyInteger # a # a) # (AddInteger # a # a))

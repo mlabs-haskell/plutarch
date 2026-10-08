@@ -23,13 +23,13 @@ ANF Binds:
  #9 := Apply #0 [#6, #8]
 
 ANF Annotations:
- #0 := Trivial
- #1 := Trivial
- #2 := Trivial
- #3 := Demanded (Id 3) 1
- #4 := Demanded (Id 9) 2
- #5 := Trivial
- #6 := Demanded (Id 6) 1
- #7 := Trivial
- #8 := Demanded (Id 8) 1
- #9 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Let-bound, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}
+ #6 := Inlined, required let-binds here: {}
+ #7 := Inlined, required let-binds here: {}
+ #8 := Inlined, required let-binds here: {}
+ #9 := Inlined, required let-binds here: {Rank 0 -> {#4}}

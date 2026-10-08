@@ -9,6 +9,6 @@ ANF Binds:
  #2 := Apply #0 [#1]
 
 ANF Annotations:
- #0 := Trivial
- #1 := Trivial
- #2 := NeverDemanded
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}

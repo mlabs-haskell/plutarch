@@ -1,0 +1,204 @@
+ANF Hashes:
+ #0 := eQ6unk7E1ym
+ #1 := lKEChdc2zXp
+ #2 := b7GJTk7BU1b
+ #3 := qjFIJsP6RSx
+ #4 := sgF3BQM7H8dN
+ #5 := gYGahX1Fexy
+ #6 := xtEEU6sFD4wN
+ #7 := qtgTPfRLZaqN
+ #8 := sWv7W7CySku
+ #9 := m5XKL3leqWoN
+ #10 := vyRIuwDii3A
+ #11 := lh2HS7l1K3h
+ #12 := zxEynBHlFbA
+ #13 := tsdxcCOJ6ib
+ #14 := lXASyJmLqFgN
+ #15 := tzauPj1o2Fs
+ #16 := fwWoZIoBoeo
+ #17 := nn9mysjEubvN
+ #18 := sskw1wrD1kr
+ #19 := aY2wZmDPKuN
+ #20 := eiaHtHDnqBAN
+ #21 := vjMEhbkCp9cN
+ #22 := u1EOXITAHKd
+ #23 := gqkffdFA6vnN
+ #24 := sSI6Gl7Duwn
+ #25 := rDIwL4m2JipN
+ #26 := ju1OuX8rjle
+ #27 := khwRaGmJyGyN
+ #28 := nuhRL7y5bYpN
+ #29 := zaMTbD1X3gy
+ #30 := c67ssYbmZOjN
+ #31 := dL7DTUdJIPo
+ #32 := tCYHZyPwh6p
+ #33 := epnTfg1QhDv
+ #34 := t4r4wnvd90lN
+ #35 := pF7aFHWqcJq
+ #36 := i5UiFOkWBHuN
+ #37 := wTMnPKp924wN
+ #38 := dJn0ua8PsBoN
+
+ANF Binds:
+ #0 := LengthOfArray
+ #1 := Force #0
+ #2 := [1, 2, 3] :: Array Integer
+ #3 := Apply #1 [#2]
+ #4 := IndexArray
+ #5 := Force #4
+ #6 := Apply #5 [#2]
+ #7 := Apply a [#3, #6]
+ #8 := \a:1 -> #7
+ #9 := AddInteger
+ #10 := 1 :: Integer
+ #11 := Apply #9 [e, #10]
+ #12 := \e:1 -> #11
+ #13 := #12 <<< c
+ #14 := Apply d [b, #13]
+ #15 := \b:1 c:1 d:1 -> #14
+ #16 := [4, 6, 8] :: Array Integer
+ #17 := Apply #1 [#16]
+ #18 := Apply #5 [#16]
+ #19 := Apply h [#17, #18]
+ #20 := \h:1 -> #19
+ #21 := MultiplyInteger
+ #22 := Apply #21 [l, l]
+ #23 := \l:2 -> #22
+ #24 := #23 <<< j
+ #25 := Apply k [i, #24]
+ #26 := \i:1 j:1 k:1 -> #25
+ #27 := LessThanEqualsInteger
+ #28 := Apply #27 [f, m]
+ #29 := Case #28 [m, f]
+ #30 := Apply g [p]
+ #31 := Apply n [p]
+ #32 := Apply #9 [#30, #31]
+ #33 := \p:2 -> #32
+ #34 := Apply o [#29, #33]
+ #35 := \m:2 n:1 o:1 -> #34
+ #36 := Apply #20 [#26, #35]
+ #37 := \f:2 g:1 -> #36
+ #38 := Apply #8 [#15, #37]
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := Direct: {#0}, indirect: {}
+ #2 := No dependencies
+ #3 := Direct: {#1, #2}, indirect: {#0}
+ #4 := No dependencies
+ #5 := Direct: {#4}, indirect: {}
+ #6 := Direct: {#2, #5}, indirect: {#4}
+ #7 := Direct: {#3, #6}, indirect: {#0, #1, #2, #4, #5}
+ #8 := Direct: {#7}, indirect: {#0, #1, #2, #3, #4, #5, #6}
+ #9 := No dependencies
+ #10 := No dependencies
+ #11 := Direct: {#9, #10}, indirect: {}
+ #12 := Direct: {#11}, indirect: {#9, #10}
+ #13 := Direct: {#12}, indirect: {#9, #10, #11}
+ #14 := Direct: {#13}, indirect: {#9, #10, #11, #12}
+ #15 := Direct: {#14}, indirect: {#9, #10, #11, #12, #13}
+ #16 := No dependencies
+ #17 := Direct: {#1, #16}, indirect: {#0}
+ #18 := Direct: {#5, #16}, indirect: {#4}
+ #19 := Direct: {#17, #18}, indirect: {#0, #1, #4, #5, #16}
+ #20 := Direct: {#19}, indirect: {#0, #1, #4, #5, #16, #17, #18}
+ #21 := No dependencies
+ #22 := Direct: {#21}, indirect: {}
+ #23 := Direct: {#22}, indirect: {#21}
+ #24 := Direct: {#23}, indirect: {#21, #22}
+ #25 := Direct: {#24}, indirect: {#21, #22, #23}
+ #26 := Direct: {#25}, indirect: {#21, #22, #23, #24}
+ #27 := No dependencies
+ #28 := Direct: {#27}, indirect: {}
+ #29 := Direct: {#28}, indirect: {#27}
+ #30 := No dependencies
+ #31 := No dependencies
+ #32 := Direct: {#9, #30, #31}, indirect: {}
+ #33 := Direct: {#32}, indirect: {#9, #30, #31}
+ #34 := Direct: {#29, #33}, indirect: {#9, #27, #28, #30, #31, #32}
+ #35 := Direct: {#34}, indirect: {#9, #27, #28, #29, #30, #31, #32, #33}
+ #36 := Direct: {#20, #26, #35}, indirect: { #0
+                                           ,  #1
+                                           ,  #4
+                                           ,  #5
+                                           ,  #9
+                                           ,  #16
+                                           ,  #17
+                                           ,  #18
+                                           ,  #19
+                                           ,  #21
+                                           ,  #22
+                                           ,  #23
+                                           ,  #24
+                                           ,  #25
+                                           ,  #27
+                                           ,  #28
+                                           ,  #29
+                                           ,  #30
+                                           ,  #31
+                                           ,  #32
+                                           ,  #33
+                                           ,  #34
+                                           }
+ #37 := Direct: {#36}, indirect: { #0
+                                 ,  #1
+                                 ,  #4
+                                 ,  #5
+                                 ,  #9
+                                 ,  #16
+                                 ,  #17
+                                 ,  #18
+                                 ,  #19
+                                 ,  #20
+                                 ,  #21
+                                 ,  #22
+                                 ,  #23
+                                 ,  #24
+                                 ,  #25
+                                 ,  #26
+                                 ,  #27
+                                 ,  #28
+                                 ,  #29
+                                 ,  #30
+                                 ,  #31
+                                 ,  #32
+                                 ,  #33
+                                 ,  #34
+                                 ,  #35
+                                 }
+ #38 := Direct: {#8, #15, #37}, indirect: { #0
+                                          ,  #1
+                                          ,  #2
+                                          ,  #3
+                                          ,  #4
+                                          ,  #5
+                                          ,  #6
+                                          ,  #7
+                                          ,  #9
+                                          ,  #10
+                                          ,  #11
+                                          ,  #12
+                                          ,  #13
+                                          ,  #14
+                                          ,  #16
+                                          ,  #17
+                                          ,  #18
+                                          ,  #19
+                                          ,  #20
+                                          ,  #21
+                                          ,  #22
+                                          ,  #23
+                                          ,  #24
+                                          ,  #25
+                                          ,  #26
+                                          ,  #27
+                                          ,  #28
+                                          ,  #29
+                                          ,  #30
+                                          ,  #31
+                                          ,  #32
+                                          ,  #33
+                                          ,  #34
+                                          ,  #35
+                                          ,  #36
+                                          }

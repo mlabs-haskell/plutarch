@@ -9,7 +9,7 @@ module Plutarch.Backend.Compile
   )
 where
 
-import Control.Monad (foldM, when)
+import Control.Monad (foldM)
 import Control.Monad.RWS.CPS
   ( MonadState (get),
     RWS,
@@ -19,11 +19,14 @@ import Control.Monad.RWS.CPS
     runRWS,
   )
 import Control.Monad.Reader (MonadReader)
-import Control.Monad.ST (runST)
-import Control.Monad.State.Strict (gets, put, runStateT)
-import Data.Foldable (foldl', for_)
+import Control.Monad.State.Strict
+  ( State,
+    gets,
+    put,
+    runState,
+  )
+import Data.Foldable (foldl', foldrM)
 import Data.Kind (Type)
-import Data.List.NonEmpty qualified as NEList
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Maybe (fromJust)
@@ -33,8 +36,6 @@ import Data.Set.NonEmpty (NESet)
 import Data.Set.NonEmpty qualified as NESet
 import Data.Text (Text)
 import Data.Vector qualified as Vector
-import Data.Vector.Mutable (PrimMonad)
-import Data.Vector.Mutable qualified as MVector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.ANF
@@ -50,8 +51,9 @@ import Plutarch.Backend.ANF
         ANFLam,
         ANFLeaf
       ),
+    Analysis (Analysis),
+    BindingStatus (ShouldBind, Shouldn'tBind),
     BoundVar (BoundVar),
-    Demand (Demanded, NeverDemanded, Trivial),
     Id (Id),
     Leaf
       ( LBuiltin,
@@ -59,6 +61,7 @@ import Plutarch.Backend.ANF
         LConstant,
         LError
       ),
+    Rank,
     Ref (AVar, AnId),
     getANFBindAnn,
   )
@@ -82,6 +85,7 @@ import Plutarch.Backend.UPLC
     uplcLam,
     uplcLam1,
     uplcLet,
+    uplcLetP,
     uplcMCombinator,
     uplcVar,
   )
@@ -95,51 +99,53 @@ import UntypedPlutusCore qualified as UPLC
 -- used more than once.
 --
 -- @since 2.0.0
-toUPLCTerm :: Bool -> ANF Demand -> UPLCTerm
+toUPLCTerm :: Bool -> ANF Analysis -> UPLCTerm
 toUPLCTerm runExternalOpts (ANF _ binds) =
-  -- We use the hashes of any variable as its `Unique`. To ensure we don't
-  -- accidentally ever alias them, we collect all the ones we use. As we know
-  -- they can't collide, we don't perform any rehashing.
-  let allVarUniques = NEVector.foldl' collectVarName Set.empty binds
-      -- If we have any chunks of precompiled code, some of their variable
-      -- `Unique`s might clash with ours. We can use rehashing to fix this.
+  let -- We use the hashes of any variable as its `Unique`. To ensure we don't
+      -- accidentally ever alias them, we collect all the ones we use. As we
+      -- know they can't collide, we don't perform any rehashing.
+      allVarUniques = NEVector.foldl' collectVarName Set.empty binds
+      -- Check if any precompiled code sections have name clashes with our
+      -- variables, and if so, rehash to fix them.
       (rewrittenBinds, usedNames) = fixPrecompiled binds allVarUniques
-      -- Look for the identity function if it exists
+      -- See if we have the identity function somewhere. If we have it, it's
+      -- unique due to hash consing.
       mIdentity = findIdentity rewrittenBinds
-      -- Check how many fixpoints we have and where they are.
+      -- Find all fixpoints, record their locations.
       fixpoints = doFixpointAnalysis rewrittenBinds
-      -- To compile a fixpoint, we take its functional (of the form `F = \self ->
-      -- body`) and transform it into `M (\r -> F (r r))`. As M is small, it's
-      -- cheaper to inline than bind it.
+      -- To compile a fixpoint, we take its functional (of the form `F = \self
+      -- -> body`) and transform it into `M (\r -> F (r r))`. As `M` is small,
+      -- it's cheaper to inline it than make a dedicated `let`-binding.
       --
-      -- Since every fixpoint node already contains a (unique) name for the
+      -- Since every fixpoint bind already contains a (unique) name for its
       -- `self` argument, we can re-use it for `r` in the above construction.
-      -- Since we are inlining M, and fixpoints may contain more nested
-      -- fixpoints, we need a unique name for each fixpoint we're going to
-      -- compile.
-      (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointName Map.empty . Set.toList $ fixpoints) usedNames 0
-      -- Check how many compositions we have and where they are.
+      -- Since we are inlining `M`, and fixpoints may contain more nested
+      -- fixpoints, we need a unique name for each fixpoint we will be
+      -- compiling.
+      (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointName Map.empty fixpoints) usedNames 0
+      -- Find all function compositions, record their locations
       compositions = doCompositionAnalysis rewrittenBinds
       -- To compile a composition of the form `[f_1, f_2, ... , f_k]`, we want
       -- to produce `\z -> f_1 (f_2 (... (f_k z) ...)`. For this, we need a
-      -- unique name for `z`.
-      (compositionNameMap, lastFresh', _) = runRWS (foldM mkCompositionName Map.empty . Set.toList $ compositions) usedNames lastFresh
+      -- unique name for `z` for each composition.
+      (compositionNameMap, lastFresh', _) = runRWS (foldM mkCompositionName Map.empty compositions) usedNames lastFresh
       -- Make a unique name for any unused arguments. As lambdas in UPLC are all
-      -- arity 1, and we will never use an unused argument, we can generate just
-      -- a single name. It's cheaper to do this speculatively that to scan for
-      -- unused function parameters.
+      -- arity 1, and we will never use an unused argument, we can generate one
+      -- name for all of them. It's cheaper to do this speculatively than scan
+      -- for unused function parameters.
       (unusedParamName, lastFresh'', _) = runRWS mkUnusedName usedNames lastFresh'
       -- Name every bind, avoiding any names of existing variables.
       namedBinds = fst . evalRWS (NEVector.mapM nameBind rewrittenBinds) usedNames $ lastFresh''
-      -- Set up our compilation environment with everything we just put together
+      -- Set up our compilation environment with everything we just put
+      -- together.
       compileEnv = CompileEnv namedBinds fixpointNameMap compositionNameMap unusedParamName mIdentity
-      compileState = CompileState Map.empty Map.empty
-      -- Use our demand analysis to compile everything.
+      compileState = CompileState Map.empty Set.empty
+      -- Compile all binds
       compiled = runCompileM compile compileEnv compileState
    in if
         | not runExternalOpts -> compiled
         -- If there are no `let`-binds, we can pre-evaluate safely
-        | isAffine binds -> case optimizeUplc . preEval $ compiled of
+        | isAffine -> case optimizeUplc . preEval $ compiled of
             Left err -> freeVarErr err
             Right res -> res
         -- Only run UPLC optimizations
@@ -147,6 +153,31 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
             Left err -> freeVarErr err
             Right res -> res
   where
+    collectVarName :: Set Int -> ANFBind Analysis -> Set Int
+    collectVarName acc = \case
+      ANFLeaf _ -> acc
+      ANFForce _ r -> addVar acc r
+      ANFDelay _ r -> addVar acc r
+      ANFLam _ _ body -> addVar acc body
+      ANFFix _ _ body -> addVar acc body
+      ANFApply _ f xs -> addVar (NEVector.foldl' addVar acc xs) f
+      ANFConstr _ _ fields -> Vector.foldl' addVar acc fields
+      ANFCase _ scrut handlers -> addVar (NEVector.foldl' addVar acc handlers) scrut
+      ANFCompose _ components -> NEVector.foldl' addVar acc components
+    addVar :: Set Int -> Ref -> Set Int
+    addVar ess = \case
+      AVar (Hash h) -> Set.insert h ess
+      _ -> ess
+    mkUnusedName :: RWS (Set Int) () Int PLC.Name
+    mkUnusedName = do
+      fresh <- untilM getFresh (asks . Set.notMember)
+      pure . mkName "unused" $ fresh
+    nameBind :: ANFBind Analysis -> RWS (Set Int) () Int (PLC.Name, ANFBind Analysis)
+    nameBind bind = do
+      fresh <- untilM getFresh (asks . Set.notMember)
+      pure (mkName "bind" fresh, bind)
+    isAffine :: Bool
+    isAffine = NEVector.all ((\(Analysis shouldBind _) -> shouldBind == Shouldn'tBind) . getANFBindAnn) binds
     preEval :: UPLCTerm -> UPLCTerm
     preEval t = case evalUPLC maxBudget t of
       (res, _, _) -> case res of
@@ -159,75 +190,38 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
         "Free variable found when optimizing: "
           <> show err
           <> "\nIf you see this, report it as a bug."
-    collectVarName :: Set Int -> ANFBind ann -> Set Int
-    collectVarName acc = \case
-      ANFLeaf _ -> acc
-      ANFForce _ r -> addVar acc r
-      ANFDelay _ r -> addVar acc r
-      ANFLam _ _ r -> addVar acc r
-      ANFFix _ _ r -> addVar acc r
-      ANFApply _ fR xsRs -> addVar (NEVector.foldl' addVar acc xsRs) fR
-      ANFConstr _ _ fieldsRs -> Vector.foldl' addVar acc fieldsRs
-      ANFCase _ scrutR handlersRs -> addVar (NEVector.foldl' addVar acc handlersRs) scrutR
-      ANFCompose _ componentRs -> NEVector.foldl' addVar acc componentRs
-    addVar :: Set Int -> Ref -> Set Int
-    addVar ess = \case
-      AVar (Hash h) -> Set.insert h ess
-      _ -> ess
-    mkUnusedName :: RWS (Set Int) () Int PLC.Name
-    mkUnusedName = do
-      fresh <- untilM getFresh (asks . Set.notMember)
-      pure . mkName "unused" $ fresh
-    nameBind :: ANFBind Demand -> RWS (Set Int) () Int (PLC.Name, ANFBind Demand)
-    nameBind bind = do
-      fresh <- untilM getFresh (asks . Set.notMember)
-      pure (mkName "bind" fresh, bind)
 
 -- Helpers
 
-isAffine :: NonEmptyVector (ANFBind Demand) -> Bool
-isAffine = NEVector.all (go . getANFBindAnn)
-  where
-    go :: Demand -> Bool
-    go = \case
-      NeverDemanded -> True
-      Demanded _ useCount -> useCount == 1
-      Trivial -> True
-
 fixPrecompiled ::
-  NonEmptyVector (ANFBind Demand) ->
+  NonEmptyVector (ANFBind Analysis) ->
   Set Int ->
-  (NonEmptyVector (ANFBind Demand), Set Int)
-fixPrecompiled binds usedNames = runST $ runStateT go usedNames
+  (NonEmptyVector (ANFBind Analysis), Set Int)
+fixPrecompiled binds usedNames =
+  let precompiledCodeIxes = NEVector.findIndices isPrecompiled binds
+      (rewritten, usedNames') = runState (Vector.mapM checkAndRewrite precompiledCodeIxes) usedNames
+   in (NEVector.unsafeUpdate binds rewritten, usedNames')
   where
-    go ::
-      forall (m :: Type -> Type).
-      (PrimMonad m, MonadState (Set Int) m) =>
-      m (NonEmptyVector (ANFBind Demand))
-    go = do
-      let len = NEVector.length binds
-      mv <- MVector.new len
-      for_ [0, 1 .. len - 1] $ \i -> do
-        case binds NEVector.! i of
-          x@(ANFLeaf ell) -> case ell of
-            -- If we see any compiled code, we rewrite all of its variable
-            -- uniques if any clash with ones we've chosen.
-            LCompiled ann code -> do
-              used <- get
-              let (code', used') = rewriteUniques code used
-              put used'
-              MVector.write mv i . ANFLeaf . LCompiled ann $ code'
-            -- Any other leaf can be left as-is.
-            _ -> MVector.write mv i x
-          -- Anything else doesn't need any changes.
-          x -> MVector.write mv i x
-      v <- Vector.unsafeFreeze mv
-      pure . NEVector.unsafeFromVector $ v
+    isPrecompiled :: ANFBind Analysis -> Bool
+    isPrecompiled = \case
+      ANFLeaf (LCompiled _ _) -> True
+      _ -> False
+    checkAndRewrite :: Int -> State (Set Int) (Int, ANFBind Analysis)
+    checkAndRewrite ix = case binds NEVector.! ix of
+      ANFLeaf (LCompiled ann code) -> do
+        currentUsed <- get
+        let (code', used') = rewriteUniques code currentUsed
+        put used'
+        pure (ix, ANFLeaf (LCompiled ann code'))
+      _ ->
+        error $
+          "When rewriting precompiled code, we were directed to rewrite something else.\n"
+            <> "If you see this, report a bug."
 
-findIdentity :: NonEmptyVector (ANFBind Demand) -> Maybe Id
+findIdentity :: NonEmptyVector (ANFBind Analysis) -> Maybe Id
 findIdentity binds = Id <$> NEVector.findIndex go binds
   where
-    go :: ANFBind Demand -> Bool
+    go :: ANFBind Analysis -> Bool
     go = \case
       ANFLam _ bvs (AVar h') -> case NEVector.uncons bvs of
         (Just (BoundVar h _), rest) -> Vector.null rest && h == h'
@@ -289,7 +283,7 @@ mkCompositionName acc i = do
 -- A read-only environment for compilation.
 data CompileEnv = CompileEnv
   { -- All ANF binds, with demand analysis, together with their unique names
-    ceBinds :: NonEmptyVector (PLC.Name, ANFBind Demand),
+    ceBinds :: NonEmptyVector (PLC.Name, ANFBind Analysis),
     -- Unique names for each fixpoint we have to compile
     ceFPNameMap :: Map Int PLC.Name,
     -- A unique name for each composition we have to compile
@@ -301,8 +295,10 @@ data CompileEnv = CompileEnv
   }
 
 data CompileState = CompileState
-  { csCache :: Map Id UPLCTerm,
-    csBindRequirements :: Map Id (NESet Id)
+  { -- All previously-compiled binds, by id
+    csCache :: Map Id UPLCTerm,
+    -- Binds that should be `let`-bound that we've compiled so far
+    csToLetBind :: Set Id
   }
 
 newtype CompileM (a :: Type) = CompileM (RWS CompileEnv () CompileState a)
@@ -344,69 +340,57 @@ compile ::
 compile = do
   binds <- asks (NEVector.map snd . ceBinds)
   NEVector.imapM_ compileWithCache binds
-  let topNodeIx = NEVector.length binds - 1
-  -- This cannot 'miss', as we have compiled every node, and the top node is
+  let topBindIx = NEVector.length binds - 1
+  -- This cannot 'miss', as we have compiled every bind, and the top bind is
   -- always the last bind.
-  fromJust <$> gets (Map.lookup (Id topNodeIx) . csCache)
+  fromJust <$> gets (Map.lookup (Id topBindIx) . csCache)
   where
-    compileWithCache :: Int -> ANFBind Demand -> m ()
-    compileWithCache ix bind = do
-      -- First, determine if this will be bound at some future stage. If so,
-      -- record it now as we're seeing this bind for the first time.
-      case getANFBindAnn bind of
-        -- This is the top-level node.
-        NeverDemanded -> pure ()
-        -- This node is always inlined.
-        Trivial -> pure ()
-        -- If we need this more than once, record this fact.
-        Demanded letBindLoc useCount -> when (useCount > 1) (modify (recordLetBind letBindLoc ix))
-      -- Check if we have to `let`-bind anything here.
-      letBindsRequired <- do
-        mBinds <- gets (Map.lookup (Id ix) . csBindRequirements)
-        case mBinds of
-          Nothing -> pure []
-          Just ess -> traverse lookupBindName . NEList.toList . NESet.toList $ ess
-      -- Compile the bind, doing any `let`-binds we need, and cache.
-      compileAndCache ix letBindsRequired bind
+    compileWithCache :: Int -> ANFBind Analysis -> m ()
+    compileWithCache bindIx bind = do
+      compiledCode <- compileBind bindIx bind
+      let (Analysis shouldBind whatToBind) = getANFBindAnn bind
+      withLetBinds <- foldrM doLetBind compiledCode . Map.toAscList $ whatToBind
+      let ourId = Id bindIx
+      modify (cacheCode shouldBind ourId withLetBinds)
+    cacheCode :: BindingStatus -> Id -> UPLCTerm -> CompileState -> CompileState
+    cacheCode shouldBind i code (CompileState cache whatToLet) =
+      let cache' = Map.insert i code cache
+       in CompileState cache' $ case shouldBind of
+            ShouldBind -> Set.insert i whatToLet
+            Shouldn'tBind -> whatToLet
+    doLetBind :: (Rank, NESet Id) -> UPLCTerm -> m UPLCTerm
+    doLetBind (_, seqBinds) acc = do
+      withCode <- traverse (\i -> (,) <$> getBindName i <*> getCode i) . NESet.toList $ seqBinds
+      pure $
+        if NESet.size seqBinds < parallelBindThreshold
+          then foldr (uncurry uplcLet) acc withCode
+          else uplcLetP (NEVector.fromNonEmpty withCode) acc
+    -- Set on the basis that `n` sequential binds require `n` lambdas and `n`
+    -- applications, while `n` parallel binds require 1 case, 1 constr and `n`
+    -- lambdas. This gives parity at 2, but may need adjustment later.
+    parallelBindThreshold :: Int
+    parallelBindThreshold = 2
+    -- This is safe because we never request something we haven't yet compiled.
+    getCode :: Id -> m UPLCTerm
+    getCode i = gets (fromJust . Map.lookup i . csCache)
+    getBindName :: Id -> m UPLC.Name
+    getBindName (Id i) = asks (\ce -> fst $ ceBinds ce NEVector.! i)
 
-recordLetBind :: Id -> Int -> CompileState -> CompileState
-recordLetBind letBindLoc whatToBind = \case
-  CompileState cache reqs -> CompileState cache . Map.alter go letBindLoc $ reqs
-  where
-    go :: Maybe (NESet Id) -> Maybe (NESet Id)
-    go =
-      Just . \case
-        Nothing -> NESet.singleton (Id whatToBind)
-        Just ess -> NESet.insert (Id whatToBind) ess
-
-lookupBindName ::
-  forall (m :: Type -> Type).
-  (MonadReader CompileEnv m, MonadState CompileState m) =>
-  Id -> m (PLC.Name, UPLCTerm)
-lookupBindName i@(Id asIx) = do
-  name <- asks (\env -> fst $ ceBinds env NEVector.! asIx)
-  -- Due to the order we compile in, we can never require something to be
-  -- `let`-bound before it's been compiled. Thus, this cannot 'miss'.
-  code <- gets (fromJust . Map.lookup i . csCache)
-  pure (name, code)
-
-compileAndCache ::
+compileBind ::
   forall (m :: Type -> Type).
   (MonadState CompileState m, MonadReader CompileEnv m) =>
-  Int -> [(PLC.Name, UPLCTerm)] -> ANFBind Demand -> m ()
-compileAndCache ix requiredLetBinds = \case
-  -- Leaves can never require any `let`-bindings, so we just compile and cache
-  -- the bind and move on. Furthermore, leaves can never reference anything, so
-  -- we don't have to namecheck.
-  ANFLeaf ell -> modify (writeToCache (Id ix) . compileLeaf $ ell)
-  -- For `force` and `delay`, we have to namecheck their bodies. We also have to
-  -- potentially resolve some `let`-binds.
-  ANFForce _ body -> do
-    bodyCode <- checkCache body
-    modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcForce $ bodyCode)
-  ANFDelay _ body -> do
-    bodyCode <- checkCache body
-    modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcDelay $ bodyCode)
+  Int ->
+  ANFBind Analysis ->
+  m UPLCTerm
+compileBind bindIx = \case
+  -- Leaves can never reference anything, so no namechecking needed
+  ANFLeaf ell -> pure $ case ell of
+    LConstant _ c -> uplcConstant c
+    LBuiltin _ f -> uplcBuiltin f
+    LCompiled _ code -> code
+    LError _ -> uplcError
+  ANFForce _ body -> uplcForce <$> checkCache body
+  ANFDelay _ body -> uplcDelay <$> checkCache body
   -- An `ANFFix` node contains two (relevant) pieces of information:
   --
   -- \* A name for the `self` argument; and
@@ -428,8 +412,7 @@ compileAndCache ix requiredLetBinds = \case
   -- equivalence, so is `F'`, `\self -> F'` and `M (\self -> F')` by the same
   -- reasoning.
   ANFFix _ bv body -> do
-    -- Might as well resolve `let`-binds _now_.
-    bodyCode <- doLetBinds requiredLetBinds <$> checkCache body
+    bodyCode <- checkCache body
     -- We have to translate F to a lambda before doing the rest. This also
     -- requires us to rewrite every use of the named variable in `bodyCode` to a
     -- self-application of the named variable instead.
@@ -438,124 +421,80 @@ compileAndCache ix requiredLetBinds = \case
     let subbedBody = substituteVarFor fVarName selfApp bodyCode
     -- `F' = F{self -> self self}`
     let bodyLam = uplcLam1 fVarName subbedBody
-    -- This cannot 'miss', as we checked before for all fixpoint sites and made
-    -- a name for each.
-    mArgName <- asks (fromJust . Map.lookup ix . ceFPNameMap)
-    -- `M = \x -> x x`, using the reserved name.
+    -- This cannot 'miss' as we checked before for all fixpoint sites and made a
+    -- name for each.
+    mArgName <- asks (fromJust . Map.lookup bindIx . ceFPNameMap)
+    -- `M = \x -> x x`, using the reserved name
     let m = uplcMCombinator mArgName
     -- Assemble everything
-    let finalCode = uplcApply1 m bodyLam
-    modify (writeToCache (Id ix) finalCode)
-  ANFConstr _ tag fields -> do
-    fieldCodes <- traverse checkCache fields
-    modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcConstr tag $ fieldCodes)
-  ANFCase _ scrut handlers -> do
-    scrutCode <- checkCache scrut
-    handlerCodes <- traverse checkCache handlers
-    modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcCase scrutCode $ handlerCodes)
+    pure . uplcApply1 m $ bodyLam
+  ANFConstr _ tag fields -> uplcConstr tag <$> traverse checkCache fields
+  ANFCase _ scrut handlers -> uplcCase <$> checkCache scrut <*> traverse checkCache handlers
   ANFApply _ f xs -> do
     -- Check if `f` is the identity
     applyingToId <- isTheIdentity f
     xsCode <- traverse checkCache xs
-    -- If `f` is the identity, then we already for certain know there's only one
-    -- argument, so we can just compile that instead.
+    -- If `f` is the identity, we already know for certain that there's only one
+    -- argument. Thus, we can just compile that instead.
     if applyingToId
-      then modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . NEVector.head $ xsCode)
+      then pure . NEVector.head $ xsCode
       else do
         fCode <- checkCache f
         let xsLen = NEVector.length xsCode
-        -- If we have two or fewer applications, we can compile an `app` chain.
-        -- However, for three or more, it's more efficient to 'pack' the `xs`
-        -- into a `constr`, then `case` on it immediately using `f` as the sole
-        -- handler.
         if xsLen <= 2
-          then modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcApply fCode $ xsCode)
+          -- More efficient to compile a chain of `app`.
+          then pure . uplcApply fCode $ xsCode
+          -- More efficient to 'pack' `xs` into a `constr`, then `case` on it
+          -- immediately with `f` as the sole handler
           else do
             let constrCall = uplcConstr 0 . NEVector.toVector $ xsCode
             let soleHandler = NEVector.singleton fCode
-            modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcCase constrCall $ soleHandler)
-  -- As with fixpoints, our analysis detects _binding_ sites, we have to
-  -- resolve `let`-binds 'around' the _body_ of the lambda, not the lambda
-  -- itself!
+            pure . uplcCase constrCall $ soleHandler
   ANFLam _ bvs body -> do
-    bodyCode <- doLetBinds requiredLetBinds <$> checkCache body
+    bodyCode <- checkCache body
     asBvNames <- NEVector.mapM bvToName bvs
-    modify (writeToCache (Id ix) . uplcLam asBvNames $ bodyCode)
+    pure . uplcLam asBvNames $ bodyCode
   -- For compositions, given components `[f_1, f_2, ... , f_k]`, we want to
   -- generate `\z -> f_1 (f_2 ( ... (f_k z) ... )`. We have a name set aside for
   -- `z` to ensure it's unique.
   ANFCompose _ components -> do
     componentCodes <- traverse checkCache components
-    -- This cannot 'miss', as we have checked every site of a composition and
-    -- set aside an argument for it specifically.
-    compArgName <- asks (fromJust . Map.lookup ix . ceCompNameMap)
+    -- This cannot 'miss', as we have checked all composition sites and set
+    -- aside arguments for them specifically.
+    compArgName <- asks (fromJust . Map.lookup bindIx . ceCompNameMap)
     -- We have to fold 'backwards' here, as application order would apply the
     -- _last_ item in the composition first. We could reverse the vector, but
     -- this would require copying it, so we don't.
     let len = NEVector.length componentCodes
     let reverseIxes = [len - 1, len - 2 .. 0]
     let asCompArg = uplcVar compArgName
-    let finalCode = foldl' (\acc i -> uplcApply1 (componentCodes NEVector.! i) acc) asCompArg reverseIxes
-    modify (writeToCache (Id ix) . uplcLam1 compArgName . doLetBinds requiredLetBinds $ finalCode)
-
-bvToName ::
-  forall (m :: Type -> Type).
-  (MonadReader CompileEnv m) =>
-  Maybe BoundVar -> m PLC.Name
-bvToName = \case
-  -- Unused argument, use reserved name
-  Nothing -> asks ceUnusedParamName
-  Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
-
-selfToName :: BoundVar -> PLC.Name
-selfToName (BoundVar (Hash h) _) = mkName "arg" h
-
-writeToCache :: Id -> UPLCTerm -> CompileState -> CompileState
-writeToCache i code = \case
-  CompileState cache reqs -> CompileState (Map.insert i code cache) reqs
-
-compileLeaf :: forall (ann :: Type). Leaf ann -> UPLCTerm
-compileLeaf = \case
-  LConstant _ c -> uplcConstant c
-  LBuiltin _ f -> uplcBuiltin f
-  LCompiled _ code -> code
-  LError _ -> uplcError
-
-checkCache ::
-  forall (m :: Type -> Type).
-  (MonadReader CompileEnv m, MonadState CompileState m) =>
-  Ref -> m UPLCTerm
-checkCache = \case
-  -- Variables always inline, so we don't even need to check the cache for them.
-  AVar (Hash h) -> pure . uplcVar . mkName "arg" $ h
-  -- Depending on the demand analysis, we might need to refer to this code by
-  -- name instead of by its literal compilation. We check this first.
-  AnId asId@(Id i) -> do
-    (name, bind) <- asks (\env -> ceBinds env NEVector.! i)
-    -- Due to compilation order (from dependencies to dependents), we can never
-    -- require code of a subcomputation that we haven't already compiled. Thus,
-    -- this cannot 'miss'.
-    code <- gets (fromJust . Map.lookup asId . csCache)
-    pure $ case getANFBindAnn bind of
-      Demanded _ useCount ->
-        if useCount > 1
-          -- Use name
-          then uplcVar name
-          -- Use code
-          else code
-      -- Use code unconditionally
-      _ -> code
-
--- Note (Koz, 06/08/2026): The fold direction is important, as this preserves
--- the dependency order of `let`-binds.
-doLetBinds :: [(PLC.Name, UPLCTerm)] -> UPLCTerm -> UPLCTerm
-doLetBinds requiredLetBinds t =
-  foldr (\(name, bind) acc -> uplcLet name bind acc) t requiredLetBinds
-
-isTheIdentity ::
-  forall (m :: Type -> Type).
-  (MonadReader CompileEnv m) =>
-  Ref -> m Bool
-isTheIdentity = \case
-  AnId i -> asks ((== Just i) . ceTheIdentity)
-  _ -> pure False
+    let compBody = foldl' (\acc i -> uplcApply1 (componentCodes NEVector.! i) acc) asCompArg reverseIxes
+    pure . uplcLam1 compArgName $ compBody
+  where
+    selfToName :: BoundVar -> PLC.Name
+    selfToName (BoundVar (Hash h) _) = mkName "arg" h
+    bvToName :: Maybe BoundVar -> m PLC.Name
+    bvToName = \case
+      -- Unused argument, use reserved name
+      Nothing -> asks ceUnusedParamName
+      Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
+    checkCache :: Ref -> m UPLCTerm
+    checkCache = \case
+      -- Variables always inline, so we don't need to check anything for them.
+      AVar (Hash h) -> pure . uplcVar . mkName "arg" $ h
+      -- If this identifier is meant to be let-bound later, we have to refer to
+      -- it by name. Otherwise, we just retrieve its code and inline it.
+      AnId i@(Id ix) -> do
+        shouldBind <- gets (Set.member i . csToLetBind)
+        if shouldBind
+          -- Get its assigned name, wrap it in a variable.
+          then do
+            assignedName <- asks (\ce -> fst $ ceBinds ce NEVector.! ix)
+            pure . uplcVar $ assignedName
+          -- Inline its code. This cannot 'miss' due to the compilation order
+          -- proceeding from dependencies to dependents.
+          else gets (fromJust . Map.lookup i . csCache)
+    isTheIdentity :: Ref -> m Bool
+    isTheIdentity = \case
+      AnId i -> asks ((== Just i) . ceTheIdentity)
+      _ -> pure False

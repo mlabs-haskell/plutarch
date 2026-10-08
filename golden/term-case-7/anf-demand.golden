@@ -1,0 +1,23 @@
+ANF Hashes:
+ #0 := m5XKL3leqWoN
+ #1 := vjMEhbkCp9cN
+ #2 := yI8DIugRYDcN
+ #3 := u7iVMdBTuZjN
+ #4 := zqlxOgUkb4oN
+ #5 := gETavfsFcui
+
+ANF Binds:
+ #0 := AddInteger
+ #1 := MultiplyInteger
+ #2 := Apply #1 [a, a]
+ #3 := Apply #0 [#2, #2]
+ #4 := Apply #0 [#3, #3]
+ #5 := \a:2 -> #4
+
+ANF Annotations:
+ #0 := Inlined, required let-binds here: {}
+ #1 := Inlined, required let-binds here: {}
+ #2 := Inlined, required let-binds here: {}
+ #3 := Inlined, required let-binds here: {}
+ #4 := Inlined, required let-binds here: {}
+ #5 := Inlined, required let-binds here: {}

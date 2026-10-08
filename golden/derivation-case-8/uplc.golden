@@ -7,9 +7,9 @@
             AppendString
             # ("PSOPCons {
             " :: String)
-            # (
-                (\bind_q ->
-                  (\bind_jc ->
+            # (case 
+                (constr 0 [(", " :: String), (" " :: String)])
+                [ \bind_q bind_jc ->
                     AppendString
                     # (
                         AppendString
@@ -133,11 +133,7 @@
                           )
                         # bind_n
                       )
-                  )
-                  # ("
-                  " :: String)
-                )
-                # (", " :: String)
+                ]
               )
         ]
     )

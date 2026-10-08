@@ -1,0 +1,20 @@
+ANF Hashes:
+ #0 := mqE7eqJLvgvN
+ #1 := b3MMFFLoh5t
+ #2 := vGSfgEJCO3c
+ #3 := dFlucIem2zwN
+ #4 := nfbEqLzLaTmN
+
+ANF Binds:
+ #0 := 0 :: Integer
+ #1 := "PRed" :: String
+ #2 := "PGreen" :: String
+ #3 := "PBlue" :: String
+ #4 := Case #0 [#1, #2, #3]
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := No dependencies
+ #2 := No dependencies
+ #3 := No dependencies
+ #4 := Direct: {#0, #1, #2, #3}, indirect: {}

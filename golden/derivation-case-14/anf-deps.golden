@@ -1,0 +1,44 @@
+ANF Hashes:
+ #0 := zd9ooDLRiOB
+ #1 := qjJx7b4Msxl
+ #2 := qvDyAVrQ9eg
+ #3 := xpO8bXGXAAbN
+ #4 := lq7M85OSbvc
+ #5 := xbeHZZ18OUjN
+ #6 := xzuvg9nZuSx
+ #7 := kAink8gYthuN
+ #8 := sjZuOF9daDzN
+ #9 := rcJtquzh7RfN
+ #10 := lIsCZaLQgJsN
+ #11 := jnK7BCttiQvN
+ #12 := mnut34OHYvi
+
+ANF Binds:
+ #0 := ConstrData
+ #1 := 2 :: Integer
+ #2 := MkCons
+ #3 := Force #2
+ #4 := IData
+ #5 := Apply #4 [#1]
+ #6 := BData
+ #7 := "foo" :: Bytestring
+ #8 := Apply #6 [#7]
+ #9 := [] :: [Data]
+ #10 := Apply #3 [#8, #9]
+ #11 := Apply #3 [#5, #10]
+ #12 := Apply #0 [#1, #11]
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := No dependencies
+ #2 := No dependencies
+ #3 := Direct: {#2}, indirect: {}
+ #4 := No dependencies
+ #5 := Direct: {#1, #4}, indirect: {}
+ #6 := No dependencies
+ #7 := No dependencies
+ #8 := Direct: {#6, #7}, indirect: {}
+ #9 := No dependencies
+ #10 := Direct: {#3, #8, #9}, indirect: {#2, #6, #7}
+ #11 := Direct: {#3, #5, #10}, indirect: {#1, #2, #4, #6, #7, #8, #9}
+ #12 := Direct: {#0, #1, #11}, indirect: {#2, #3, #4, #5, #6, #7, #8, #9, #10}
