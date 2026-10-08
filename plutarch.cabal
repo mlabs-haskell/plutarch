@@ -155,9 +155,13 @@ benchmark benches
   type:           exitcode-stdio-1.0
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
-  other-modules:  Maybe
+  other-modules:
+    Maybe
+    These
+
   hs-source-dirs: bench
   build-depends:
+    , nonempty-vector
     , plutarch
     , tasty
     , tasty-expected-failure
