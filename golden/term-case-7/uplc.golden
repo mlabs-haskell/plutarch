@@ -1,0 +1,4 @@
+\gc ->
+  let cse_hc = (\cse_ic -> AddInteger # cse_ic # cse_ic)
+               # (MultiplyInteger # gc # gc)
+  in AddInteger # cse_hc # cse_hc

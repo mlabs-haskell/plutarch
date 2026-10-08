@@ -7,7 +7,7 @@ where
 import Control.Monad.Except (runExceptT)
 import Control.Monad.RWS.CPS (runRWS)
 import Data.Kind (Type)
-import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
+import Plutarch.Backend.ANF (analyzeDeps, fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
@@ -36,4 +36,4 @@ termToUPLC ::
   Either TermError UPLCTerm
 termToUPLC env@(TermEnv _ opt) t = do
   let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
-  toUPLCTerm optAsBool . fullPipeline . fromHashedAST . fromRawTerm <$> compileTerm env t
+  toUPLCTerm optAsBool . fullPipeline . analyzeDeps . fromHashedAST . fromRawTerm <$> compileTerm env t

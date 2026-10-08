@@ -2,7 +2,7 @@
   a
   # (3 :: Integer)
   # (\compArg_b ->
-      (\bind_c -> AddInteger # bind_c # bind_c)
+      (\cse_c -> AddInteger # cse_c # cse_c)
       # (
           AddInteger
           # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_b)

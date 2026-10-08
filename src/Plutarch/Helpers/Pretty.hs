@@ -11,6 +11,7 @@ module Plutarch.Helpers.Pretty
     prettyAnnotated,
     blockList,
     customList,
+    customSet,
     prettyUPLC,
     oneLineList,
     blockParens,
@@ -193,10 +194,29 @@ customList = \case
           <> foldr (\x acc -> "," <+> x <> hardline <> acc) "" rest
           <> "]"
 
+customSet :: forall (ann :: Type). [Doc ann] -> Doc ann
+customSet = \case
+  [] -> "{}"
+  (x : xs) -> group $ flatAlt (go x xs) (oneLineSet (x : xs))
+  where
+    go :: Doc ann -> [Doc ann] -> Doc ann
+    go headEl rest =
+      align . group $
+        "{"
+          <+> headEl
+          <> hardline
+          <> foldr (\x acc -> ", " <+> x <> hardline <> acc) "" rest
+          <> "}"
+
 oneLineList :: forall (ann :: Type). [Doc ann] -> Doc ann
 oneLineList = \case
   [] -> "[]"
   xs -> "[" <> hcat (punctuate ", " xs) <> "]"
+
+oneLineSet :: forall (ann :: Type). [Doc ann] -> Doc ann
+oneLineSet = \case
+  [] -> "{}"
+  xs -> "{" <> hcat (punctuate ", " xs) <> "}"
 
 blockParens :: forall (ann :: Type). Doc ann -> Doc ann
 blockParens = block "(" ")"

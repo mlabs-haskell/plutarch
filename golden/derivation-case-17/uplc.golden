@@ -12,26 +12,24 @@
        [ \a b ->
            case b
              [ \c d ->
-                 (\bind_x ->
-                   (\bind_z ->
-                     (\bind_bb ->
-                       case a
-                         [ bind_z # bind_bb
-                         , bind_z # (UnBData # c)
-                         , (\unused_e ->
-                             case d
-                               [ \l m ->
-                                   (\unused_e -> case m [bind_x, bind_u])
-                                   # (UnBData # l)
-                               ]
-                           )
-                           # bind_bb
-                         ]
-                     )
-                     # (UnIData # c)
-                   )
-                   # (\unused_e -> case d [bind_x, bind_u])
-                 )
-                 # (\unused_e unused_e -> ERROR)
+                 case 
+                   (constr 0 [\unused_e unused_e -> ERROR, UnIData # c])
+                   [ \bind_x bind_bb ->
+                       (\bind_z ->
+                         case a
+                           [ bind_z # bind_bb
+                           , bind_z # (UnBData # c)
+                           , (\unused_e ->
+                               case d
+                                 [ \l m ->
+                                     (\unused_e -> case m [bind_x, bind_u])
+                                     # (UnBData # l)
+                                 ]
+                             )
+                             # bind_bb
+                           ]
+                       )
+                       # (\unused_e -> case d [bind_x, bind_u])
+                   ]
              ]
        ]

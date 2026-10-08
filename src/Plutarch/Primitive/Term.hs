@@ -40,7 +40,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import GHC.Stack (HasCallStack, callStack)
-import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
+import Plutarch.Backend.ANF (analyzeDeps, fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.PosTree
@@ -411,7 +411,7 @@ pcompiled t = Term $ do
       Right (_, rt) -> do
         let ast = fromRawTerm rt
         let anf = fromHashedAST ast
-        let analyzedANF = fullPipeline anf
+        let analyzedANF = fullPipeline . analyzeDeps $ anf
         let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
         pure (vmEmpty, RCompiled () . toUPLCTerm optAsBool $ analyzedANF)
 

@@ -13,7 +13,7 @@ import Data.Char (isSpace, isUpperCase, toLower)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text.Lazy.Encoding (encodeUtf8)
-import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
+import Plutarch.Backend.ANF (analyzeDeps, fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.Term
@@ -94,7 +94,9 @@ plutarchGoldenWith evaluation env@(TermEnv _ opt) testDescription testName t =
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
       anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
-      withDemand = fullPipeline <$> asANF
+      withDeps = analyzeDeps <$> asANF
+      anfDepsFP = goldenFolderFP </> "anf-deps" <.> "golden"
+      withDemand = fullPipeline <$> withDeps
       demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
       optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
       asUPLC = toUPLCTerm optAsBool <$> withDemand
@@ -103,6 +105,7 @@ plutarchGoldenWith evaluation env@(TermEnv _ opt) testDescription testName t =
         [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t),
           goldenVsString "AST" astGoldenFP (toLazyBSOrErr asAST),
           goldenVsString "ANF" anfGoldenFP (toLazyBSOrErr asANF),
+          goldenVsString "ANF with dependency analysis" anfDepsFP (toLazyBSOrErr withDeps),
           goldenVsString "ANF with demand analysis" demandGoldenFP (toLazyBSOrErr withDemand),
           goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr asUPLC)
         ]

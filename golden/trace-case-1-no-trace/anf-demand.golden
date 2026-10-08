@@ -5,4 +5,4 @@ ANF Binds:
  #0 := 10 :: Integer
 
 ANF Annotations:
- #0 := Trivial
+ #0 := Inlined, required let-binds here: {}
