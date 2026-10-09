@@ -18,7 +18,7 @@ data PTheseData (a :: S -> Type) (b :: S -> Type) (s :: S)
   | PThatData (Term s (PAsData b))
   | PTheseData (Term s (PAsData a)) (Term s (PAsData b))
 
-deriveFor ''PTheseData DataPlutus AllInstances
+deriveFor ''PTheseData DataPlutusCompact AllInstances
 
 data PTriple (a :: S -> Type) (s :: S)
   = PTriple (Term s (PAsData a)) (Term s (PAsData a)) (Term s (PAsData a))
@@ -34,4 +34,4 @@ data PSmash (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PNada
   | PSmash (Term s (PAsData a)) (Term s (PAsData b))
 
-deriveFor ''PSmash DataPlutus NoEqDebug
+deriveFor ''PSmash DataPlutusCompact NoEqDebug

@@ -87,6 +87,7 @@ library
     Plutarch.Test.Size
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
+    Plutarch.TH.DataPlutusCompact
     Plutarch.TH.Enum
     Plutarch.TH.MS
     Plutarch.TH.Newtype

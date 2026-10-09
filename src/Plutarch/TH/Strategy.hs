@@ -15,6 +15,7 @@ import Language.Haskell.TH
 import Plutarch.Helpers.TH (checkTyName, consToPTypeSum)
 import Plutarch.TH.DataList (deriveDataList)
 import Plutarch.TH.DataPlutus (deriveDataPlutus)
+import Plutarch.TH.DataPlutusCompact (deriveDataPlutusCompact)
 import Plutarch.TH.Enum (deriveEnum)
 import Plutarch.TH.MS (deriveMS)
 import Plutarch.TH.Newtype (deriveNewtype)
@@ -39,6 +40,18 @@ data Strategy
     --
     --    @since 2.0.0
     DataPlutus
+  | -- | As 'DataPlutus', but prioritizes code size being smaller over better exunit
+    -- and memory use.
+    --
+    -- This is only beneficial if your data type is a sum type with at least one
+    -- field in every \'arm\'. For example, something like @These@ would
+    -- potentially benefit in code size from this strategy, but something like
+    -- @Maybe@ wouldn't.
+    --
+    -- This strategy derives the same instances as 'DataPlutus'.
+    --
+    -- @since 2.0.0
+    DataPlutusCompact
   | -- | Use an onchain @Integer@ as the representation. This strategy derives
     --    'PlutarchType', 'PMatch', 'PCon', 'PEq', 'PDebug' and 'PCanData' instances.
     --
@@ -128,6 +141,7 @@ deriveFor tyName strat insts = do
           Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
           DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
           DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
+          DataPlutusCompact -> deriveDataPlutusCompact tvbs name typeStructure deriveEqDebug
           SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
           MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
           Newtype -> fail "Cannot use the Newtype strategy on a non-newtype."
@@ -145,6 +159,7 @@ deriveFor tyName strat insts = do
           Enum -> fail "As a newtype must have one field, it cannot use the Enum strategy."
           DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
           DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
+          DataPlutusCompact -> deriveDataPlutusCompact tvbs name typeStructure deriveEqDebug
           SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
           MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
           Newtype -> deriveNewtype tvbs name typeStructure deriveEqDebug False
