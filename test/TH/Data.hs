@@ -7,6 +7,7 @@ module TH.Data
     PTriple (..),
     PPairData (..),
     PSmash (..),
+    PListData (..),
   )
 where
 
@@ -35,3 +36,9 @@ data PSmash (a :: S -> Type) (b :: S -> Type) (s :: S)
   | PSmash (Term s (PAsData a)) (Term s (PAsData b))
 
 deriveFor ''PSmash DataPlutusCompact NoEqDebug
+
+data PListData (a :: S -> Type) (s :: S)
+  = PNilData
+  | PConsData (Term s (PAsData a)) (Term s (PAsData (PListData a)))
+
+deriveFor ''PListData DataPlutus AllInstances

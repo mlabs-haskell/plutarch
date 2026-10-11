@@ -1,0 +1,63 @@
+(
+  fix (\a_self b c ->
+        case b
+          [ \d -> case d [\_ _ -> ERROR, c]
+          , \e ->
+              case e
+                [ \f g ->
+                    let _ = UnIData # f
+                    in case g [\h i -> a_self # h # (case i [\_ _ -> ERROR, c])]
+                ]
+          ]
+      )
+)
+# (
+    ConstrData
+    # 1 :: Integer
+    # (
+        !MkCons
+        # (IData # 1 :: Integer)
+        # (
+            !MkCons
+            # (
+                ConstrData
+                # 1 :: Integer
+                # (
+                    !MkCons
+                    # (IData # 2 :: Integer)
+                    # (
+                        !MkCons
+                        # (ConstrData # 0 :: Integer # [] :: [Data])
+                        # [] :: [Data]
+                      )
+                  )
+              )
+            # [] :: [Data]
+          )
+      )
+  )
+# (
+    ConstrData
+    # 1 :: Integer
+    # (
+        !MkCons
+        # (IData # 1 :: Integer)
+        # (
+            !MkCons
+            # (
+                ConstrData
+                # 1 :: Integer
+                # (
+                    !MkCons
+                    # (IData # 2 :: Integer)
+                    # (
+                        !MkCons
+                        # (ConstrData # 0 :: Integer # [] :: [Data])
+                        # [] :: [Data]
+                      )
+                  )
+              )
+            # [] :: [Data]
+          )
+      )
+  )

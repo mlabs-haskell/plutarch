@@ -1,0 +1,79 @@
+(\mArg_e -> mArg_e # mArg_e)
+# (\a b c ->
+    (\bind_m ->
+      case b
+        [ \d -> case d [bind_m, c]
+        , \g ->
+            case g
+              [ \h i ->
+                  (\unused_f ->
+                    case i [\k l -> a # a # k # (case l [bind_m, c])]
+                  )
+                  # (UnIData # h)
+              ]
+        ]
+    )
+    # (\unused_f unused_f -> ERROR)
+  )
+# (
+    ConstrData
+    # (1 :: Integer)
+    # (
+        (\bind_gb ->
+          bind_gb
+          # (IData # (1 :: Integer))
+          # (
+              (\bind_mb ->
+                bind_gb
+                # (
+                    ConstrData
+                    # (1 :: Integer)
+                    # (
+                        bind_gb
+                        # (IData # (2 :: Integer))
+                        # (
+                            bind_gb
+                            # (ConstrData # (0 :: Integer) # bind_mb)
+                            # bind_mb
+                          )
+                      )
+                  )
+                # bind_mb
+              )
+              # ([] :: [Data])
+            )
+        )
+        # !MkCons
+      )
+  )
+# (
+    ConstrData
+    # (1 :: Integer)
+    # (
+        (\bind_gb ->
+          bind_gb
+          # (IData # (1 :: Integer))
+          # (
+              (\bind_mb ->
+                bind_gb
+                # (
+                    ConstrData
+                    # (1 :: Integer)
+                    # (
+                        bind_gb
+                        # (IData # (2 :: Integer))
+                        # (
+                            bind_gb
+                            # (ConstrData # (0 :: Integer) # bind_mb)
+                            # bind_mb
+                          )
+                      )
+                  )
+                # bind_mb
+              )
+              # ([] :: [Data])
+            )
+        )
+        # !MkCons
+      )
+  )

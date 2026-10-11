@@ -32,6 +32,7 @@ module Plutarch.Helpers.TH
     unwrapField,
     isTypeRecursive,
     checkAndMark,
+    checkAndMarkUnwrapped,
     terminateList,
   )
 where
@@ -71,7 +72,7 @@ import Plutarch.Primitive.BuiltinFun
   )
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
 import Plutarch.Primitive.DerivedFun (pheadTailList)
-import Plutarch.Primitive.Singular (PAsData, (:-->))
+import Plutarch.Primitive.Singular (PAsData, PData, (:-->))
 import Plutarch.Primitive.Term
   ( plam',
     punsafeCase,
@@ -300,10 +301,22 @@ checkAndMark deriveEqDebug name t = case t of
   PTypeNotData t' -> pure (isTypeRecursive name t, t')
 
 -- | @since 2.0.0
+checkAndMarkUnwrapped :: Name -> (Name, Vector Type) -> Vector (Bool, Type)
+checkAndMarkUnwrapped tyName (_, fieldTys) =
+  fmap (\t -> (isRecursive t, t)) fieldTys
+  where
+    isRecursive :: Type -> Bool
+    isRecursive = \case
+      ConT name -> name == tyName
+      AppT x y -> isRecursive x || isRecursive y
+      InfixT t name u -> name == tyName || isRecursive t || isRecursive u
+      _ -> False
+
+-- | @since 2.0.0
 terminateList :: Exp -> Name -> Q Exp
 terminateList ellE contName =
   [e|
-    pmatch $(pure ellE) $ \case
+    pmatch @(PBList PData) $(pure ellE) $ \case
       PBNil -> $(pure . VarE $ contName)
       PBCons _ _ -> perror
     |]

@@ -9,7 +9,11 @@ import Plutarch.Test.Golden
     releaseGolden,
   )
 import Plutarch.Unsafe (punsafeCoerce)
-import TH.Data (PTheseData (PTheseData), PTriple (PTriple))
+import TH.Data
+  ( PListData (PConsData, PNilData),
+    PTheseData (PTheseData),
+    PTriple (PTriple),
+  )
 import TH.Enum (PColour (PRed))
 import TH.MS (PTheseMS (PTheseMS))
 import TH.SOP (PEither (PLeft), PSOPList (PSOPCons, PSOPNil), PThese)
@@ -103,7 +107,12 @@ goldens =
         EvaluateUPLC
         "pvalidateData @(PTheseData PInteger PByteString)"
         "Derivation Case 17"
-        (pvalidateData @(PTheseData PInteger PByteString) . pfundamental $ pthese)
+        (pvalidateData @(PTheseData PInteger PByteString) . pfundamental $ pthese),
+      debugGolden
+        EvaluateUPLC
+        "pvalidateData @(PListData PInteger)"
+        "Derivation Case 18"
+        (pvalidateData @(PListData PInteger) . pfundamental $ plist)
     ]
 
 -- Cases
@@ -163,3 +172,14 @@ pthese =
     . ptoData
     . pconstant
     $ "foo"
+
+plist :: forall (s :: S). Term s (PListData PInteger)
+plist =
+  pcon
+    . PConsData (ptoData . pconstant $ 1)
+    . ptoData
+    . pcon
+    . PConsData (ptoData . pconstant $ 2)
+    . ptoData
+    . pcon
+    $ PNilData
