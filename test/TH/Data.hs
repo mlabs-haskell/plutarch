@@ -8,6 +8,7 @@ module TH.Data
     PPairData (..),
     PSmash (..),
     PListData (..),
+    PNEList (..),
   )
 where
 
@@ -42,3 +43,9 @@ data PListData (a :: S -> Type) (s :: S)
   | PConsData (Term s (PAsData a)) (Term s (PAsData (PListData a)))
 
 deriveFor ''PListData DataPlutus AllInstances
+
+data PNEList (a :: S -> Type) (s :: S)
+  = PSolo (Term s (PAsData a))
+  | PCons (Term s (PAsData a)) (Term s (PAsData (PNEList a)))
+
+deriveFor ''PNEList DataPlutusCompact AllInstances

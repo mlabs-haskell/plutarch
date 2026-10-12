@@ -42,6 +42,7 @@ import Plutarch.Helpers.TH
     PTypeProduct (PTypeProduct),
     PTypeSum (PTypeSum),
     checkAndMark,
+    checkAndMarkUnwrapped,
     fullTypeName,
     mkContextOf,
     mkUncons,
@@ -108,7 +109,8 @@ deriveDataPlutusCompact tvbs name t@(PTypeSum typeStructure) deriveEqDebug = do
         peqDec <- if deriveEqDebug then derivePEq tvbs name else pure []
         pdebugDec <- if deriveEqDebug then derivePDebug tvbs name markedAll else pure []
         pcanDataDec <- derivePCanData tvbs name
-        pvalidateDataDec <- derivePValidateData tvbs name allConFields
+        let markedNoAsData = fmap (checkAndMarkUnwrapped name) allConFields
+        pvalidateDataDec <- derivePValidateData tvbs name markedNoAsData
         pure $
           plutarchTypeDec
             <> pmatchDec
@@ -359,7 +361,7 @@ derivePDebug tyVars tyName constructors =
       newlineE <- [e|pconstant @PString "\n"|]
       fieldE <-
         if isRec
-          then [e|$(pure . VarE $ selfName) # $(pure . VarE $ fVarName)|]
+          then [e|$(pure . VarE $ selfName) # pfromData $(pure . VarE $ fVarName)|]
           else [e|pshow $(pure . VarE $ fVarName)|]
       [e|pappendString # $(pure commaE) # (pappendString # $(pure fieldE) # $(pure newlineE))|]
     go :: Exp -> [Exp] -> Q Exp
@@ -381,62 +383,85 @@ derivePCanData tyVars tyName =
 derivePValidateData ::
   Vector (TyVarBndr BndrVis) ->
   Name ->
-  NonEmptyVector (Name, Vector Type) ->
+  NonEmptyVector (Vector (Bool, Type)) ->
   Q [Dec]
 derivePValidateData tyVars tyName cs =
-  [d|
-    instance ($ctx) => PValidateData $name where
-      pwithValidated d res = pmatch ($punConstrDataE # d) $ \(PBPair tag fields) ->
-        $(mkCases 'res 'tag 'fields)
-    |]
+  if NEVector.any (Vector.any fst) cs
+    then -- We're isorecursive, so we need a fixpoint. This has to be done in
+    -- a somewhat strange way, as we can only take fixpoints of Plutus
+    -- arrows, not Haskell ones, so we have to wrap the entire process into
+    -- a Plutus arrow, then apply the arguments of the type class method to
+    -- it.
+      [d|
+        instance ($ctx) => PValidateData $name where
+          pwithValidated d res =
+            pfix
+              ( \self -> plam' $ \d' ->
+                  plam' $ \resInner -> pmatch ($punConstrDataE # d') $ \(PBPair tag fields) ->
+                    $(mkCases 'self 'resInner 'tag 'fields)
+              )
+              # d
+              # res
+        |]
+    else -- Not isorecursive.
+      [d|
+        instance ($ctx) => PValidateData $name where
+          pwithValidated d res = pmatch ($punConstrDataE # d) $ \(PBPair tag fields) ->
+            $(mkCases 'pwithValidated 'res 'tag 'fields)
+        |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
     ctx = pure . mkContextOf [''PValidateData] $ tyVars
-    mkCases :: Name -> Name -> Name -> Q Exp
-    mkCases contName tagName fieldsName = do
+    mkCases :: Name -> Name -> Name -> Name -> Q Exp
+    mkCases validateName contName tagName fieldsName = do
       -- Calculate our preload by finding the minimum number of fields we have
-      -- to extract regardless of 'arm'.
-      let minArity = Vector.length . snd . NEVector.minimumBy (comparing (Vector.length . snd)) $ cs
-      -- Construct the code that will extract minArity fields, leaving behind
-      -- an `Exp` referring to the 'remaining tail' if any, as well as all the
-      -- 'preloaded' names. Because of silly TH reasons, we have to do this
-      -- using CPS.
-      withPreload tagName contName minArity (VarE fieldsName) []
-    withPreload :: Name -> Name -> Int -> Exp -> [Name] -> Q Exp
-    withPreload tagName contName remaining lastTailE fieldNamesBackwards
+      -- to extract regardles of 'arm'.
+      let minArity = Vector.length . NEVector.minimumBy (comparing Vector.length) $ cs
+      -- Construct the code that will extract `minArity` fields, then handle all
+      -- validation. Because of silly TH reasons, we have to do this using CPS.
+      withPreload validateName tagName contName minArity (VarE fieldsName) []
+    withPreload :: Name -> Name -> Name -> Int -> Exp -> [Name] -> Q Exp
+    withPreload validateName tagName contName remaining lastTailE fieldNamesBackwards
       | remaining == 0 = do
           let preloadedNames = reverse fieldNamesBackwards
-          [e|$punsafeCaseE $(pure . VarE $ tagName) $(mkHandlers contName lastTailE preloadedNames)|]
+          [e|$punsafeCaseE $(pure . VarE $ tagName) $(mkHandlers validateName contName lastTailE preloadedNames)|]
       | otherwise = mkUncons lastTailE $ \headName tailName -> do
           let remaining' = remaining - 1
           let lastTail' = VarE tailName
-          -- This is why they're backwards - accumulating at the end
-          -- makes this quadratic, but we can reverse once we're
-          -- done in linear time.
+          -- This is why they're backwards - accumulating at the end makes this
+          -- quadratic, but we can reverse once we're done in linear time.
           let fieldNamesBackwards' = headName : fieldNamesBackwards
-          withPreload tagName contName remaining' lastTail' fieldNamesBackwards'
-    mkHandlers :: Name -> Exp -> [Name] -> Q Exp
-    mkHandlers contName lastTailE preloadedFieldNames = do
-      handlerEs <- traverse (mkHandlerE contName lastTailE preloadedFieldNames . snd) cs
+          withPreload validateName tagName contName remaining' lastTail' fieldNamesBackwards'
+    mkHandlers :: Name -> Name -> Exp -> [Name] -> Q Exp
+    mkHandlers validateName contName lastTailE preloadedFieldNames = do
+      handlerEs <- traverse (mkHandlerE validateName contName lastTailE preloadedFieldNames) cs
       case NEVector.unsnoc handlerEs of
         (es, e) -> do
           startE <- [e|NEVector.singleton ($toSomeTermE $(pure e))|]
           foldrM (\h acc -> [e|NEVector.cons ($toSomeTermE $(pure h)) $(pure acc)|]) startE es
-    mkHandlerE :: Name -> Exp -> [Name] -> Vector Type -> Q Exp
-    mkHandlerE contName lastTailE namesLeft fieldTys = case Vector.uncons fieldTys of
+    mkHandlerE :: Name -> Name -> Exp -> [Name] -> Vector (Bool, Type) -> Q Exp
+    mkHandlerE validateName contName lastTailE namesLeft fieldTys = case Vector.uncons fieldTys of
       -- We've generated validation code for every field in this 'arm', so
       -- terminate the expression by checking that `lastTailE` is indeed empty.
       Nothing -> terminateList lastTailE contName
-      Just (ty, fieldTys') -> do
-        let validateE = AppTypeE (VarE 'pwithValidated) ty
-        case namesLeft of
-          -- We've validated every preloaded name, so we have to do more unconses.
-          [] -> mkUncons lastTailE $ \headName tailName -> do
-            restE <- mkHandlerE contName (VarE tailName) [] fieldTys'
-            [e|$(pure validateE) $(pure . VarE $ headName) ($(pure restE))|]
-          -- Some preloaded names remain to validate.
-          (n : namesLeft') -> do
-            restE <- mkHandlerE contName lastTailE namesLeft' fieldTys'
-            [e|$(pure validateE) $(pure . VarE $ n) ($(pure restE))|]
+      Just ((isRec, ty), fieldTys') -> case namesLeft of
+        -- All preloadedNames are validated, so we have to uncons more.
+        [] -> mkUncons lastTailE $ \headName tailName -> do
+          restE <- mkHandlerE validateName contName (VarE tailName) [] fieldTys'
+          let headE = VarE headName
+          if isRec
+            then [e|$(pure . VarE $ validateName) # $(pure headE) # $(pure restE)|]
+            else do
+              let validateE = AppTypeE (VarE 'pwithValidated) ty
+              [e|$(pure validateE) $(pure headE) ($(pure restE))|]
+        -- Some preloaded names remain to validate.
+        (n : namesLeft') -> do
+          let headE = VarE n
+          restE <- mkHandlerE validateName contName lastTailE namesLeft' fieldTys'
+          if isRec
+            then [e|$(pure . VarE $ validateName) # $(pure headE) # $(pure restE)|]
+            else do
+              let validateE = AppTypeE (VarE 'pwithValidated) ty
+              [e|$(pure validateE) $(pure headE) ($(pure restE))|]
