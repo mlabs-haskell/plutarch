@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 -- | @since 2.0.0
 module Plutarch.Test.Golden
   ( Evaluation (..),
@@ -29,7 +31,7 @@ import Plutarch.Backend.UPLC (UPLCTerm, uplcConstant)
 import Plutarch.Helpers.Compile (compileTerm)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
 import PlutusCore qualified as PLC
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget), minusExBudget)
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.Text (renderLazy)
 import System.FilePath ((<.>), (</>))
@@ -57,7 +59,12 @@ data Evaluation
 -- * The resulting UPLC.
 --
 -- If given 'EvaluateUPLC' as an argument, it will also evaluate the resulting
--- UPLC, and produce a golden file of its result. A 'TermEnv' for compilation is
+-- UPLC, and produce golden files of each of the following:
+--
+-- * The result of the evaluation; and
+-- * The exunits and memory used to evaluate.
+--
+-- A 'TermEnv' for compilation is
 -- provided to determine how much tracing, or what optimizations, to use.
 --
 -- All but the first of these will produce an error if the 'Term' fails to
@@ -114,8 +121,11 @@ plutarchGoldenWith evaluation env@(TermEnv _ opt) testDescription testName t =
         EvaluateUPLC ->
           let evaluated = evalUPLC maxBudget <$> asUPLC
               uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
+              uplcEvalBenchFP = goldenFolderFP </> "uplc-bench" <.> "golden"
            in mandatoryTests
-                <> [goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)]
+                <> [ goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated),
+                     goldenVsString "UPLC (benchmark)" uplcEvalBenchFP (toLazyBSBench evaluated)
+                   ]
 
 -- | As 'plutachGoldenWith', with the 'TermEnv' set to 'debugTermEnv'.
 --
@@ -192,6 +202,27 @@ toLazyBSEvaluated = \case
   Right (Left err, _, _) -> throwIO . DidNotEvaluateException $ err
   Right (Right (Left c), _, _) -> pure . toLazyBS . uplcConstant $ c
   Right (Right (Right t), _, _) -> pure . toLazyBS $ t
+
+toLazyBSBench ::
+  Either
+    TermError
+    ( Either
+        (Cek.CekEvaluationException PLC.Name PLC.DefaultUni PLC.DefaultFun)
+        (Either (PLC.Some (PLC.ValueOf PLC.DefaultUni)) UPLCTerm),
+      ExBudget,
+      [Text]
+    ) ->
+  IO Lazy.ByteString
+toLazyBSBench = \case
+  Left err -> throwIO . DidNotCompileException $ err
+  Right (Left err, _, _) -> throwIO . DidNotEvaluateException $ err
+  Right (Right _, remainingBudget, _) -> pure . toLazyBS . PrettyBudget $ maxBudget `minusExBudget` remainingBudget
+
+newtype PrettyBudget = PrettyBudget ExBudget
+
+instance Pretty PrettyBudget where
+  pretty (PrettyBudget (ExBudget cpu mem)) =
+    "Exunits used: " <> pretty cpu <> ", memory used: " <> pretty mem <> "\n"
 
 newtype DidNotCompileException = DidNotCompileException TermError
   deriving stock (Show)

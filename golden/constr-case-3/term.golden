@@ -1,0 +1,22 @@
+case 
+  (UnConstrData
+    # (
+        ConstrData
+        # 2 :: Integer
+        # (
+            !MkCons
+            # (IData # 1 :: Integer)
+            # (!MkCons # (IData # 2 :: Integer) # [] :: [Data])
+          )
+      )
+  )
+  [ \a b ->
+      case b
+        [ \c d ->
+            case a
+              [ UnIData # c
+              , UnIData # c
+              , case d [\e _ -> AddInteger # (UnIData # c) # (UnIData # e)]
+              ]
+        ]
+  ]

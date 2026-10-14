@@ -87,6 +87,7 @@ library
     Plutarch.Test.Size
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
+    Plutarch.TH.DataPlutusCompact
     Plutarch.TH.Enum
     Plutarch.TH.MS
     Plutarch.TH.Newtype
@@ -129,6 +130,7 @@ test-suite tests
     Bool
     Compiled
     Compose
+    Constr
     Debug
     Derivation
     Error
@@ -155,9 +157,13 @@ benchmark benches
   type:           exitcode-stdio-1.0
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
-  other-modules:  Maybe
+  other-modules:
+    Maybe
+    These
+
   hs-source-dirs: bench
   build-depends:
+    , nonempty-vector
     , plutarch
     , tasty
     , tasty-expected-failure

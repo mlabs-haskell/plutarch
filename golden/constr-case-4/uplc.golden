@@ -1,0 +1,21 @@
+\ ->
+  let bind_t = !HeadList
+  in case 
+       (
+         ConstrData
+         # (2 :: Integer)
+         # (
+             (\bind_i ->
+               bind_i
+               # (IData # (1 :: Integer))
+               # (bind_i # (IData # (2 :: Integer)) # ([] :: [Data]))
+             )
+             # !MkCons
+           )
+       )
+       [ \a -> UnIData # (bind_t # a)
+       , \a -> UnIData # (bind_t # a)
+       , \c ->
+           case c
+             [\d e -> AddInteger # (UnIData # d) # (UnIData # (bind_t # e))]
+       ]
