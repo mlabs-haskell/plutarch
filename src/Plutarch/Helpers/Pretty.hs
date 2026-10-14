@@ -35,6 +35,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
 import Data.Word (Word64)
+import PlutusCore.Data qualified as PD (Data (B, Constr, I, List, Map))
 import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
 import Prettyprinter
   ( Doc,
@@ -106,7 +107,7 @@ prettyValueOf uni x = case prettyUni uni of
          in case uniA of
               DefaultUniApply DefaultUniProtoArray _ -> ("Array" <+> parens inner, f')
               _ -> ("Array" <+> inner, f')
-      DefaultUniData -> ("Data", pretty)
+      DefaultUniData -> ("Data", prettyData)
       DefaultUniBLS12_381_G1_Element -> ("Bls12_381_G1_element", pretty)
       DefaultUniBLS12_381_G2_Element -> ("Bls12_381_G2_element", pretty)
       DefaultUniBLS12_381_MlResult -> ("Bls12_381_mlresult", pretty)
@@ -121,6 +122,14 @@ prettyValueOf uni x = case prettyUni uni of
             <> "default universe but `prettyValueOf` was not updated to support it."
             <> "\n"
             <> "If you are a Plutarch user, please open an issue or contact the maintainers."
+
+prettyData :: forall ann. PD.Data -> Doc ann
+prettyData = \case
+  PD.Constr cix args -> "Constr" <+> pretty cix <+> customList (prettyData <$> args)
+  PD.Map xs -> customList $ (\(a, b) -> tupled [prettyData a, prettyData b]) <$> xs
+  PD.List xs -> customList (prettyData <$> xs)
+  PD.I i -> viaShow i
+  PD.B b -> viaShow b
 
 {- The hashes are usually pretty large Ints, and would clutter up the prettified output
    even in hex, so we do something even more compact.
