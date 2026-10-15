@@ -1,118 +1,118 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TypeAbstractions #-}
 
-module Plutarch.Primitive.Function where
+-- | @since 2.0.0
+module Plutarch.Primitive.Function
+  ( -- * Basic interface
+    plam1,
+    plam2,
+    plam3,
+    plam4,
 
-import Data.Kind (Constraint, Type)
-import Data.Proxy (Proxy (Proxy))
+    -- * Variadic
+    PLamArgs (..),
+    PlutarchArrow,
+    plam,
+  )
+where
+
+import Data.Kind (Type)
 import Generics.SOP
-  ( All (cpara_SList),
-    K (K),
-    SListI,
+  ( SListI,
     Shape (ShapeCons, ShapeNil),
-    Top,
     shape,
   )
 import Plutarch.Backend.Term (S, Term)
 import Plutarch.Primitive.Singular ((:-->))
 import Plutarch.Primitive.Term (plam')
 
--- plam :: forall (ts :: [S -> Type]) (b :: S -> Type) (s :: S) .
---  (HVec s ts -> Term s b) -> Term s (PlutarchArrow ts b)
+-- | A type-heterogenous cons list of 'Term's. Designed to allow constructing a
+-- Plutus lambda taking any number of arguments from a code transformation
+-- taking the same number of arguments.
 --
---  data HVec ts s where
---    HNil :: HVec [] s
---    HCons :: Term s a -> HVec ts s -> HVec (a : ts) s
---    HMCons :: a s -> HVec ts s -> HVec (a : ts) s
---
--- plam1 :: (Term s a -> Term s b) -> ...
---
--- plam2 ...
---
--- ...
---
--- plam1Matching :: (a s -> Term  s b) -> Term s (a :--> b)
---
--- plam2:
---
---  * (Term s a -> Term s b -> Term s b) -> Term s (a :--> b :--> c)
---  * (a s -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
---  * (Term s a -> b s -> Term s c) -> Term s (a :--> b :--> c)
---  * (a s -> b s -> Term s c) -> Term s (a :--> b :--> c)
---
--- plam2 :: (Term s a -> Term s b -> Term s b) -> Term s (a :--> b :--> c)
--- plam2 f = plam' $ \x -> plam' $ \y -> f x y
---
--- plam2 :: (a s -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
--- plam2 f = plam' $ \x -> plam' $ \y -> pmatch x $ \x' ->
---              f x' y
---
--- plam2 :: (a s -> b s -> Term s c) -> Term s (a :--> b :--> c)
--- plam2 f = plam' $ \x -> plam' $ \y -> pmatch x $ \x' ->
---              pmatch y $ \y' -> f x' y'
+-- @since 2.0.0
+data PLamArgs (ts :: [S -> Type]) (s :: S) where
+  Done :: PLamArgs '[] s
+  Arg ::
+    forall (a :: S -> Type) (ts :: [S -> Type]) (s :: S).
+    Term s a -> PLamArgs ts s -> PLamArgs (a ': ts) s
 
-data HVec (s :: S) (f :: [S -> Type]) where
-  HNil :: HVec s '[]
-  HCons :: forall (a :: S -> Type) (b :: [S -> Type]) (s :: S). Term s a -> HVec s b -> HVec s (a ': b)
-
+-- | Needed to successfully type 'plam'. Essentially, @'PlutarchArrow' [a_1,
+-- a_2, ... , a_k] b@ is the same as @a_1 :--> a_2 :--> ... :--> a_k :--> b@.
+--
+-- @since 2.0.0
 type family PlutarchArrow (ts :: [S -> Type]) (r :: S -> Type) where
-  PlutarchArrow '[] b = b
-  PlutarchArrow (a ': as) b = a :--> PlutarchArrow as b
+  PlutarchArrow '[] r = r
+  PlutarchArrow (a ': as) r = a :--> PlutarchArrow as r
 
-data PContext :: (S -> Type) -> (S -> Type) -> Type -> Type where
-  PCxt :: (Term s b -> t) -> Term s a -> PContext a b t
-
--- f :: (a -> b -> c -> d)
-
--- | c1 = PCxt (\_ -> f : () -> a -> (b -> c -> d)) () : PContext () () (a -> b -> c -> d) '[]
--- | |- x : a
--- |  | case c1 of PCxt g x ->
--- |     c2 = PCxt (g x a : b -> (c -> d)) a : PContext a b (b -> c -> d) '[a]
--- |     | y : b
--- |     case c2 of PCxt h a ->
--- |       c3 = PCxt (h y :: (c -> d)) b : PContext b c d '[a,b]
-
--- PContext almost works except it's very hard to see how we could construct it w/o
--- type class soup that we're trying to avoid! But I think we can make it work with a
--- type level list....
-
-plam :: forall s xs r. (SListI xs) => (HVec s xs -> Term s r) -> Term s (PlutarchArrow xs r)
-plam f = case shape @(S -> Type) @xs of
-  ShapeNil -> f HNil
-  ShapeCons @ys @y _rest ->
-    let g :: Term s y -> HVec s ys -> Term s r
-        g a ys = f (HCons a ys)
-     in plam' $ \y -> plam (g y)
-
-{-
-type PLiftFn :: S -> Type -> Constraint
-class PLiftFn s t where
-  type ToPF s t :: (S -> Type)
-  type PFArgs s t :: [S -> Type]
-  type PFResult s t :: (S -> Type)
-
-  pfunK :: t -> PFunK t (PFArgs s t) (PFResult s t) (ToPF s t) s
-
-instance PLiftFn s (Term s a) where
-  type ToPF s (Term s a) = a
-  type PFArgs s (Term s a) = '[]
-  type PFResult s (Term s a) = a
-
-  pfunK  = PDoneK
-
-instance PLiftFn s (Term s a -> Term s b) where
-  type ToPF s (Term s a -> Term s b)
--}
-{-
+-- | Given a code transformation involving any number of 'Term's to produce
+-- another 'Term', construct a Plutus lambda taking the same number of arguments,
+-- of the same types, and producing a result of the same type as the 'Term' that
+-- the code transformation would produce.
+--
+-- = Note
+--
+-- You shouldn't need to use this directly very often: prefer the various
+-- @plam*@ helpers. This is designed to act as a uniform \'back-end\' for
+-- generating Plutus lambdas of arbitrary arity, shared across all helpers, and
+-- for the rare case where you want a huge number of arguments.
+--
+-- @since 2.0.0
 plam ::
-  forall (ts :: [S -> Type]) (b :: S -> Type) (s :: S).
+  forall (ts :: [S -> Type]) (r :: S -> Type) (s :: S).
   (SListI ts) =>
-  (HVec s ts -> Term s b) -> PFunK
-plam f = mkP
--}
+  (PLamArgs ts s -> Term s r) -> Term s (PlutarchArrow ts r)
+plam f = case shape @(S -> Type) @ts of
+  ShapeNil -> f Done
+  ShapeCons @ts' @a _ ->
+    let g :: Term s a -> PLamArgs ts' s -> Term s r
+        g x rest = f (Arg x rest)
+     in plam' $ \arg -> plam (g arg)
+
+-- | Construct an arity-1 Plutus lambda given a 'Term' transformation taking one
+-- argument.
+--
+-- @since 2.0.0
+plam1 ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (Term s a -> Term s b) -> Term s (a :--> b)
+plam1 = plam'
+
+-- | As 'plam1', but for two arguments.
+--
+-- @since 2.0.0
+plam2 ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  (Term s a -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
+plam2 f =
+  plam @[a, b]
+    ( \case
+        Arg t1 (Arg t2 Done) -> f t1 t2
+    )
+
+-- | As 'plam1', but for three arguments.
+--
+-- @since 2.0.0
+plam3 ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (s :: S).
+  (Term s a -> Term s b -> Term s c -> Term s d) ->
+  Term s (a :--> b :--> c :--> d)
+plam3 f =
+  plam @[a, b, c]
+    ( \case
+        Arg t1 (Arg t2 (Arg t3 Done)) -> f t1 t2 t3
+    )
+
+-- | As 'plam1', but for four arguments.
+--
+-- @since 2.0.0
+plam4 ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (e :: S -> Type) (s :: S).
+  (Term s a -> Term s b -> Term s c -> Term s d -> Term s e) ->
+  Term s (a :--> b :--> c :--> d :--> e)
+plam4 f =
+  plam @[a, b, c, d]
+    ( \case
+        Arg t1 (Arg t2 (Arg t3 (Arg t4 Done))) -> f t1 t2 t3 t4
+    )

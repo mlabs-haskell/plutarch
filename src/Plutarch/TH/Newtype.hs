@@ -24,6 +24,7 @@ import Plutarch.Helpers.TH
     checkAndMark,
     fullTypeName,
     mkContextOfExtended,
+    plam'E,
   )
 import Plutarch.Primitive.CanData (PCanData (pfromData, ptoData))
 import Plutarch.Primitive.Con (PCon (pcon'))
@@ -128,7 +129,7 @@ derivePEq ::
 derivePEq tyVars tyName conName (_, fieldTy) =
   [d|
     instance ($ctx) => PEq $name where
-      peq = plam' $ \x -> plam' $ \y -> $(mkEq 'x 'y)
+      peq = $(plam'E) $ \x -> $(plam'E) $ \y -> $(mkEq 'x 'y)
     |]
   where
     ctx :: Q Type

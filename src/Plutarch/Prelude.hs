@@ -7,9 +7,18 @@ module Plutarch.Prelude
     BackendTerm.TermEnv (..),
 
     -- * DSL construction operations
-    PrimTerm.plam',
+
+    -- ** Lambdas
+    Function.plam1,
+    Function.plam2,
+    Function.plam3,
+    Function.plam4,
+
+    -- ** Application
     (Representation.#),
     (Representation.#$),
+
+    -- ** Others
     PrimTerm.pforce,
     PrimTerm.pdelay,
     PrimTerm.plet,
@@ -161,6 +170,7 @@ import Plutarch.Primitive.Con qualified as Con
 import Plutarch.Primitive.Debug qualified as Debug
 import Plutarch.Primitive.DerivedFun qualified as DF
 import Plutarch.Primitive.Eq qualified as Eq
+import Plutarch.Primitive.Function qualified as Function
 import Plutarch.Primitive.Liftable qualified as Lift
 import Plutarch.Primitive.Match qualified as Match
 import Plutarch.Primitive.Representation qualified as Representation

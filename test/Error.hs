@@ -22,12 +22,12 @@ goldens =
 
 -- Case 1: \x -> addInteger error (addInteger x error)
 case1 :: forall (s :: S). Term s (PInteger :--> PInteger)
-case1 = plam' $ \x -> paddInteger # perror #$ paddInteger # x # perror
+case1 = plam1 $ \x -> paddInteger # perror #$ paddInteger # x # perror
 
 -- Case 2: \x -> constr 0 [x, error]
 case2 :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (a :--> b)
-case2 = plam' $ \x -> punsafeConstr 0 [toSomeTerm x, toSomeTerm perror]
+case2 = plam1 $ \x -> punsafeConstr 0 [toSomeTerm x, toSomeTerm perror]
 
 -- Case 3: \x -> case error of [x]
 case3 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
-case3 = plam' $ \x -> punsafeCase perror . NEVector.singleton . toSomeTerm $ x
+case3 = plam1 $ \x -> punsafeCase perror . NEVector.singleton . toSomeTerm $ x

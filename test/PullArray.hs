@@ -51,7 +51,7 @@ case3 =
 case4 :: forall (s :: S). Term s (PPullArray PInteger)
 case4 =
   Array.pzipWith
-    (plam' $ \x1 -> plam' $ \x2 -> paddInteger # (pinc # x1) # (psquare # x2))
+    (plam2 $ \x1 x2 -> paddInteger # (pinc # x1) # (psquare # x2))
     parr
     parr2
 
@@ -59,7 +59,7 @@ case5 :: forall (s :: S). Term s (PPullArray PInteger)
 case5 = Array.pzipWith paddInteger parr parr
 
 case6 :: forall (s :: S). Term s (PPullArray PInteger)
-case6 = Array.pmap (plam' $ \x -> paddInteger # x # x) parr
+case6 = Array.pmap (plam1 $ \x -> paddInteger # x # x) parr
 
 case7 :: forall (s :: S). Term s (PPullArray PInteger)
 case7 =
@@ -69,13 +69,13 @@ case7 =
     (Array.pmap pinc parr)
 
 case8 :: forall (s :: S). Term s (PPullArray PInteger)
-case8 = Array.pmap (plam' $ \x -> paddInteger # (pinc # x) # (pinc # x)) parr
+case8 = Array.pmap (plam1 $ \x -> paddInteger # (pinc # x) # (pinc # x)) parr
 
 case9 :: forall (s :: S). Term s PInteger
 case9 = Array.pfoldr paddInteger (pconstant 5) . Array.pmap psquare $ parr
 
 case10 :: forall (s :: S). Term s PInteger
-case10 = Array.pfoldr (plam' $ \z -> plam' $ \acc -> paddInteger # (psquare # z) # acc) (pconstant 5) parr
+case10 = Array.pfoldr (plam2 $ \z acc -> paddInteger # (psquare # z) # acc) (pconstant 5) parr
 
 case11 :: forall (s :: S). Term s (PPullArray PInteger)
 case11 = Array.pimap pscale parr
@@ -95,17 +95,16 @@ case14 = pzipWith3Fused pfma parr parr2 parr3
 -- Helpers
 
 pfma :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
-pfma = plam' $ \x -> plam' $ \y -> plam' $ \z ->
-  pmultiplyInteger # x #$ paddInteger # y # z
+pfma = plam3 $ \x y z -> pmultiplyInteger # x #$ paddInteger # y # z
 
 pscale :: forall (s :: S). Term s (PNatural :--> PInteger :--> PInteger)
-pscale = plam' $ \n -> plam' $ \i -> pmultiplyInteger # pfundamental n # i
+pscale = plam2 $ \n i -> pmultiplyInteger # pfundamental n # i
 
 psquare :: forall (s :: S). Term s (PInteger :--> PInteger)
-psquare = plam' $ \x -> pmultiplyInteger # x # x
+psquare = plam1 $ \x -> pmultiplyInteger # x # x
 
 pinc :: forall (s :: S). Term s (PInteger :--> PInteger)
-pinc = plam' $ \x -> paddInteger # x # pconstant 1
+pinc = plam1 $ \x -> paddInteger # x # pconstant 1
 
 parr :: forall (s :: S). Term s (PPullArray PInteger)
 parr = Array.pfromArray $ pconstant @(PBArray PInteger) [1, 2, 3]
@@ -125,7 +124,7 @@ pzipWith3Naive ::
   Term s (PPullArray c) ->
   Term s (PPullArray d)
 pzipWith3Naive f xs ys =
-  Array.pzipWith (plam' $ \f' -> plam' $ \z -> f' # z) (Array.pzipWith (plam' $ \x -> plam' $ \y -> f # x # y) xs ys)
+  Array.pzipWith (plam2 $ \f' z -> f' # z) (Array.pzipWith (plam2 $ \x y -> f # x # y) xs ys)
 
 pzipWith3Fused ::
   forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (s :: S).
@@ -143,4 +142,4 @@ pzipWith3Fused f xs ys zs = pmatch xs $ \(Array.PPullArray len1 g1) ->
           len3' = pfundamental len3
           min12 = pif (plessThanEqualsInteger # len1' # len2') len1' len2'
           len = pif (plessThanEqualsInteger # min12 # len3') (punsafeSecondary min12) len3
-       in pcon . Array.PPullArray len $ plam' $ \i -> f # (g1 # i) # (g2 # i) # (g3 # i)
+       in pcon . Array.PPullArray len $ plam1 $ \i -> f # (g1 # i) # (g2 # i) # (g3 # i)

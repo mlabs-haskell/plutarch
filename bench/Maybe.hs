@@ -60,10 +60,10 @@ instance (PlutarchType a) => PlutarchType (PMaybeNew a) where
 instance (PlutarchType a) => PMatch (PMaybeNew a) where
   pmatch' t f =
     punsafeCase t
-      . NEVector.cons (toSomeTerm $ plam' $ \_ -> f PNothingNew)
+      . NEVector.cons (toSomeTerm $ plam1 $ \_ -> f PNothingNew)
       . NEVector.singleton
       . toSomeTerm
-      $ plam'
+      $ plam1
       $ \fields -> f . PJustNew . punsafeSecondary $ BF.pheadList # fields
 
 instance (PlutarchType a) => PCon (PMaybeNew a) where
@@ -80,7 +80,7 @@ pfindSOP ::
 pfindSOP p ell = go # ell
   where
     go :: Term s (PBList a :--> PSOPMaybe a)
-    go = pfix $ \self -> plam' $ \xs -> pmatch xs $ \case
+    go = pfix $ \self -> plam1 $ \xs -> pmatch xs $ \case
       PBNil -> pcon PSOPNothing
       PBCons x xs' -> pif (p # x) (pcon . PSOPJust $ x) (self # xs')
 
@@ -93,7 +93,7 @@ pfindMS ::
 pfindMS p ell = go # ell
   where
     go :: Term s (PBList a :--> PMSMaybe a)
-    go = pfix $ \self -> plam' $ \xs -> pmatch xs $ \case
+    go = pfix $ \self -> plam1 $ \xs -> pmatch xs $ \case
       PBNil -> pcon PMSNothing
       PBCons x xs' -> pif (p # x) (pcon . PMSJust $ x) (self # xs')
 
@@ -108,7 +108,7 @@ pfindCPS ::
 pfindCPS p ell whenMissing whenFound = go # ell
   where
     go :: Term s (PBList a :--> b)
-    go = pfix $ \self -> plam' $ \xs -> pmatch xs $ \case
+    go = pfix $ \self -> plam1 $ \xs -> pmatch xs $ \case
       PBNil -> whenMissing
       PBCons x xs' ->
         pif
