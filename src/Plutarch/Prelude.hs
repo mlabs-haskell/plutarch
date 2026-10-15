@@ -63,8 +63,6 @@ module Plutarch.Prelude
     S.PInteger,
 
     -- *** Primitive operations
-    BF.pequalsInteger,
-    BF.plessThanEqualsInteger,
     BF.paddInteger,
     BF.psubtractInteger,
     BF.pmultiplyInteger,
@@ -144,6 +142,15 @@ module Plutarch.Prelude
     (Eq.#==),
     (Eq.#/=),
 
+    -- ** Order
+    Ord.POrd (..),
+    (Ord.#<=),
+    (Ord.#<),
+    (Ord.#>=),
+    (Ord.#>),
+    Ord.pmin,
+    Ord.pmax,
+
     -- * Derivations
     Strategy.Strategy (..),
     Strategy.WhichInstances (..),
@@ -163,6 +170,7 @@ import Plutarch.Primitive.DerivedFun qualified as DF
 import Plutarch.Primitive.Eq qualified as Eq
 import Plutarch.Primitive.Liftable qualified as Lift
 import Plutarch.Primitive.Match qualified as Match
+import Plutarch.Primitive.Ord qualified as Ord
 import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term qualified as PrimTerm

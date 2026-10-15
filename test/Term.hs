@@ -62,7 +62,7 @@ case5 = go # pconstant 0
     go :: Term s (PInteger :--> PInteger)
     go = pfix $ \self -> plam' $ \i ->
       pif
-        (pequalsInteger # i # pconstant 10)
+        (i #== pconstant 10)
         (pconstant 0)
         (paddInteger # i #$ self #$ paddInteger # i # pconstant 1)
 
