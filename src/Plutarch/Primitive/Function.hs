@@ -9,6 +9,8 @@ module Plutarch.Primitive.Function
     plam2,
     plam3,
     plam4,
+    plam5,
+    plam6,
 
     -- * Variadic
     PLamArgs (..),
@@ -85,34 +87,71 @@ plam1 = plam'
 plam2 ::
   forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
   (Term s a -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
-plam2 f =
-  plam @[a, b]
-    ( \case
-        Arg t1 (Arg t2 Done) -> f t1 t2
-    )
+plam2 f = plam @[a, b] $ \case
+  Arg t1 (Arg t2 Done) -> f t1 t2
 
 -- | As 'plam1', but for three arguments.
 --
 -- @since 2.0.0
 plam3 ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (s :: S).
+  forall
+    (a :: S -> Type)
+    (b :: S -> Type)
+    (c :: S -> Type)
+    (d :: S -> Type)
+    (s :: S).
   (Term s a -> Term s b -> Term s c -> Term s d) ->
   Term s (a :--> b :--> c :--> d)
-plam3 f =
-  plam @[a, b, c]
-    ( \case
-        Arg t1 (Arg t2 (Arg t3 Done)) -> f t1 t2 t3
-    )
+plam3 f = plam @[a, b, c] $ \case
+  Arg t1 (Arg t2 (Arg t3 Done)) -> f t1 t2 t3
 
 -- | As 'plam1', but for four arguments.
 --
 -- @since 2.0.0
 plam4 ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (e :: S -> Type) (s :: S).
+  forall
+    (a :: S -> Type)
+    (b :: S -> Type)
+    (c :: S -> Type)
+    (d :: S -> Type)
+    (e :: S -> Type)
+    (s :: S).
   (Term s a -> Term s b -> Term s c -> Term s d -> Term s e) ->
   Term s (a :--> b :--> c :--> d :--> e)
-plam4 f =
-  plam @[a, b, c, d]
-    ( \case
-        Arg t1 (Arg t2 (Arg t3 (Arg t4 Done))) -> f t1 t2 t3 t4
-    )
+plam4 f = plam @[a, b, c, d] $ \case
+  Arg t1 (Arg t2 (Arg t3 (Arg t4 Done))) -> f t1 t2 t3 t4
+
+-- | As 'plam1', but for five arguments.
+--
+-- @since 2.0.0
+plam5 ::
+  forall
+    (a :: S -> Type)
+    (b :: S -> Type)
+    (c :: S -> Type)
+    (d :: S -> Type)
+    (e :: S -> Type)
+    (f :: S -> Type)
+    (s :: S).
+  (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f) ->
+  Term s (a :--> b :--> c :--> d :--> e :--> f)
+plam5 f = plam @[a, b, c, d, e] $ \case
+  Arg t1 (Arg t2 (Arg t3 (Arg t4 (Arg t5 Done)))) -> f t1 t2 t3 t4 t5
+
+-- | As 'plam1', but for six arguments.
+--
+-- @since 2.0.0
+plam6 ::
+  forall
+    (a :: S -> Type)
+    (b :: S -> Type)
+    (c :: S -> Type)
+    (d :: S -> Type)
+    (e :: S -> Type)
+    (f :: S -> Type)
+    (g :: S -> Type)
+    (s :: S).
+  (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f -> Term s g) ->
+  Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)
+plam6 f = plam @[a, b, c, d, e, f] $ \case
+  Arg t1 (Arg t2 (Arg t3 (Arg t4 (Arg t5 (Arg t6 Done))))) -> f t1 t2 t3 t4 t5 t6

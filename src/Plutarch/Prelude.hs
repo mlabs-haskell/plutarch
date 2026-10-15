@@ -13,6 +13,8 @@ module Plutarch.Prelude
     Function.plam2,
     Function.plam3,
     Function.plam4,
+    Function.plam5,
+    Function.plam6,
 
     -- ** Application
     (Representation.#),
