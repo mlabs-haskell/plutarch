@@ -76,6 +76,7 @@ library
     Plutarch.Primitive.Debug
     Plutarch.Primitive.DerivedFun
     Plutarch.Primitive.Eq
+    Plutarch.Primitive.Function
     Plutarch.Primitive.Liftable
     Plutarch.Primitive.Match
     Plutarch.Primitive.Representation
@@ -101,6 +102,7 @@ library
     , containers
     , data-default
     , filepath
+    , generics-sop
     , hashable
     , indexed-traversable
     , lens

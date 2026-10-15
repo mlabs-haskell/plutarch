@@ -27,7 +27,7 @@ case1 = pconstant [[(2, 3)]]
 
 -- Case 2: \f x -> let lol = toPrettyString (f # x) in pconstant (T.pack . show $ lol)
 case2 :: forall (s :: S). Term s ((PBool :--> PBool) :--> PBool :--> PString)
-case2 = plam' $ \f -> plam' $ \x ->
+case2 = plam2 $ \f x ->
   let lol = toPrettyString (f # x)
    in pconstant (Text.pack . show $ lol)
 

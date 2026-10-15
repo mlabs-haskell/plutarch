@@ -26,12 +26,12 @@ instance (PlutarchType a, PlutarchType b) => PlutarchType (PThese a b) where
 instance (PlutarchType a, PlutarchType b) => PMatch (PThese a b) where
   pmatch' t f =
     punsafeCase t
-      . NEVector.cons (toSomeTerm $ plam' $ \fields -> f (PThis . punsafeSecondary $ BF.pheadList # fields))
-      . NEVector.cons (toSomeTerm $ plam' $ \fields -> f (PThat . punsafeSecondary $ BF.pheadList # fields))
+      . NEVector.cons (toSomeTerm $ plam1 $ \fields -> f (PThis . punsafeSecondary $ BF.pheadList # fields))
+      . NEVector.cons (toSomeTerm $ plam1 $ \fields -> f (PThat . punsafeSecondary $ BF.pheadList # fields))
       . NEVector.singleton
       . toSomeTerm
-      $ plam'
-      $ \fields -> punsafeUncons fields $ plam' $ \f1 -> plam' $ \t1 ->
+      $ plam1
+      $ \fields -> punsafeUncons fields $ plam2 $ \f1 t1 ->
         f (PThese (punsafeSecondary f1) . punsafeSecondary $ BF.pheadList # t1)
 
 instance (PlutarchType a, PlutarchType b) => PCon (PThese a b) where
@@ -50,15 +50,15 @@ instance (PlutarchType a, PlutarchType b) => PlutarchType (PTheseNow a b) where
 
 instance (PlutarchType a, PlutarchType b) => PMatch (PTheseNow a b) where
   pmatch' t f = pmatch (BF.punConstrData # t) $ \(PBPair tag fields) ->
-    punsafeUncons fields $ plam' $ \f1 -> plam' $ \t1 ->
+    punsafeUncons fields $ plam2 $ \f1 t1 ->
       punsafeCase tag
         . NEVector.cons (toSomeTerm $ f (PThisNow . punsafeSecondary $ f1))
         . NEVector.cons (toSomeTerm $ f (PThatNow . punsafeSecondary $ f1))
         . NEVector.singleton
         . toSomeTerm
         . punsafeUncons t1
-        $ plam'
-        $ \f2 -> plam' $ \_ -> f (PTheseNow (punsafeSecondary f1) (punsafeSecondary f2))
+        $ plam2
+        $ \f2 _ -> f (PTheseNow (punsafeSecondary f1) (punsafeSecondary f2))
 
 instance (PlutarchType a, PlutarchType b) => PCon (PTheseNow a b) where
   pcon' = \case
