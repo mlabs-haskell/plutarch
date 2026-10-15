@@ -117,6 +117,10 @@ module Plutarch.Primitive.BuiltinFun
     pvalueData,
     punValueData,
     pscaleValue,
+    ppolicies,
+    passetCount,
+    pkeepPolicies,
+    pdropPolicies,
 
     -- * Bool
     pifThenElse,
@@ -139,6 +143,7 @@ module Plutarch.Primitive.BuiltinFun
     -- * Arrays
     plengthOfArray,
     pindexArray,
+    pmultiIndexArray,
   )
 where
 
@@ -713,3 +718,33 @@ pindexArray ::
   forall (a :: S -> Type) (s :: S).
   Term s (PBArray a :--> PNatural :--> a)
 pindexArray = pforce $ punsafeBuiltin PLC.IndexArray
+
+-- | @since 2.0.0
+pmultiIndexArray ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (PBArray a :--> PBList PNatural :--> PBList a)
+pmultiIndexArray = pforce $ punsafeBuiltin PLC.MultiIndexArray
+
+-- | @since 2.0.0
+ppolicies ::
+  forall (s :: S).
+  Term s (PBValue :--> PBList PByteString)
+ppolicies = punsafeBuiltin PLC.Policies
+
+-- | @since 2.0.0
+passetCount ::
+  forall (s :: S).
+  Term s (PBValue :--> PNatural)
+passetCount = punsafeBuiltin PLC.AssetCount
+
+-- | @since 2.0.0
+pkeepPolicies ::
+  forall (s :: S).
+  Term s (PBList PByteString :--> PBValue :--> PBValue)
+pkeepPolicies = punsafeBuiltin PLC.KeepPolicies
+
+-- | @since 2.0.0
+pdropPolicies ::
+  forall (s :: S).
+  Term s (PBList PByteString :--> PBValue :--> PBValue)
+pdropPolicies = punsafeBuiltin PLC.DropPolicies
