@@ -130,6 +130,7 @@ test-suite tests
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
   other-modules:
+    Additive
     Bool
     Compiled
     Compose

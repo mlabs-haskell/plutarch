@@ -65,14 +65,23 @@ module Plutarch.Prelude
     -- *** Primitive operations
     BF.pequalsInteger,
     BF.plessThanEqualsInteger,
-    BF.paddInteger,
-    BF.psubtractInteger,
-    BF.pmultiplyInteger,
 
     -- ** Natural
 
     -- *** Type marker
     S.PNatural,
+
+    -- ** Positive
+
+    -- *** Type marker
+    S.PPositive,
+
+    -- ** BLS12-381
+
+    -- *** Type markers
+    S.PBLS12_381_G1_Element,
+    S.PBLS12_381_G2_Element,
+    S.PBLS12_381_MlResult,
 
     -- ** ByteString
 
@@ -144,6 +153,22 @@ module Plutarch.Prelude
     (Eq.#==),
     (Eq.#/=),
 
+    -- ** Numeric
+
+    -- *** Additive
+    Additive.PAdditiveSemigroup (..),
+    Additive.PAdditiveMonoid (..),
+    Additive.PAdditiveGroup (..),
+    (Additive.#+),
+    Additive.psum,
+    (Additive.#-),
+
+    -- *** Multiplicative
+    Multiplicative.PMultiplicativeSemigroup (..),
+    Multiplicative.PMultiplicativeMonoid (..),
+    (Multiplicative.#*),
+    Multiplicative.pproduct,
+
     -- * Derivations
     Strategy.Strategy (..),
     Strategy.WhichInstances (..),
@@ -154,6 +179,7 @@ where
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
+import Plutarch.Primitive.Additive qualified as Additive
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.CanData qualified as CanData
 import Plutarch.Primitive.Composite qualified as C
@@ -163,6 +189,7 @@ import Plutarch.Primitive.DerivedFun qualified as DF
 import Plutarch.Primitive.Eq qualified as Eq
 import Plutarch.Primitive.Liftable qualified as Lift
 import Plutarch.Primitive.Match qualified as Match
+import Plutarch.Primitive.Multiplicative qualified as Multiplicative
 import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term qualified as PrimTerm

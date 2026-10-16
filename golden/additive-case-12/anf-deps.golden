@@ -1,0 +1,20 @@
+ANF Hashes:
+ #0 := mlVxlnVQe0y
+ #1 := fBFAaqxGj4nN
+ #2 := f8ijuxKQ05m
+ #3 := drRrReDzmcuN
+ #4 := avOqoeExpcv
+
+ANF Binds:
+ #0 := Bls12_381_G2_add
+ #1 := Bls12_381_G2_neg
+ #2 := Apply #1 [b]
+ #3 := Apply #0 [a, #2]
+ #4 := \a:1 b:1 -> #3
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := No dependencies
+ #2 := Direct: {#1}, indirect: {}
+ #3 := Direct: {#0, #2}, indirect: {#1}
+ #4 := Direct: {#3}, indirect: {#0, #1, #2}
