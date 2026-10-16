@@ -19,9 +19,10 @@ import Plutarch.Primitive.Debug (pshow)
 import Plutarch.Primitive.DerivedFun (pfalse, ptrue)
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Match (pmatch)
+import Plutarch.Primitive.Ord (POrd (ple, plt))
 import Plutarch.Primitive.Representation (PlutarchType, (#))
 import Plutarch.Primitive.Singular (PBool)
-import Plutarch.Primitive.Term (perror)
+import Plutarch.Primitive.Term (perror, plam')
 import Plutarch.TH.Strategy
   ( Strategy (SOP),
     WhichInstances (AllInstances),
@@ -34,6 +35,21 @@ data PMaybe (a :: S -> Type) (s :: S)
   | PJust (Term s a)
 
 deriveFor ''PMaybe SOP AllInstances
+
+-- | @since 2.0.0
+instance (POrd a) => POrd (PMaybe a) where
+  plt = plam' $ \x -> plam' $ \y -> pmatch x $ \case
+    PNothing -> pmatch y $ \case
+      PNothing -> pfalse
+      PJust _ -> ptrue
+    PJust x' -> pmatch y $ \case
+      PNothing -> pfalse
+      PJust y' -> plt # x' # y'
+  ple = plam' $ \x -> plam' $ \y -> pmatch x $ \case
+    PNothing -> ptrue
+    PJust x' -> pmatch y $ \case
+      PNothing -> pfalse
+      PJust y' -> ple # x' # y'
 
 -- | @since 2.0.0
 pnothing ::
