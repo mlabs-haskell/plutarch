@@ -35,7 +35,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
 import Data.Word (Word64)
-import PlutusCore.Data qualified as PD (Data (B, Constr, I, List, Map))
+import PlutusCore.Data qualified as PD
 import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
 import Prettyprinter
   ( Doc,
