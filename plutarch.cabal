@@ -80,6 +80,7 @@ library
     Plutarch.Primitive.Eq
     Plutarch.Primitive.Liftable
     Plutarch.Primitive.Match
+    Plutarch.Primitive.Multiplicative
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
