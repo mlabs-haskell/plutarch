@@ -64,11 +64,13 @@ library
     Plutarch.Helpers.Backend
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
+    Plutarch.Helpers.Numeric
     Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
     Plutarch.Prelude
     Plutarch.Prelude.List
     Plutarch.Prelude.Maybe
+    Plutarch.Primitive.Additive
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
     Plutarch.Primitive.Composite
