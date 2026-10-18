@@ -1,0 +1,29 @@
+ANF Hashes:
+ #0 := vjMEhbkCp9cN
+ #1 := nlTHvWhSkgAN
+ #2 := d42ltRryLuqN
+ #3 := vDADJ2DcO7g
+ #4 := vyRIuwDii3A
+ #5 := jWcn5Jxgcro
+ #6 := hX9VpwVF0FwN
+ #7 := csmdbRIfowl
+
+ANF Binds:
+ #0 := MultiplyInteger
+ #1 := Apply a [d]
+ #2 := Apply #0 [c, #1]
+ #3 := \c:1 d:1 -> #2
+ #4 := 1 :: Integer
+ #5 := Case b [#3, #4]
+ #6 := \b:1 -> #5
+ #7 := Fix[a:1] #6
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := No dependencies
+ #2 := Direct: {#0, #1}, indirect: {}
+ #3 := Direct: {#2}, indirect: {#0, #1}
+ #4 := No dependencies
+ #5 := Direct: {#3, #4}, indirect: {#0, #1, #2}
+ #6 := Direct: {#5}, indirect: {#0, #1, #2, #3, #4}
+ #7 := Direct: {#6}, indirect: {#0, #1, #2, #3, #4, #5}

@@ -138,6 +138,7 @@ test-suite tests
     Debug
     Derivation
     Error
+    Multiplicative
     Pretty
     PullArray
     Term

@@ -8,6 +8,7 @@ import Constr qualified
 import Debug qualified
 import Derivation qualified
 import Error qualified
+import Multiplicative qualified
 import Pretty qualified
 import PullArray qualified
 import Term qualified
@@ -20,6 +21,7 @@ main =
     [ Term.goldens,
       Bool.goldens,
       Additive.goldens,
+      Multiplicative.goldens,
       Compiled.goldens,
       Error.goldens,
       Compose.goldens,

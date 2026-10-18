@@ -1,0 +1,77 @@
+<\a b -> 
+  <Apply
+    <Fix
+      [c]
+      <\d -> 
+        <case
+          <Apply
+            <EqualsInteger>@dr5yy9ULU5j [a, <1 :: Integer>@vyRIuwDii3A]
+          >@e30okZqI8FBN 
+          [
+            <case
+              <Apply
+                <RemainderInteger>@n275PtZtdlc [d, <2 :: Integer>@qjJx7b4Msxl]
+              >@xcUTqGfS5jhN 
+              [
+                <Apply
+                  <MultiplyInteger>@vjMEhbkCp9cN
+                  [
+                    <Apply
+                      c
+                      [
+                        <Apply
+                          <QuotientInteger>@kq3kmmKulbi
+                          [d, <2 :: Integer>@qjJx7b4Msxl]
+                        >@kJyDJt1oqtk
+                      ]
+                    >@uCesIanxnjmN, 
+                    <Apply
+                      c
+                      [
+                        <Apply
+                          <QuotientInteger>@kq3kmmKulbi
+                          [d, <2 :: Integer>@qjJx7b4Msxl]
+                        >@kJyDJt1oqtk
+                      ]
+                    >@uCesIanxnjmN
+                  ]
+                >@h4jZYTTssvl, 
+                <Apply
+                  <MultiplyInteger>@vjMEhbkCp9cN
+                  [
+                    <Apply
+                      <MultiplyInteger>@vjMEhbkCp9cN
+                      [
+                        <Apply
+                          c
+                          [
+                            <Apply
+                              <QuotientInteger>@kq3kmmKulbi
+                              [d, <2 :: Integer>@qjJx7b4Msxl]
+                            >@kJyDJt1oqtk
+                          ]
+                        >@uCesIanxnjmN, 
+                        <Apply
+                          c
+                          [
+                            <Apply
+                              <QuotientInteger>@kq3kmmKulbi
+                              [d, <2 :: Integer>@qjJx7b4Msxl]
+                            >@kJyDJt1oqtk
+                          ]
+                        >@uCesIanxnjmN
+                      ]
+                    >@h4jZYTTssvl, 
+                    b
+                  ]
+                >@xgwC00CiiQc
+              ]
+            >@aLMdW4SKsFv, 
+            b
+          ]
+        >@pLjx2BaODPi
+      >@j0I67up1Igv
+    >@iJcafqfGLJsN
+    [a]
+  >@dgv5AtWDyVu
+>@s989CyXryMw
