@@ -1,1 +1,1 @@
-(<1, <2, <>>> :: Data)
+(Constr 1 [1, Constr 1 [2, Constr 0 []]] :: Data)

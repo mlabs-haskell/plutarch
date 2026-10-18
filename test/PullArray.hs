@@ -140,6 +140,6 @@ pzipWith3Fused f xs ys zs = pmatch xs $ \(Array.PPullArray len1 g1) ->
       let len1' = pfundamental len1
           len2' = pfundamental len2
           len3' = pfundamental len3
-          min12 = pif (plessThanEqualsInteger # len1' # len2') len1' len2'
-          len = pif (plessThanEqualsInteger # min12 # len3') (punsafeSecondary min12) len3
+          min12 = pmin len1' len2'
+          len = punsafeSecondary (pmin min12 len3')
        in pcon . Array.PPullArray len $ plam' $ \i -> f # (g1 # i) # (g2 # i) # (g3 # i)
