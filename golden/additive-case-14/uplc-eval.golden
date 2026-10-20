@@ -1,0 +1,16 @@
+\a b ->
+  let mArg_c = \d e ->
+                 case 
+                   (EqualsInteger # a # (1 :: Integer))
+                   [ (\bind_f ->
+                       case 
+                         (RemainderInteger # e # (2 :: Integer))
+                         [bind_f, AddInteger # bind_f # b]
+                     )
+                     # (
+                         (\cse_g -> AddInteger # cse_g # cse_g)
+                         # (d # d # (QuotientInteger # e # (2 :: Integer)))
+                       )
+                   , b
+                   ]
+  in mArg_c # mArg_c # a

@@ -35,11 +35,11 @@ case2 = plam1 $ \x -> pforce (pdelay x)
 case3 :: forall (s :: S). Term s PInteger
 case3 =
   let f = plam1 $ \x -> pif x (pconstant 1) (pconstant 2)
-   in paddInteger # (f # ptrue) # (f # pfalse)
+   in (f # ptrue) #+ (f # pfalse)
 
 case3Plet :: forall (s :: S). Term s PInteger
 case3Plet = plet (plam1 $ \x -> pif x (pconstant 1) (pconstant 2)) $ \f ->
-  paddInteger # (f # ptrue) # (f # pfalse)
+  (f # ptrue) #+ (f # pfalse)
 
 case4 :: forall (s :: S). Term s (PBool :--> PInteger)
 case4 =
@@ -48,13 +48,13 @@ case4 =
    in plam1 $ \b -> pif b (squares # ten # twenty) (sums # ten # twenty)
   where
     squares :: Term s (PInteger :--> PInteger :--> PInteger)
-    squares = plam2 $ \i j -> paddInteger # (square # i) # (square # j)
+    squares = plam2 $ \i j -> (square # i) #+ (square # j)
     sums :: Term s (PInteger :--> PInteger :--> PInteger)
-    sums = plam2 $ \i j -> paddInteger # (double # i) # (double # j)
+    sums = plam2 $ \i j -> (double # i) #+ (double # j)
     square :: Term s (PInteger :--> PInteger)
-    square = plam1 $ \x -> pmultiplyInteger # x # x
+    square = plam1 $ \x -> x #* x
     double :: Term s (PInteger :--> PInteger)
-    double = plam1 $ \x -> paddInteger # x # x
+    double = plam1 $ \x -> x #+ x
 
 case5 :: forall (s :: S). Term s PInteger
 case5 = go # pconstant 0
@@ -62,18 +62,18 @@ case5 = go # pconstant 0
     go :: Term s (PInteger :--> PInteger)
     go = pfix $ \self -> plam1 $ \i ->
       pif
-        (pequalsInteger # i # pconstant 10)
+        (i #== pconstant 10)
         (pconstant 0)
-        (paddInteger # i #$ self #$ paddInteger # i # pconstant 1)
+        (i #+ (self # (i #+ pconstant 1)))
 
 case6 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case6 = plam1 $ \x ->
-  let squared = pmultiplyInteger # x # x
-      doubled = paddInteger # x # x
-   in paddInteger # (paddInteger # doubled # squared) #$ paddInteger # squared # doubled
+  let squared = x #* x
+      doubled = x #+ x
+   in (doubled #+ squared) #+ (squared #+ doubled)
 
 case7 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case7 = plam1 $ \x ->
-  let squareX = pmultiplyInteger # x # x
-      doubleSquareX = paddInteger # squareX # squareX
-   in paddInteger # doubleSquareX # doubleSquareX
+  let squareX = x #* x
+      doubleSquareX = squareX #+ squareX
+   in doubleSquareX #+ doubleSquareX

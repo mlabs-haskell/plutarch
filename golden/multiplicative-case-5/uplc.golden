@@ -1,0 +1,16 @@
+\uk vk ->
+  let mArg_wk = \xk yk ->
+                  case 
+                    (EqualsInteger # uk # (1 :: Integer))
+                    [ (\bind_zk ->
+                        case 
+                          (RemainderInteger # yk # (2 :: Integer))
+                          [bind_zk, MultiplyInteger # bind_zk # vk]
+                      )
+                      # (
+                          (\cse_al -> MultiplyInteger # cse_al # cse_al)
+                          # (xk # xk # (QuotientInteger # yk # (2 :: Integer)))
+                        )
+                    , vk
+                    ]
+  in mArg_wk # mArg_wk # uk

@@ -1,0 +1,19 @@
+ANF Hashes:
+ #0 := vjMEhbkCp9cN
+ #1 := nlTHvWhSkgAN
+ #2 := d42ltRryLuqN
+ #3 := vDADJ2DcO7g
+ #4 := vyRIuwDii3A
+ #5 := jWcn5Jxgcro
+ #6 := hX9VpwVF0FwN
+ #7 := csmdbRIfowl
+
+ANF Binds:
+ #0 := MultiplyInteger
+ #1 := Apply a [d]
+ #2 := Apply #0 [c, #1]
+ #3 := \c:1 d:1 -> #2
+ #4 := 1 :: Integer
+ #5 := Case b [#3, #4]
+ #6 := \b:1 -> #5
+ #7 := Fix[a:1] #6

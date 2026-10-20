@@ -1,1 +1,1 @@
-(<2, Zm9v> :: Data)
+(Constr 2 [2, "foo"] :: Data)

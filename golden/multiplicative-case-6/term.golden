@@ -1,0 +1,3 @@
+fix (\a_self b ->
+      case b [\c d -> MultiplyInteger # c # (a_self # d), 1 :: Integer]
+    )

@@ -132,10 +132,10 @@ case3 :: forall (s :: S). Term s PInteger
 case3 = pmatch (pcon . PTheseOld (ptoData . pconstant $ 1) . ptoData . pconstant $ 2) $ \case
   PThisOld x -> pfromData x
   PThatOld y -> pfromData y
-  PTheseOld x y -> paddInteger # pfromData x # pfromData y
+  PTheseOld x y -> pfromData x #+ pfromData y
 
 case4 :: forall (s :: S). Term s PInteger
 case4 = pmatch (pcon . PTheseNew (ptoData . pconstant $ 1) . ptoData . pconstant $ 2) $ \case
   PThisNew x -> pfromData x
   PThatNew y -> pfromData y
-  PTheseNew x y -> paddInteger # pfromData x # pfromData y
+  PTheseNew x y -> pfromData x #+ pfromData y

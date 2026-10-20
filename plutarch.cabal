@@ -64,11 +64,13 @@ library
     Plutarch.Helpers.Backend
     Plutarch.Helpers.Compile
     Plutarch.Helpers.Evaluate
+    Plutarch.Helpers.Numeric
     Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
     Plutarch.Prelude
     Plutarch.Prelude.List
     Plutarch.Prelude.Maybe
+    Plutarch.Primitive.Additive
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
     Plutarch.Primitive.Composite
@@ -79,6 +81,8 @@ library
     Plutarch.Primitive.Function
     Plutarch.Primitive.Liftable
     Plutarch.Primitive.Match
+    Plutarch.Primitive.Multiplicative
+    Plutarch.Primitive.Ord
     Plutarch.Primitive.Representation
     Plutarch.Primitive.Singular
     Plutarch.Primitive.Term
@@ -129,6 +133,7 @@ test-suite tests
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
   other-modules:
+    Additive
     Bool
     Compiled
     Compose
@@ -136,6 +141,7 @@ test-suite tests
     Debug
     Derivation
     Error
+    Multiplicative
     Pretty
     PullArray
     Term

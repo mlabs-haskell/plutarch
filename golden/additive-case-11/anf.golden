@@ -1,0 +1,13 @@
+ANF Hashes:
+ #0 := pCOGIijZlYg
+ #1 := uQfm6MCrp7iN
+ #2 := sdvr6E9dY1pN
+ #3 := mIOsJhllgFy
+ #4 := q21L1jxMdLz
+
+ANF Binds:
+ #0 := Bls12_381_G1_add
+ #1 := Bls12_381_G1_neg
+ #2 := Apply #1 [b]
+ #3 := Apply #0 [a, #2]
+ #4 := \a:1 b:1 -> #3

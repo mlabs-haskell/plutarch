@@ -77,11 +77,11 @@ main =
           ( plam3 $ \t handleX handleY -> pmatch t $ \case
               PThis x -> handleX # x
               PThat y -> handleY # y
-              PThese x y -> paddInteger # (handleX # x) # (handleY # y)
+              PThese x y -> (handleX # x) #+ (handleY # y)
           )
           ( plam3 $ \t handleX handleY -> pmatch t $ \case
               PThisNow x -> handleX # x
               PThatNow y -> handleY # y
-              PTheseNow x y -> paddInteger # (handleX # x) # (handleY # y)
+              PTheseNow x y -> (handleX # x) #+ (handleY # y)
           )
     ]

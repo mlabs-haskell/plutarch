@@ -1,0 +1,6 @@
+<\a b -> 
+  <Apply
+    <Bls12_381_G1_add>@pCOGIijZlYg
+    [a, <Apply<Bls12_381_G1_neg>@uQfm6MCrp7iN [b]>@sdvr6E9dY1pN]
+  >@mIOsJhllgFy
+>@q21L1jxMdLz
