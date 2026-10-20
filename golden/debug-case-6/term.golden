@@ -1,41 +1,59 @@
-(\a ->
-  case a
-    [ \b c ->
-        AppendString
-        # (
-            AppendString
-            # (
-                AppendString
-                # (
-                    AppendString
-                    # "(" :: String
-                    # (
-                        (\d ->
-                          case 
-                            (LessThanEqualsInteger # d # -1 :: Integer)
-                            [ case 
-                                (EqualsInteger # d # 0 :: Integer)
-                                [ (
-                                    fix (\e_self f g ->
-                                          case 
-                                            (EqualsInteger # f # 0 :: Integer)
-                                            [ AppendString
-                                              # (
-                                                  e_self
+ (\a ->
+   case a
+     [ \b c ->
+          AppendString
+          # (
+              AppendString
+              # (
+                  AppendString
+                  # (
+                      AppendString
+                      # "(" :: String
+                      # (
+                          (\d ->
+                            case 
+                              (LessThanEqualsInteger # d # -1 :: Integer)
+                              [ case 
+                                  (EqualsInteger # d # 0 :: Integer)
+                                  [  (
+                                       fix (\e_self f g ->
+                                             case 
+                                               (
+                                                 EqualsInteger# f# 0 :: Integer
+                                               )
+                                               [  AppendString
                                                   # (
-                                                      QuotientInteger
-                                                      # f
-                                                      # 10 :: Integer
+                                                      e_self
+                                                      # (
+                                                          QuotientInteger
+                                                          # f
+                                                          # 10 :: Integer
+                                                        )
+                                                      # (
+                                                          RemainderInteger
+                                                          # f
+                                                          # 10 :: Integer
+                                                        )
                                                     )
                                                   # (
-                                                      RemainderInteger
-                                                      # f
-                                                      # 10 :: Integer
-                                                    )
-                                                )
-                                              # (
-                                                  (\h ->
-                                                    case h
+                                                      (\h ->
+                                                        case h
+                                                          [ "0" :: String
+                                                          , "1" :: String
+                                                          , "2" :: String
+                                                          , "3" :: String
+                                                          , "4" :: String
+                                                          , "5" :: String
+                                                          , "6" :: String
+                                                          , "7" :: String
+                                                          , "8" :: String
+                                                          , "9" :: String
+                                                          ]
+                                                      )
+                                                      # g
+                                                    ) 
+                                               ,  (\i ->
+                                                    case i
                                                       [ "0" :: String
                                                       , "1" :: String
                                                       , "2" :: String
@@ -48,135 +66,159 @@
                                                       , "9" :: String
                                                       ]
                                                   )
-                                                  # g
-                                                )
-                                            , (\i ->
-                                                case i
-                                                  [ "0" :: String
-                                                  , "1" :: String
-                                                  , "2" :: String
-                                                  , "3" :: String
-                                                  , "4" :: String
-                                                  , "5" :: String
-                                                  , "6" :: String
-                                                  , "7" :: String
-                                                  , "8" :: String
-                                                  , "9" :: String
-                                                  ]
-                                              )
-                                              # g
-                                            ]
-                                        )
-                                  )
-                                  # (QuotientInteger # d # 10 :: Integer)
-                                  # (RemainderInteger # d # 10 :: Integer)
-                                , "0" :: String
-                                ]
-                            , AppendString
-                              # "-" :: String
-                              # (case 
-                                  (
-                                    EqualsInteger
-                                    # (SubtractInteger # 0 :: Integer # d)
-                                    # 0 :: Integer
-                                  )
-                                  [ (
-                                      fix (\j_self k l ->
-                                            case 
-                                              (EqualsInteger # k # 0 :: Integer)
-                                              [ AppendString
-                                                # (
-                                                    j_self
-                                                    # (
-                                                        QuotientInteger
-                                                        # k
-                                                        # 10 :: Integer
-                                                      )
-                                                    # (
-                                                        RemainderInteger
-                                                        # k
-                                                        # 10 :: Integer
-                                                      )
-                                                  )
-                                                # (
-                                                    (\m ->
-                                                      case m
-                                                        [ "0" :: String
-                                                        , "1" :: String
-                                                        , "2" :: String
-                                                        , "3" :: String
-                                                        , "4" :: String
-                                                        , "5" :: String
-                                                        , "6" :: String
-                                                        , "7" :: String
-                                                        , "8" :: String
-                                                        , "9" :: String
-                                                        ]
-                                                    )
-                                                    # l
-                                                  )
-                                              , (\n ->
-                                                  case n
-                                                    [ "0" :: String
-                                                    , "1" :: String
-                                                    , "2" :: String
-                                                    , "3" :: String
-                                                    , "4" :: String
-                                                    , "5" :: String
-                                                    , "6" :: String
-                                                    , "7" :: String
-                                                    , "8" :: String
-                                                    , "9" :: String
-                                                    ]
-                                                )
-                                                # l
-                                              ]
-                                          )
-                                    )
-                                    # (
-                                        QuotientInteger
-                                        # (SubtractInteger # 0 :: Integer # d)
-                                        # 10 :: Integer
-                                      )
-                                    # (
-                                        RemainderInteger
-                                        # (SubtractInteger # 0 :: Integer # d)
-                                        # 10 :: Integer
-                                      )
+                                                  # g 
+                                               ]
+                                           )
+                                     )
+                                     # (QuotientInteger # d # 10 :: Integer)
+                                     # (RemainderInteger # d # 10 :: Integer) 
                                   , "0" :: String
                                   ]
-                                )
-                            ]
+                              ,  AppendString
+                                 # "-" :: String
+                                 # (case 
+                                     (
+                                       EqualsInteger
+                                       # (SubtractInteger # 0 :: Integer # d)
+                                       # 0 :: Integer
+                                     )
+                                     [  (
+                                          fix (\j_self k l ->
+                                                case 
+                                                  (
+                                                    EqualsInteger
+                                                    # k
+                                                    # 0 :: Integer
+                                                  )
+                                                  [  AppendString
+                                                     # (
+                                                         j_self
+                                                         # (
+                                                             QuotientInteger
+                                                             # k
+                                                             # 10 :: Integer
+                                                           )
+                                                         # (
+                                                             RemainderInteger
+                                                             # k
+                                                             # 10 :: Integer
+                                                           )
+                                                       )
+                                                     # (
+                                                         (\m ->
+                                                           case m
+                                                             [ "0" :: String
+                                                             , "1" :: String
+                                                             , "2" :: String
+                                                             , "3" :: String
+                                                             , "4" :: String
+                                                             , "5" :: String
+                                                             , "6" :: String
+                                                             , "7" :: String
+                                                             , "8" :: String
+                                                             , "9" :: String
+                                                             ]
+                                                         )
+                                                         # l
+                                                       ) 
+                                                  ,  (\n ->
+                                                       case n
+                                                         [ "0" :: String
+                                                         , "1" :: String
+                                                         , "2" :: String
+                                                         , "3" :: String
+                                                         , "4" :: String
+                                                         , "5" :: String
+                                                         , "6" :: String
+                                                         , "7" :: String
+                                                         , "8" :: String
+                                                         , "9" :: String
+                                                         ]
+                                                     )
+                                                     # l 
+                                                  ]
+                                              )
+                                        )
+                                        # (
+                                            QuotientInteger
+                                            # (
+                                                SubtractInteger# 0 :: Integer# d
+                                              )
+                                            # 10 :: Integer
+                                          )
+                                        # (
+                                            RemainderInteger
+                                            # (
+                                                SubtractInteger# 0 :: Integer# d
+                                              )
+                                            # 10 :: Integer
+                                          ) 
+                                     , "0" :: String
+                                     ]
+                                   ) 
+                              ]
+                          )
+                          # b
                         )
-                        # b
-                      )
-                  )
-                # ", " :: String
-              )
-            # (
-                (\o ->
-                  case 
-                    (EqualsInteger # (LengthOfByteString # o) # 0 :: Integer)
-                    [ AppendString
-                      # (
-                          AppendString
-                          # "[" :: String
-                          # (
-                              (
-                                fix (\p_self q r s ->
-                                      case 
-                                        (EqualsInteger # r # s)
-                                        [ AppendString
-                                          # (
-                                              AppendString
+                    )
+                  # ", " :: String
+                )
+              # (
+                  (\o ->
+                    case 
+                      (EqualsInteger # (LengthOfByteString # o) # 0 :: Integer)
+                      [  AppendString
+                         # (
+                             AppendString
+                             # "[" :: String
+                             # (
+                                 (
+                                   fix (\p_self q r s ->
+                                         case 
+                                           (EqualsInteger # r # s)
+                                           [  AppendString
                                               # (
                                                   AppendString
                                                   # (
                                                       AppendString
-                                                      # "0x" :: String
                                                       # (
-                                                          (\t ->
-                                                            case t
+                                                          AppendString
+                                                          # "0x" :: String
+                                                          # (
+                                                              (\t ->
+                                                                case t
+                                                                  [ "0" :: String
+                                                                  , "1" :: String
+                                                                  , "2" :: String
+                                                                  , "3" :: String
+                                                                  , "4" :: String
+                                                                  , "5" :: String
+                                                                  , "6" :: String
+                                                                  , "7" :: String
+                                                                  , "8" :: String
+                                                                  , "9" :: String
+                                                                  , "A" :: String
+                                                                  , "B" :: String
+                                                                  , "C" :: String
+                                                                  , "D" :: String
+                                                                  , "E" :: String
+                                                                  , "F" :: String
+                                                                  ]
+                                                              )
+                                                              # (
+                                                                  QuotientInteger
+                                                                  # (
+                                                                      IndexByteString
+                                                                      # q
+                                                                      # s
+                                                                    )
+                                                                  # 16 :: Integer
+                                                                )
+                                                            )
+                                                        )
+                                                      # (
+                                                          (\u ->
+                                                            case u
                                                               [ "0" :: String
                                                               , "1" :: String
                                                               , "2" :: String
@@ -196,7 +238,7 @@
                                                               ]
                                                           )
                                                           # (
-                                                              QuotientInteger
+                                                              RemainderInteger
                                                               # (
                                                                   IndexByteString
                                                                   # q
@@ -206,9 +248,25 @@
                                                             )
                                                         )
                                                     )
+                                                  # ", " :: String
+                                                )
+                                              # (
+                                                  p_self
+                                                  # q
+                                                  # r
                                                   # (
-                                                      (\u ->
-                                                        case u
+                                                      AddInteger
+                                                      # s
+                                                      # 1 :: Integer
+                                                    )
+                                                ) 
+                                           ,  AppendString
+                                              # (
+                                                  AppendString
+                                                  # "0x" :: String
+                                                  # (
+                                                      (\v ->
+                                                        case v
                                                           [ "0" :: String
                                                           , "1" :: String
                                                           , "2" :: String
@@ -228,7 +286,7 @@
                                                           ]
                                                       )
                                                       # (
-                                                          RemainderInteger
+                                                          QuotientInteger
                                                           # (
                                                               IndexByteString
                                                               # q
@@ -238,21 +296,9 @@
                                                         )
                                                     )
                                                 )
-                                              # ", " :: String
-                                            )
-                                          # (
-                                              p_self
-                                              # q
-                                              # r
-                                              # (AddInteger # s # 1 :: Integer)
-                                            )
-                                        , AppendString
-                                          # (
-                                              AppendString
-                                              # "0x" :: String
                                               # (
-                                                  (\v ->
-                                                    case v
+                                                  (\w ->
+                                                    case w
                                                       [ "0" :: String
                                                       , "1" :: String
                                                       , "2" :: String
@@ -272,61 +318,33 @@
                                                       ]
                                                   )
                                                   # (
-                                                      QuotientInteger
+                                                      RemainderInteger
                                                       # (
                                                           IndexByteString# q# s
                                                         )
                                                       # 16 :: Integer
                                                     )
-                                                )
-                                            )
-                                          # (
-                                              (\w ->
-                                                case w
-                                                  [ "0" :: String
-                                                  , "1" :: String
-                                                  , "2" :: String
-                                                  , "3" :: String
-                                                  , "4" :: String
-                                                  , "5" :: String
-                                                  , "6" :: String
-                                                  , "7" :: String
-                                                  , "8" :: String
-                                                  , "9" :: String
-                                                  , "A" :: String
-                                                  , "B" :: String
-                                                  , "C" :: String
-                                                  , "D" :: String
-                                                  , "E" :: String
-                                                  , "F" :: String
-                                                  ]
-                                              )
-                                              # (
-                                                  RemainderInteger
-                                                  # (IndexByteString # q # s)
-                                                  # 16 :: Integer
-                                                )
-                                            )
-                                        ]
-                                    )
-                              )
-                              # o
-                              # (
-                                  SubtractInteger
-                                  # (LengthOfByteString # o)
-                                  # 1 :: Integer
-                                )
-                              # 0 :: Integer
-                            )
-                        )
-                      # "]" :: String
-                    , "[]" :: String
-                    ]
+                                                ) 
+                                           ]
+                                       )
+                                 )
+                                 # o
+                                 # (
+                                     SubtractInteger
+                                     # (LengthOfByteString # o)
+                                     # 1 :: Integer
+                                   )
+                                 # 0 :: Integer
+                               )
+                           )
+                         # "]" :: String 
+                      , "[]" :: String
+                      ]
+                  )
+                  # c
                 )
-                # c
-              )
-          )
-        # ")" :: String
-    ]
-)
-# (10, "nyaaa") :: (Integer, Bytestring)
+            )
+          # ")" :: String 
+     ]
+ )
+ # (10, "nyaaa") :: (Integer, Bytestring) 

@@ -2,81 +2,81 @@ case
   (case 
     (constr 0 [!MkCons, ([] :: [Data])])
     [ \bind_h bind_n ->
-        (\bind_o ->
-          bind_h # bind_o # (bind_h # bind_o # (bind_h # bind_o # bind_n))
-        )
-        # (
-            ConstrData
-            # (case (False :: Bool) [(1 :: Integer), (0 :: Integer)])
-            # bind_n
-          )
+         (\bind_o ->
+           bind_h # bind_o # (bind_h # bind_o # (bind_h # bind_o # bind_n))
+         )
+         # (
+             ConstrData
+             # (case (False :: Bool) [(1 :: Integer), (0 :: Integer)])
+             # bind_n
+           ) 
     ]
   )
   [ \a b ->
       case b
         [ \c d ->
-            AppendString
-            # ("PTriple {
-            " :: String)
-            # (case 
-                (constr 0
-                  [ (", " :: String)
-                  , \e unused_f -> case e [(False :: Bool), (True :: Bool)]
-                  , ("false" :: String)
-                  , ("true" :: String)
-                  , ("
-                  " :: String)
-                  ]
-                )
-                [ \bind_u bind_z bind_bb bind_cb bind_eb ->
-                    AppendString
-                    # (
-                        AppendString
-                        # bind_u
-                        # (
-                            AppendString
-                            # (case 
-                                (case (UnConstrData # c) [bind_z])
-                                [bind_bb, bind_cb]
-                              )
-                            # bind_eb
-                          )
-                      )
-                    # (
-                        AppendString
-                        # (
-                            AppendString
-                            # bind_u
-                            # (
-                                AppendString
-                                # (case 
-                                    (case (UnConstrData # a) [bind_z])
-                                    [bind_bb, bind_cb]
-                                  )
-                                # bind_eb
-                              )
-                          )
-                        # (
-                            AppendString
-                            # (
-                                AppendString
-                                # bind_u
-                                # (
-                                    AppendString
-                                    # (case 
-                                        (case 
-                                          (UnConstrData # (!HeadList # d))
-                                          [bind_z]
+             AppendString
+             # ("PTriple {
+             " :: String)
+             # (case 
+                 (constr 0
+                   [ (", " :: String)
+                   , \e unused_f -> case e [(False :: Bool), (True :: Bool)]
+                   , ("false" :: String)
+                   , ("true" :: String)
+                   , ("
+                   " :: String)
+                   ]
+                 )
+                 [ \bind_u bind_z bind_bb bind_cb bind_eb ->
+                      AppendString
+                      # (
+                          AppendString
+                          # bind_u
+                          # (
+                              AppendString
+                              # (case 
+                                  (case (UnConstrData # c) [bind_z])
+                                  [bind_bb, bind_cb]
+                                )
+                              # bind_eb
+                            )
+                        )
+                      # (
+                          AppendString
+                          # (
+                              AppendString
+                              # bind_u
+                              # (
+                                  AppendString
+                                  # (case 
+                                      (case (UnConstrData # a) [bind_z])
+                                      [bind_bb, bind_cb]
+                                    )
+                                  # bind_eb
+                                )
+                            )
+                          # (
+                              AppendString
+                              # (
+                                  AppendString
+                                  # bind_u
+                                  # (
+                                      AppendString
+                                      # (case 
+                                          (case 
+                                            (UnConstrData # (!HeadList # d))
+                                            [bind_z]
+                                          )
+                                          [bind_bb, bind_cb]
                                         )
-                                        [bind_bb, bind_cb]
-                                      )
-                                    # bind_eb
-                                  )
-                              )
-                            # ("}" :: String)
-                          )
-                      )
-                ]
-              )
+                                      # bind_eb
+                                    )
+                                )
+                              # ("}" :: String)
+                            )
+                        ) 
+                 ]
+               ) 
         ]
   ]

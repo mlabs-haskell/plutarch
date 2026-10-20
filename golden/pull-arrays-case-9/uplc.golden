@@ -1,22 +1,23 @@
-(\forced_vl forced_wl ->
-  (\bind_nl ->
-    (\ol ->
-      (\mArg_pl -> mArg_pl # mArg_pl # (0 :: Integer))
-      # (\ql rl ->
-          case 
-            (EqualsInteger # rl # ol)
-            [ AddInteger
-              # (
-                  (\sl -> MultiplyInteger # sl # sl)# (forced_wl # bind_nl # rl)
-                )
-              # (ql # ql # (AddInteger # rl # (1 :: Integer)))
-            , (5 :: Integer)
-            ]
-        )
+ (\forced_vl forced_wl ->
+    (\bind_nl ->
+       (\ol ->
+          (\mArg_pl -> mArg_pl # mArg_pl # (0 :: Integer))
+          # (\ql rl ->
+              case 
+                (EqualsInteger # rl # ol)
+                [  AddInteger
+                   # (
+                       (\sl -> MultiplyInteger # sl # sl)
+                       # (forced_wl # bind_nl # rl)
+                     )
+                   # (ql # ql # (AddInteger # rl # (1 :: Integer))) 
+                , (5 :: Integer)
+                ]
+            ) 
+       )
+       # (forced_vl # bind_nl) 
     )
-    # (forced_vl # bind_nl)
-  )
-  # ([1, 2, 3] :: Array Integer)
-)
-# !LengthOfArray
-# !IndexArray
+    # ([1, 2, 3] :: Array Integer) 
+ )
+ # !LengthOfArray
+ # !IndexArray 

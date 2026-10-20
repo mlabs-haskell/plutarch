@@ -1,7 +1,7 @@
 \a ->
-  a
-  # (3 :: Integer)
-  # (\compArg_b ->
-      (\c -> AddInteger # c # c)
-      # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_b)
-    )
+   a
+   # (3 :: Integer)
+   # (\compArg_b ->
+        (\c -> AddInteger # c # c)
+        # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_b) 
+     ) 

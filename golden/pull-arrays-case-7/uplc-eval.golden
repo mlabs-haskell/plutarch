@@ -1,25 +1,25 @@
 \a ->
-  a
-  # (case 
-      (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
-      [(3 :: Integer), (3 :: Integer)]
-    )
-  # (\b ->
-      AddInteger
-      # (
-          (\compArg_c ->
-            AddInteger
-            # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_c)
-            # (1 :: Integer)
+   a
+   # (case 
+       (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
+       [(3 :: Integer), (3 :: Integer)]
+     )
+   # (\b ->
+        AddInteger
+        # (
+            (\compArg_c ->
+               AddInteger
+               # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_c)
+               # (1 :: Integer) 
+            )
+            # b
           )
-          # b
-        )
-      # (
-          (\compArg_d ->
-            AddInteger
-            # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_d)
-            # (1 :: Integer)
-          )
-          # b
-        )
-    )
+        # (
+            (\compArg_d ->
+               AddInteger
+               # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_d)
+               # (1 :: Integer) 
+            )
+            # b
+          ) 
+     ) 

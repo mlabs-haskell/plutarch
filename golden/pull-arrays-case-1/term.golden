@@ -1,7 +1,7 @@
-(\a ->
-  a
-  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
-  # (!IndexArray # [1, 2, 3] :: Array Integer)
-)
-# (\b c d -> d # b # ((\e -> AddInteger # e # 1 :: Integer) . c))
-# (\f g h -> h # f # ((\i -> MultiplyInteger # i # i) . g))
+ (\a ->
+    a
+    # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+    # (!IndexArray # [1, 2, 3] :: Array Integer) 
+ )
+ # (\b c d -> d # b # ((\e -> AddInteger # e # 1 :: Integer) . c))
+ # (\f g h -> h # f # ((\i -> MultiplyInteger # i # i) . g)) 

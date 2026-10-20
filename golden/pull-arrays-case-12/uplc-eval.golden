@@ -1,9 +1,9 @@
 \a ->
-  a
-  # (case 
-      (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
-      [(3 :: Integer), (3 :: Integer)]
-    )
-  # (\b ->
-      MultiplyInteger # b # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
-    )
+   a
+   # (case 
+       (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
+       [(3 :: Integer), (3 :: Integer)]
+     )
+   # (\b ->
+       MultiplyInteger # b # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
+     ) 

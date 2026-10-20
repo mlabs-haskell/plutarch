@@ -1,28 +1,30 @@
-(\forced_nv forced_ov ->
-  (\bind_wu ->
-    (\cse_xu ->
-      cse_xu
-        # (\yu zu ->
-            cse_xu
-              # (\av bv cv ->
-                  cv
-                  # (case (LessThanEqualsInteger # yu # av) [av, yu])
-                  # (\dv -> AddInteger # (zu # dv) # (bv # dv))
-                )
-          )
+ (\forced_nv forced_ov ->
+    (\bind_wu ->
+       (\cse_xu ->
+          cse_xu
+          # (\yu zu ->
+               cse_xu
+               # (\av bv cv ->
+                    cv
+                    # (case (LessThanEqualsInteger # yu # av) [av, yu])
+                    # (\dv -> AddInteger # (zu # dv) # (bv # dv)) 
+                 ) 
+            ) 
+       )
+       # (
+           (\ev fv ->
+              fv
+              # ev
+              # (\compArg_gv ->
+                   AddInteger
+                   # (forced_ov # bind_wu # compArg_gv)
+                   # (1 :: Integer) 
+                ) 
+           )
+           # (forced_nv # bind_wu)
+         ) 
     )
-    # (
-        (\ev fv ->
-          fv
-          # ev
-          # (\compArg_gv ->
-              AddInteger # (forced_ov # bind_wu # compArg_gv) # (1 :: Integer)
-            )
-        )
-        # (forced_nv # bind_wu)
-      )
-  )
-  # ([1, 2, 3] :: Array Integer)
-)
-# !LengthOfArray
-# !IndexArray
+    # ([1, 2, 3] :: Array Integer) 
+ )
+ # !LengthOfArray
+ # !IndexArray 

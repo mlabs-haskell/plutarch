@@ -1,36 +1,36 @@
-(\a ->
-  a
-  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
-  # (!IndexArray # [1, 2, 3] :: Array Integer)
-)
-# (\b c ->
-    (\d ->
-      d
-      # (!LengthOfArray # [4, 6, 8] :: Array Integer)
-      # (!IndexArray # [4, 6, 8] :: Array Integer)
-    )
-    # (\e f ->
-        (\g ->
-          g
-          # (!LengthOfArray # [3, 6, 9] :: Array Integer)
-          # (!IndexArray # [3, 6, 9] :: Array Integer)
-        )
-        # (\h i j ->
-            j
-            # (case 
-                (
-                  LessThanEqualsInteger
-                  # (case (LessThanEqualsInteger # b # e) [e, b])
-                  # h
-                )
-                [h, case (LessThanEqualsInteger # b # e) [e, b]]
-              )
-            # (\k ->
-                (\l m n -> MultiplyInteger # l # (AddInteger # m # n))
-                # (c # k)
-                # (f # k)
-                # (i # k)
-              )
-          )
+ (\a ->
+    a
+    # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+    # (!IndexArray # [1, 2, 3] :: Array Integer) 
+ )
+ # (\b c ->
+      (\d ->
+         d
+         # (!LengthOfArray # [4, 6, 8] :: Array Integer)
+         # (!IndexArray # [4, 6, 8] :: Array Integer) 
       )
-  )
+      # (\e f ->
+           (\g ->
+              g
+              # (!LengthOfArray # [3, 6, 9] :: Array Integer)
+              # (!IndexArray # [3, 6, 9] :: Array Integer) 
+           )
+           # (\h i j ->
+                j
+                # (case 
+                    (
+                      LessThanEqualsInteger
+                      # (case (LessThanEqualsInteger # b # e) [e, b])
+                      # h
+                    )
+                    [h, case (LessThanEqualsInteger # b # e) [e, b]]
+                  )
+                # (\k ->
+                     (\l m n -> MultiplyInteger # l # (AddInteger # m # n))
+                     # (c # k)
+                     # (f # k)
+                     # (i # k) 
+                  ) 
+             ) 
+        ) 
+   ) 

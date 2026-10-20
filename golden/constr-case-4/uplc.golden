@@ -6,9 +6,9 @@
          # (2 :: Integer)
          # (
              (\bind_i ->
-               bind_i
-               # (IData # (1 :: Integer))
-               # (bind_i # (IData # (2 :: Integer)) # ([] :: [Data]))
+                bind_i
+                # (IData # (1 :: Integer))
+                # (bind_i # (IData # (2 :: Integer)) # ([] :: [Data])) 
              )
              # !MkCons
            )

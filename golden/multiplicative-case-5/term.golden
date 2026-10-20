@@ -1,23 +1,23 @@
 \a b ->
-  (
-    fix (\c_self d ->
-          case 
-            (EqualsInteger # a # 1 :: Integer)
-            [ case 
-                (RemainderInteger # d # 2 :: Integer)
-                [ MultiplyInteger
-                  # (c_self # (QuotientInteger # d # 2 :: Integer))
-                  # (c_self # (QuotientInteger # d # 2 :: Integer))
-                , MultiplyInteger
-                  # (
-                      MultiplyInteger
-                      # (c_self # (QuotientInteger # d # 2 :: Integer))
-                      # (c_self # (QuotientInteger # d # 2 :: Integer))
-                    )
-                  # b
-                ]
-            , b
-            ]
-        )
-  )
-  # a
+   (
+     fix (\c_self d ->
+           case 
+             (EqualsInteger # a # 1 :: Integer)
+             [ case 
+                 (RemainderInteger # d # 2 :: Integer)
+                 [  MultiplyInteger
+                    # (c_self # (QuotientInteger # d # 2 :: Integer))
+                    # (c_self # (QuotientInteger # d # 2 :: Integer)) 
+                 ,  MultiplyInteger
+                    # (
+                        MultiplyInteger
+                        # (c_self # (QuotientInteger # d # 2 :: Integer))
+                        # (c_self # (QuotientInteger # d # 2 :: Integer))
+                      )
+                    # b 
+                 ]
+             , b
+             ]
+         )
+   )
+   # a 

@@ -1,17 +1,17 @@
-(\a ->
-  a
-  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
-  # (!IndexArray # [1, 2, 3] :: Array Integer)
-)
-# (\b c d ->
-    d
-    # b
-    # (
-        (\e ->
-          AddInteger
-          # ((\f -> AddInteger # f # 1 :: Integer) # e)
-          # ((\g -> AddInteger # g # 1 :: Integer) # e)
-        )
-        . c
-      )
-  )
+ (\a ->
+    a
+    # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+    # (!IndexArray # [1, 2, 3] :: Array Integer) 
+ )
+ # (\b c d ->
+      d
+      # b
+      # (
+          (\e ->
+             AddInteger
+             # ((\f -> AddInteger # f # 1 :: Integer) # e)
+             # ((\g -> AddInteger # g # 1 :: Integer) # e) 
+          )
+          . c
+        ) 
+   ) 

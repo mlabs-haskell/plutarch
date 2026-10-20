@@ -1,18 +1,20 @@
-(\a ->
-  a
-  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
-  # (!IndexArray # [1, 2, 3] :: Array Integer)
-)
-# (\b c d -> d # b # ((\e -> MultiplyInteger # e # e) . c))
-# (\f g ->
-    (
-      fix (\h_self i ->
-            case 
-              (EqualsInteger # i # f)
-              [ AddInteger# (g # i)# (h_self # (AddInteger # i # 1 :: Integer))
-              , 5 :: Integer
-              ]
-          )
-    )
-    # 0 :: Integer
-  )
+ (\a ->
+    a
+    # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+    # (!IndexArray # [1, 2, 3] :: Array Integer) 
+ )
+ # (\b c d -> d # b # ((\e -> MultiplyInteger # e # e) . c))
+ # (\f g ->
+      (
+        fix (\h_self i ->
+              case 
+                (EqualsInteger # i # f)
+                [  AddInteger
+                   # (g # i)
+                   # (h_self # (AddInteger # i # 1 :: Integer)) 
+                , 5 :: Integer
+                ]
+            )
+      )
+      # 0 :: Integer 
+   ) 

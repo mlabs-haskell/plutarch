@@ -393,9 +393,9 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
       RDelay _ inner -> do
         pinner <- local (mapMaybe1 downOne) $ goAtomic inner
         pure $ angles pinner
-      app@(RApply _ f _) -> do
+      app@(RApply {}) -> do
         pfunList <- goApp app
-        pure $ appTemplate mode (isSmall f) pfunList
+        pure $ appTemplate mode pfunList
       RConstant _ (Some (ValueOf uni x)) ->
         pure $ prettyValueOf uni x
       RBuiltin _ bif ->

@@ -1,6 +1,6 @@
 \a ->
-  a
-  # (3 :: Integer)
-  # (\b ->
-      MultiplyInteger # b # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
-    )
+   a
+   # (3 :: Integer)
+   # (\b ->
+       MultiplyInteger # b # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
+     ) 

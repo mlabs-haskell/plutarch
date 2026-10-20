@@ -1,16 +1,17 @@
 \a ->
   case a
     [ \b c ->
-        MultiplyInteger
-        # b
-        # (
-            (\d ->
-              case c [\e f -> MultiplyInteger # e # (d # d # f), (1 :: Integer)]
-            )
-            # (\g h ->
-                case h
-                  [\i j -> MultiplyInteger # i # (g # g # j), (1 :: Integer)]
-              )
-          )
+         MultiplyInteger
+         # b
+         # (
+             (\d ->
+               case c
+                 [\e f -> MultiplyInteger # e # (d # d # f), (1 :: Integer)]
+             )
+             # (\g h ->
+                 case h
+                   [\i j -> MultiplyInteger # i # (g # g # j), (1 :: Integer)]
+               )
+           ) 
     , (1 :: Integer)
     ]

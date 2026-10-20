@@ -1,17 +1,17 @@
 \a ->
-  a
-  # (case 
-      (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
-      [(3 :: Integer), (3 :: Integer)]
-    )
-  # (\b ->
-      (\c ->
-        (\d ->
-          AddInteger
-          # (AddInteger # c # (1 :: Integer))
-          # (MultiplyInteger # d # d)
+   a
+   # (case 
+       (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
+       [(3 :: Integer), (3 :: Integer)]
+     )
+   # (\b ->
+        (\c ->
+           (\d ->
+              AddInteger
+              # (AddInteger # c # (1 :: Integer))
+              # (MultiplyInteger # d # d) 
+           )
+           # (!IndexArray # ([4, 6, 8] :: Array Integer) # b) 
         )
-        # (!IndexArray # ([4, 6, 8] :: Array Integer) # b)
-      )
-      # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
-    )
+        # (!IndexArray # ([1, 2, 3] :: Array Integer) # b) 
+     ) 
