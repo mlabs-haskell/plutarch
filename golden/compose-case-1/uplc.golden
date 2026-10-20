@@ -1,4 +1,4 @@
 \wb ->
-  AddInteger
-  # (MultiplyInteger # wb # (SubtractInteger # wb # (5 :: Integer)))
-  # (2 :: Integer)
+   AddInteger
+   # (MultiplyInteger # wb # (SubtractInteger # wb # (5 :: Integer)))
+   # (2 :: Integer) 

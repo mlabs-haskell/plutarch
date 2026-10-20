@@ -1,4 +1,4 @@
 \wb ->
-  AddInteger
-  # (AddInteger # (AddInteger # wb # (2 :: Integer)) # (2 :: Integer))
-  # (2 :: Integer)
+   AddInteger
+   # (AddInteger # (AddInteger # wb # (2 :: Integer)) # (2 :: Integer))
+   # (2 :: Integer) 

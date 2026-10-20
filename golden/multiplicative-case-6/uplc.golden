@@ -1,21 +1,21 @@
 \hq ->
   case hq
     [ \iq jq ->
-        MultiplyInteger
-        # iq
-        # (
-            (\kq ->
-              case jq
-                [ \lq mq -> MultiplyInteger # lq # (kq # kq # mq)
-                , (1 :: Integer)
-                ]
-            )
-            # (\nq oq ->
-                case oq
-                  [ \pq qq -> MultiplyInteger # pq # (nq # nq # qq)
-                  , (1 :: Integer)
-                  ]
-              )
-          )
+         MultiplyInteger
+         # iq
+         # (
+             (\kq ->
+               case jq
+                 [ \lq mq -> MultiplyInteger # lq # (kq # kq # mq)
+                 , (1 :: Integer)
+                 ]
+             )
+             # (\nq oq ->
+                 case oq
+                   [ \pq qq -> MultiplyInteger # pq # (nq # nq # qq)
+                   , (1 :: Integer)
+                   ]
+               )
+           ) 
     , (1 :: Integer)
     ]

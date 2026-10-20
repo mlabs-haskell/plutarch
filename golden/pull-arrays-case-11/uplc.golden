@@ -1,11 +1,11 @@
-(\forced_hg forced_ig ->
-  (\bind_dg ->
-    (\eg fg ->
-      fg # eg # (\gg -> MultiplyInteger # gg # (forced_ig # bind_dg # gg))
+ (\forced_hg forced_ig ->
+    (\bind_dg ->
+       (\eg fg ->
+         fg # eg # (\gg -> MultiplyInteger # gg # (forced_ig # bind_dg # gg))
+       )
+       # (forced_hg # bind_dg) 
     )
-    # (forced_hg # bind_dg)
-  )
-  # ([1, 2, 3] :: Array Integer)
-)
-# !LengthOfArray
-# !IndexArray
+    # ([1, 2, 3] :: Array Integer) 
+ )
+ # !LengthOfArray
+ # !IndexArray 

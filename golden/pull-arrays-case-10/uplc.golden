@@ -1,22 +1,22 @@
-(\forced_gn forced_hn ->
-  (\bind_vm ->
-    (\wm ->
-      (\mArg_xm -> mArg_xm # mArg_xm # (0 :: Integer))
-      # (\ym zm ->
-          case 
-            (EqualsInteger # zm # wm)
-            [ (\an ->
-                (\bn -> AddInteger # (MultiplyInteger # an # an) # bn)
-                # (ym # ym # (AddInteger # zm # (1 :: Integer)))
-              )
-              # (forced_hn # bind_vm # zm)
-            , (5 :: Integer)
-            ]
-        )
+ (\forced_gn forced_hn ->
+    (\bind_vm ->
+       (\wm ->
+          (\mArg_xm -> mArg_xm # mArg_xm # (0 :: Integer))
+          # (\ym zm ->
+              case 
+                (EqualsInteger # zm # wm)
+                [  (\an ->
+                      (\bn -> AddInteger # (MultiplyInteger # an # an) # bn)
+                      # (ym # ym # (AddInteger # zm # (1 :: Integer))) 
+                   )
+                   # (forced_hn # bind_vm # zm) 
+                , (5 :: Integer)
+                ]
+            ) 
+       )
+       # (forced_gn # bind_vm) 
     )
-    # (forced_gn # bind_vm)
-  )
-  # ([1, 2, 3] :: Array Integer)
-)
-# !LengthOfArray
-# !IndexArray
+    # ([1, 2, 3] :: Array Integer) 
+ )
+ # !LengthOfArray
+ # !IndexArray 

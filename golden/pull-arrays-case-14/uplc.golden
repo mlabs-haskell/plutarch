@@ -1,51 +1,60 @@
-(\forced_fw forced_gw ->
-  (\bind_rv ->
-    (\bind_sv ->
-      (\bind_tv ->
-        (\uv ->
-          (\vv ->
-            (\bind_wv ->
-              (\xv ->
-                (\yv ->
-                  (\bind_zv ->
-                    (\aw ->
-                      (\bw cw ->
-                        cw
-                        # (
-                            (\bind_dw ->
-                              case 
-                                (LessThanEqualsInteger # bind_dw # aw)
-                                [aw, bind_dw]
+ (\forced_fw forced_gw ->
+    (\bind_rv ->
+       (\bind_sv ->
+          (\bind_tv ->
+             (\uv ->
+                (\vv ->
+                   (\bind_wv ->
+                      (\xv ->
+                         (\yv ->
+                            (\bind_zv ->
+                               (\aw ->
+                                  (\bw cw ->
+                                     cw
+                                     # (
+                                         (\bind_dw ->
+                                           case 
+                                             (
+                                               LessThanEqualsInteger
+                                               # bind_dw
+                                               # aw
+                                             )
+                                             [aw, bind_dw]
+                                         )
+                                         # (case 
+                                             (LessThanEqualsInteger # uv # xv)
+                                             [xv, uv]
+                                           )
+                                       )
+                                     # (\ew ->
+                                          MultiplyInteger
+                                          # (vv # ew)
+                                          # (
+                                              AddInteger# (yv # ew)# (bw # ew)
+                                            ) 
+                                       ) 
+                                  )
+                                  # (bind_sv # bind_zv) 
+                               )
+                               # (bind_rv # bind_zv) 
                             )
-                            # (case (LessThanEqualsInteger # uv # xv) [xv, uv])
-                          )
-                        # (\ew ->
-                            MultiplyInteger
-                            # (vv # ew)
-                            # (AddInteger # (yv # ew) # (bw # ew))
-                          )
+                            # ([3, 6, 9] :: Array Integer) 
+                         )
+                         # (bind_sv # bind_wv) 
                       )
-                      # (bind_sv # bind_zv)
-                    )
-                    # (bind_rv # bind_zv)
-                  )
-                  # ([3, 6, 9] :: Array Integer)
+                      # (bind_rv # bind_wv) 
+                   )
+                   # ([4, 6, 8] :: Array Integer) 
                 )
-                # (bind_sv # bind_wv)
-              )
-              # (bind_rv # bind_wv)
-            )
-            # ([4, 6, 8] :: Array Integer)
+                # (bind_sv # bind_tv) 
+             )
+             # (bind_rv # bind_tv) 
           )
-          # (bind_sv # bind_tv)
-        )
-        # (bind_rv # bind_tv)
-      )
-      # ([1, 2, 3] :: Array Integer)
+          # ([1, 2, 3] :: Array Integer) 
+       )
+       # forced_gw 
     )
-    # forced_gw
-  )
-  # forced_fw
-)
-# !LengthOfArray
-# !IndexArray
+    # forced_fw 
+ )
+ # !LengthOfArray
+ # !IndexArray 

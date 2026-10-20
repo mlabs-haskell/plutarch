@@ -1,35 +1,38 @@
-(\forced_ju forced_ku ->
-  (\bind_yt ->
-    (\bind_zt ->
-      (\bind_au ->
-        (\bu ->
-          (\cu ->
-            (\bind_du ->
-              (\eu ->
-                (\fu gu ->
-                  gu
-                  # (case (LessThanEqualsInteger # bu # eu) [eu, bu])
-                  # (\hu ->
-                      AddInteger
-                      # (AddInteger # (cu # hu) # (1 :: Integer))
-                      # ((\iu -> MultiplyInteger # iu # iu) # (fu # hu))
-                    )
+ (\forced_ju forced_ku ->
+    (\bind_yt ->
+       (\bind_zt ->
+          (\bind_au ->
+             (\bu ->
+                (\cu ->
+                   (\bind_du ->
+                      (\eu ->
+                         (\fu gu ->
+                            gu
+                            # (case (LessThanEqualsInteger # bu # eu) [eu, bu])
+                            # (\hu ->
+                                 AddInteger
+                                 # (AddInteger # (cu # hu) # (1 :: Integer))
+                                 # (
+                                     (\iu -> MultiplyInteger # iu # iu)
+                                     # (fu # hu)
+                                   ) 
+                              ) 
+                         )
+                         # (bind_zt # bind_du) 
+                      )
+                      # (bind_yt # bind_du) 
+                   )
+                   # ([4, 6, 8] :: Array Integer) 
                 )
-                # (bind_zt # bind_du)
-              )
-              # (bind_yt # bind_du)
-            )
-            # ([4, 6, 8] :: Array Integer)
+                # (bind_zt # bind_au) 
+             )
+             # (bind_yt # bind_au) 
           )
-          # (bind_zt # bind_au)
-        )
-        # (bind_yt # bind_au)
-      )
-      # ([1, 2, 3] :: Array Integer)
+          # ([1, 2, 3] :: Array Integer) 
+       )
+       # forced_ku 
     )
-    # forced_ku
-  )
-  # forced_ju
-)
-# !LengthOfArray
-# !IndexArray
+    # forced_ju 
+ )
+ # !LengthOfArray
+ # !IndexArray 

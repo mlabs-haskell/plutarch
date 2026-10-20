@@ -1,11 +1,11 @@
 \a ->
-  a
-  # (3 :: Integer)
-  # (\compArg_b ->
-      (\cse_c -> AddInteger # cse_c # cse_c)
-      # (
-          AddInteger
-          # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_b)
-          # (1 :: Integer)
-        )
-    )
+   a
+   # (3 :: Integer)
+   # (\compArg_b ->
+        (\cse_c -> AddInteger # cse_c # cse_c)
+        # (
+            AddInteger
+            # (!IndexArray # ([1, 2, 3] :: Array Integer) # compArg_b)
+            # (1 :: Integer)
+          ) 
+     ) 

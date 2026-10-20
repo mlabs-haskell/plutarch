@@ -1,13 +1,13 @@
-(\a -> a # 3 :: Integer # (\b -> b))
-# (\c d ->
-    (\e ->
-      e
-      # (!LengthOfArray # [1, 2, 3] :: Array Integer)
-      # (!IndexArray # [1, 2, 3] :: Array Integer)
-    )
-    # (\f g h ->
-        h
-        # (case (LessThanEqualsInteger # c # f) [f, c])
-        # (\i -> (\j k -> MultiplyInteger # j # k) # (d # i) # (g # i))
+ (\a -> a # 3 :: Integer # (\b -> b))
+ # (\c d ->
+      (\e ->
+         e
+         # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+         # (!IndexArray # [1, 2, 3] :: Array Integer) 
       )
-  )
+      # (\f g h ->
+           h
+           # (case (LessThanEqualsInteger # c # f) [f, c])
+           # (\i -> (\j k -> MultiplyInteger # j # k) # (d # i) # (g # i)) 
+        ) 
+   ) 

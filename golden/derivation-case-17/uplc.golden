@@ -1,12 +1,14 @@
 \ ->
   let bind_j = !MkCons
-  let bind_u = ConstrData
-               # (2 :: Integer)
-               # (
-                   bind_j
-                   # (IData # (2 :: Integer))
-                   # (bind_j # (BData # ("foo" :: Bytestring)) # ([] :: [Data]))
-                 )
+  let bind_u =  ConstrData
+                # (2 :: Integer)
+                # (
+                    bind_j
+                    # (IData # (2 :: Integer))
+                    # (
+                        bind_j# (BData # ("foo" :: Bytestring))# ([] :: [Data])
+                      )
+                  ) 
   in case 
        (UnConstrData # bind_u)
        [ \a b ->
@@ -15,21 +17,21 @@
                  case 
                    (constr 0 [\unused_e unused_e -> ERROR, UnIData # c])
                    [ \bind_x bind_bb ->
-                       (\bind_z ->
-                         case a
-                           [ bind_z # bind_bb
-                           , bind_z # (UnBData # c)
-                           , (\unused_e ->
-                               case d
-                                 [ \l m ->
-                                     (\unused_e -> case m [bind_x, bind_u])
-                                     # (UnBData # l)
-                                 ]
-                             )
-                             # bind_bb
-                           ]
-                       )
-                       # (\unused_e -> case d [bind_x, bind_u])
+                        (\bind_z ->
+                          case a
+                            [ bind_z # bind_bb
+                            , bind_z # (UnBData # c)
+                            ,  (\unused_e ->
+                                 case d
+                                   [ \l m ->
+                                        (\unused_e -> case m [bind_x, bind_u])
+                                        # (UnBData # l) 
+                                   ]
+                               )
+                               # bind_bb 
+                            ]
+                        )
+                        # (\unused_e -> case d [bind_x, bind_u]) 
                    ]
              ]
        ]

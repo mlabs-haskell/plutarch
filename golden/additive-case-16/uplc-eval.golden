@@ -1,15 +1,15 @@
 \a ->
   case a
     [ \b c ->
-        AddInteger
-        # b
-        # (
-            (\d ->
-              case c [\e f -> AddInteger # e # (d # d # f), (0 :: Integer)]
-            )
-            # (\g h ->
-                case h [\i j -> AddInteger # i # (g # g # j), (0 :: Integer)]
-              )
-          )
+         AddInteger
+         # b
+         # (
+             (\d ->
+               case c [\e f -> AddInteger # e # (d # d # f), (0 :: Integer)]
+             )
+             # (\g h ->
+                 case h [\i j -> AddInteger # i # (g # g # j), (0 :: Integer)]
+               )
+           ) 
     , (0 :: Integer)
     ]

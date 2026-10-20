@@ -1,11 +1,11 @@
 \a ->
-  a
-  # (case 
-      (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
-      [(3 :: Integer), (3 :: Integer)]
-    )
-  # (\b ->
-      AddInteger
-      # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
-      # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
-    )
+   a
+   # (case 
+       (LessThanEqualsInteger # (3 :: Integer) # (3 :: Integer))
+       [(3 :: Integer), (3 :: Integer)]
+     )
+   # (\b ->
+        AddInteger
+        # (!IndexArray # ([1, 2, 3] :: Array Integer) # b)
+        # (!IndexArray # ([1, 2, 3] :: Array Integer) # b) 
+     ) 

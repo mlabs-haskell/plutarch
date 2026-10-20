@@ -27,68 +27,70 @@ case
   [ \a b ->
       case b
         [ \c d ->
-            AppendString
-            # "PTriple {
-            " :: String
-            # (
-                AppendString
-                # (
-                    AppendString
-                    # ", " :: String
-                    # (
-                        AppendString
-                        # (case 
-                            (case 
-                              (UnConstrData # c)
-                              [\e _ -> case e [False :: Bool, True :: Bool]]
-                            )
-                            ["false" :: String, "true" :: String]
-                          )
-                        # "
-                        " :: String
-                      )
-                  )
-                # (
-                    AppendString
-                    # (
-                        AppendString
-                        # ", " :: String
-                        # (
-                            AppendString
-                            # (case 
-                                (case 
-                                  (UnConstrData # a)
-                                  [\f _ -> case f [False :: Bool, True :: Bool]]
-                                )
-                                ["false" :: String, "true" :: String]
-                              )
-                            # "
-                            " :: String
-                          )
-                      )
-                    # (
-                        AppendString
-                        # (
-                            AppendString
-                            # ", " :: String
-                            # (
-                                AppendString
-                                # (case 
-                                    (case 
-                                      (UnConstrData # (!HeadList # d))
-                                      [ \g _ ->
-                                          case g [False :: Bool, True :: Bool]
-                                      ]
-                                    )
-                                    ["false" :: String, "true" :: String]
-                                  )
-                                # "
-                                " :: String
-                              )
-                          )
-                        # "}" :: String
-                      )
-                  )
-              )
+             AppendString
+             # "PTriple {
+             " :: String
+             # (
+                 AppendString
+                 # (
+                     AppendString
+                     # ", " :: String
+                     # (
+                         AppendString
+                         # (case 
+                             (case 
+                               (UnConstrData # c)
+                               [\e _ -> case e [False :: Bool, True :: Bool]]
+                             )
+                             ["false" :: String, "true" :: String]
+                           )
+                         # "
+                         " :: String
+                       )
+                   )
+                 # (
+                     AppendString
+                     # (
+                         AppendString
+                         # ", " :: String
+                         # (
+                             AppendString
+                             # (case 
+                                 (case 
+                                   (UnConstrData # a)
+                                   [ \f _ ->
+                                       case f [False :: Bool, True :: Bool]
+                                   ]
+                                 )
+                                 ["false" :: String, "true" :: String]
+                               )
+                             # "
+                             " :: String
+                           )
+                       )
+                     # (
+                         AppendString
+                         # (
+                             AppendString
+                             # ", " :: String
+                             # (
+                                 AppendString
+                                 # (case 
+                                     (case 
+                                       (UnConstrData # (!HeadList # d))
+                                       [ \g _ ->
+                                           case g [False :: Bool, True :: Bool]
+                                       ]
+                                     )
+                                     ["false" :: String, "true" :: String]
+                                   )
+                                 # "
+                                 " :: String
+                               )
+                           )
+                         # "}" :: String
+                       )
+                   )
+               ) 
         ]
   ]

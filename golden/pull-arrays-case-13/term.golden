@@ -1,35 +1,35 @@
-(\a ->
-  a
-  # (!LengthOfArray # [1, 2, 3] :: Array Integer)
-  # (!IndexArray # [1, 2, 3] :: Array Integer)
-)
-# (\b c ->
-    (\d ->
-      d
-      # (!LengthOfArray # [4, 6, 8] :: Array Integer)
-      # (!IndexArray # [4, 6, 8] :: Array Integer)
-    )
-    # (\e f g ->
-        g
-        # (case (LessThanEqualsInteger # b # e) [e, b])
-        # (\h ->
-            (\i j ->
-              (\k l m -> MultiplyInteger # k # (AddInteger # l # m)) # i # j
-            )
-            # (c # h)
-            # (f # h)
-          )
+ (\a ->
+    a
+    # (!LengthOfArray # [1, 2, 3] :: Array Integer)
+    # (!IndexArray # [1, 2, 3] :: Array Integer) 
+ )
+ # (\b c ->
+      (\d ->
+         d
+         # (!LengthOfArray # [4, 6, 8] :: Array Integer)
+         # (!IndexArray # [4, 6, 8] :: Array Integer) 
       )
-  )
-# (\n o ->
-    (\p ->
-      p
-      # (!LengthOfArray # [3, 6, 9] :: Array Integer)
-      # (!IndexArray # [3, 6, 9] :: Array Integer)
-    )
-    # (\q r s ->
-        s
-        # (case (LessThanEqualsInteger # n # q) [q, n])
-        # (\t -> (\u v -> u # v) # (o # t) # (r # t))
+      # (\e f g ->
+           g
+           # (case (LessThanEqualsInteger # b # e) [e, b])
+           # (\h ->
+                (\i j ->
+                  (\k l m -> MultiplyInteger # k # (AddInteger # l # m)) # i # j
+                )
+                # (c # h)
+                # (f # h) 
+             ) 
+        ) 
+   )
+ # (\n o ->
+      (\p ->
+         p
+         # (!LengthOfArray # [3, 6, 9] :: Array Integer)
+         # (!IndexArray # [3, 6, 9] :: Array Integer) 
       )
-  )
+      # (\q r s ->
+           s
+           # (case (LessThanEqualsInteger # n # q) [q, n])
+           # (\t -> (\u v -> u # v) # (o # t) # (r # t)) 
+        ) 
+   ) 

@@ -1,13 +1,14 @@
 case 
-  (UnConstrData
+  (
+    UnConstrData
     # (
         ConstrData
         # (2 :: Integer)
         # (
             (\bind_k ->
-              bind_k
-              # (IData # (1 :: Integer))
-              # (bind_k # (IData # (2 :: Integer)) # ([] :: [Data]))
+               bind_k
+               # (IData # (1 :: Integer))
+               # (bind_k # (IData # (2 :: Integer)) # ([] :: [Data])) 
             )
             # !MkCons
           )
@@ -16,13 +17,13 @@ case
   [ \a b ->
       case b
         [ \c d ->
-            (\bind_v ->
-              case a
-                [ bind_v
-                , bind_v
-                , case d [\e unused_f -> AddInteger # bind_v # (UnIData # e)]
-                ]
-            )
-            # (UnIData # c)
+             (\bind_v ->
+               case a
+                 [ bind_v
+                 , bind_v
+                 , case d [\e unused_f -> AddInteger # bind_v # (UnIData # e)]
+                 ]
+             )
+             # (UnIData # c) 
         ]
   ]

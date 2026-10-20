@@ -1,19 +1,19 @@
-(\forced_ht forced_it ->
-  (\bind_os ->
-    (\bind_ps ->
-      bind_ps
-        # (\qs rs ->
-            bind_ps
-              # (\ss ts us ->
-                  us
-                  # (case (LessThanEqualsInteger # qs # ss) [ss, qs])
-                  # (\vs -> AddInteger # (rs # vs) # (ts # vs))
-                )
-          )
+ (\forced_ht forced_it ->
+    (\bind_os ->
+       (\bind_ps ->
+          bind_ps
+          # (\qs rs ->
+               bind_ps
+               # (\ss ts us ->
+                    us
+                    # (case (LessThanEqualsInteger # qs # ss) [ss, qs])
+                    # (\vs -> AddInteger # (rs # vs) # (ts # vs)) 
+                 ) 
+            ) 
+       )
+       # (\ws -> ws # (forced_ht # bind_os) # (forced_it # bind_os)) 
     )
-    # (\ws -> ws # (forced_ht # bind_os) # (forced_it # bind_os))
-  )
-  # ([1, 2, 3] :: Array Integer)
-)
-# !LengthOfArray
-# !IndexArray
+    # ([1, 2, 3] :: Array Integer) 
+ )
+ # !LengthOfArray
+ # !IndexArray 

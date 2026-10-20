@@ -1,26 +1,26 @@
-ListData
-  # (
-      !MkCons
-      # (
-          ConstrData
-          # (case False :: Bool [1 :: Integer, 0 :: Integer])
-          # [] :: [Data]
-        )
-      # (
-          !MkCons
-          # (
-              ConstrData
-              # (case False :: Bool [1 :: Integer, 0 :: Integer])
-              # [] :: [Data]
-            )
-          # (
-              !MkCons
-              # (
-                  ConstrData
-                  # (case False :: Bool [1 :: Integer, 0 :: Integer])
-                  # [] :: [Data]
-                )
-              # [] :: [Data]
-            )
-        )
-    )
+ ListData
+ # (
+     !MkCons
+     # (
+         ConstrData
+         # (case False :: Bool [1 :: Integer, 0 :: Integer])
+         # [] :: [Data]
+       )
+     # (
+         !MkCons
+         # (
+             ConstrData
+             # (case False :: Bool [1 :: Integer, 0 :: Integer])
+             # [] :: [Data]
+           )
+         # (
+             !MkCons
+             # (
+                 ConstrData
+                 # (case False :: Bool [1 :: Integer, 0 :: Integer])
+                 # [] :: [Data]
+               )
+             # [] :: [Data]
+           )
+       )
+   ) 

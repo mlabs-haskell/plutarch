@@ -1,17 +1,17 @@
 \hq ->
   case hq
     [ \iq jq ->
-        AddInteger
-        # iq
-        # (
-            (\kq ->
-              case jq
-                [\lq mq -> AddInteger # lq # (kq # kq # mq), (0 :: Integer)]
-            )
-            # (\nq oq ->
-                case oq
-                  [\pq qq -> AddInteger # pq # (nq # nq # qq), (0 :: Integer)]
-              )
-          )
+         AddInteger
+         # iq
+         # (
+             (\kq ->
+               case jq
+                 [\lq mq -> AddInteger # lq # (kq # kq # mq), (0 :: Integer)]
+             )
+             # (\nq oq ->
+                 case oq
+                   [\pq qq -> AddInteger # pq # (nq # nq # qq), (0 :: Integer)]
+               )
+           ) 
     , (0 :: Integer)
     ]

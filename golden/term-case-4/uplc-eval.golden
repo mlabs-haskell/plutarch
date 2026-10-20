@@ -1,11 +1,11 @@
 \a ->
   case a
-    [ (\bind_b ->
-        AddInteger # (bind_b # (10 :: Integer)) # (bind_b # (20 :: Integer))
-      )
-      # (\c -> AddInteger # c # c)
-    , (\bind_d ->
-        AddInteger # (bind_d # (10 :: Integer)) # (bind_d # (20 :: Integer))
-      )
-      # (\e -> MultiplyInteger # e # e)
+    [  (\bind_b ->
+         AddInteger # (bind_b # (10 :: Integer)) # (bind_b # (20 :: Integer))
+       )
+       # (\c -> AddInteger # c # c) 
+    ,  (\bind_d ->
+         AddInteger # (bind_d # (10 :: Integer)) # (bind_d # (20 :: Integer))
+       )
+       # (\e -> MultiplyInteger # e # e) 
     ]

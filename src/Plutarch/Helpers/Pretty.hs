@@ -267,8 +267,8 @@ lambdaTemplate mode vars body = case mode of
     oneLineNoParens = "\\" <> hsep vars <+> "->" <+> body
 
 -- | Don't pass an empty list into this
-appLike :: forall (ann :: Type). Doc ann -> PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
-appLike op mode funIsSmall funList = case mode of
+appLike :: forall (ann :: Type). Doc ann -> PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
+appLike op mode funList = case mode of
   PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
   PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
   where
@@ -277,38 +277,26 @@ appLike op mode funIsSmall funList = case mode of
     (fun, args) = NEVector.uncons funList
 
     myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+    myLine = case mode of PrintAtomic -> hardline; _ -> " "
 
     myIndent :: Doc ann -> Doc ann
-    myIndent = case mode of
-      PrintAtomic -> indent 2
-      PrintDefault -> id
+    myIndent = case mode of PrintAtomic -> indent 2; _ -> id
 
     mkMultiline :: Doc ann -> Doc ann -> Doc ann
     mkMultiline l r =
-      if funIsSmall
-        then
-          group $
-            l
-              <> fun
-              <> hardline
-              <> indent 2 (vcat (map (op <+>) $ Vector.toList args))
-              <> myLine
-              <> r
-        else
-          group $
-            l
-              <> myLine
-              <> myIndent (align . encloseSep "" "" (op <> " ") $ NEVector.toList funList)
-              <> myLine
-              <> r
+      group $
+        l
+          <> myLine
+          <> myIndent (align . encloseSep "" "" (op <> " ") $ NEVector.toList funList)
+          <> myLine
+          <> r
     oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ Vector.toList args)
 
-appTemplate :: PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
+appTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 appTemplate = appLike "#"
 
 composeTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
-composeTemplate mode = appLike "." mode False
+composeTemplate = appLike "."
 
 -- Var -> Binding -> Body -> Result
 letTemplate :: forall (ann :: Type). PrintMode -> Doc ann -> Doc ann -> Doc ann -> Doc ann
@@ -430,7 +418,7 @@ prettyUPLC pt = case takeBindable ([], topLevelBody) of
          in lambdaTemplate mode vars (prettyNoBind body)
       Apply () f arg ->
         let funList = prettyAtomic <$> (analyzeApp f <> NEVector.singleton arg)
-         in align . group $ appTemplate mode (isAtom f) funList
+         in align $ appTemplate mode funList
       Force () inner -> "!" <> prettyAtomic inner
       Delay () inner -> angles $ prettyNoBind inner
       Constant _ (Some (ValueOf uni x)) -> parens (prettyValueOf uni x)

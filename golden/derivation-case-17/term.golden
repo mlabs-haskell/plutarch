@@ -1,5 +1,6 @@
 case 
-  (UnConstrData
+  (
+    UnConstrData
     # (
         ConstrData
         # 2 :: Integer
@@ -17,32 +18,32 @@ case
               [ let _ = UnIData # c
                 in case d
                      [ \_ _ -> ERROR
-                     , ConstrData
-                       # 2 :: Integer
-                       # (
-                           !MkCons
-                           # (IData # 2 :: Integer)
-                           # (
-                               !MkCons
-                               # (BData # "foo" :: Bytestring)
-                               # [] :: [Data]
-                             )
-                         )
+                     ,  ConstrData
+                        # 2 :: Integer
+                        # (
+                            !MkCons
+                            # (IData # 2 :: Integer)
+                            # (
+                                !MkCons
+                                # (BData # "foo" :: Bytestring)
+                                # [] :: [Data]
+                              )
+                          ) 
                      ]
               , let _ = UnBData # c
                 in case d
                      [ \_ _ -> ERROR
-                     , ConstrData
-                       # 2 :: Integer
-                       # (
-                           !MkCons
-                           # (IData # 2 :: Integer)
-                           # (
-                               !MkCons
-                               # (BData # "foo" :: Bytestring)
-                               # [] :: [Data]
-                             )
-                         )
+                     ,  ConstrData
+                        # 2 :: Integer
+                        # (
+                            !MkCons
+                            # (IData # 2 :: Integer)
+                            # (
+                                !MkCons
+                                # (BData # "foo" :: Bytestring)
+                                # [] :: [Data]
+                              )
+                          ) 
                      ]
               , let _ = UnIData # c
                 in case d
@@ -50,17 +51,17 @@ case
                          let _ = UnBData # e
                          in case f
                               [ \_ _ -> ERROR
-                              , ConstrData
-                                # 2 :: Integer
-                                # (
-                                    !MkCons
-                                    # (IData # 2 :: Integer)
-                                    # (
-                                        !MkCons
-                                        # (BData # "foo" :: Bytestring)
-                                        # [] :: [Data]
-                                      )
-                                  )
+                              ,  ConstrData
+                                 # 2 :: Integer
+                                 # (
+                                     !MkCons
+                                     # (IData # 2 :: Integer)
+                                     # (
+                                         !MkCons
+                                         # (BData # "foo" :: Bytestring)
+                                         # [] :: [Data]
+                                       )
+                                   ) 
                               ]
                      ]
               ]
