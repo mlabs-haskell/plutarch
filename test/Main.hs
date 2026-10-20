@@ -1,5 +1,6 @@
 module Main (main) where
 
+import Additive qualified
 import Bool qualified
 import Compiled qualified
 import Compose qualified
@@ -7,7 +8,7 @@ import Constr qualified
 import Debug qualified
 import Derivation qualified
 import Error qualified
--- import Numeric qualified
+import Multiplicative qualified
 import Pretty qualified
 import PullArray qualified
 import Term qualified
@@ -19,7 +20,8 @@ main =
   defaultMain . testGroup "Goldens" $
     [ Term.goldens,
       Bool.goldens,
-      -- , Numeric.goldens
+      Additive.goldens,
+      Multiplicative.goldens,
       Compiled.goldens,
       Error.goldens,
       Compose.goldens,

@@ -1,0 +1,16 @@
+<Fix
+  [a]
+  <\b -> 
+    <case
+      b 
+      [
+        <\c d -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [c, <Applya [d]>@nlTHvWhSkgAN]
+          >@sK6i3gPpdRe
+        >@pJZoKsIOYnoN, 
+        <0 :: Integer>@mqE7eqJLvgvN
+      ]
+    >@iusZYMLwuAm
+  >@qwDpaSxzzxnN
+>@yDf5aPXtQmz

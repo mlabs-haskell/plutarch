@@ -1,0 +1,1 @@
+fix (\a_self b -> case b [\c d -> AddInteger # c # (a_self # d), 0 :: Integer])

@@ -22,7 +22,7 @@ goldens =
 
 -- Case 1: \x -> addInteger error (addInteger x error)
 case1 :: forall (s :: S). Term s (PInteger :--> PInteger)
-case1 = plam' $ \x -> paddInteger # perror #$ paddInteger # x # perror
+case1 = plam' $ \x -> perror #+ (x #+ perror)
 
 -- Case 2: \x -> constr 0 [x, error]
 case2 :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (a :--> b)

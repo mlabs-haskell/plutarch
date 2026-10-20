@@ -1,0 +1,8 @@
+ANF Hashes:
+ #0 := pCOGIijZlYg
+
+ANF Binds:
+ #0 := Bls12_381_G1_add
+
+ANF Annotations:
+ #0 := Inlined, required let-binds here: {}
