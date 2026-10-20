@@ -22,24 +22,20 @@ goldens =
 
 -- Case 1: \x y -> por (pnot x) y
 case1 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool)
-case1 = plam' $ \x -> plam' $ \y -> por (pnot x) y
+case1 = plam2 $ \x y -> por (pnot x) y
 
 -- Case 2: \a b c d -> por a (por b (por c d))
 case2 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool :--> PBool :--> PBool)
-case2 = plam' $ \x1 -> plam' $ \x2 -> plam' $ \x3 -> plam' $ \x4 ->
-  por x1 (por x2 (por x3 x4))
+case2 = plam4 $ \x1 x2 x3 x4 -> por x1 (por x2 (por x3 x4))
 
 -- Case 3: \a b c d -> pand (pand a b) (pand c d)
 case3 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool :--> PBool :--> PBool)
-case3 = plam' $ \x1 -> plam' $ \x2 -> plam' $ \x3 -> plam' $ \x4 ->
-  por (por x1 x2) (por x3 x4)
+case3 = plam4 $ \x1 x2 x3 x4 -> por (por x1 x2) (por x3 x4)
 
 -- Case 4: \a b c d -> pand a (pand b (pand c d))
 case4 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool :--> PBool :--> PBool)
-case4 = plam' $ \x1 -> plam' $ \x2 -> plam' $ \x3 -> plam' $ \x4 ->
-  pand x1 (pand x2 (pand x3 x4))
+case4 = plam4 $ \x1 x2 x3 x4 -> pand x1 (pand x2 (pand x3 x4))
 
 -- Case 5: \a b c d -> pand (pand a b) (pand c d)
 case5 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool :--> PBool :--> PBool)
-case5 = plam' $ \x1 -> plam' $ \x2 -> plam' $ \x3 -> plam' $ \x4 ->
-  pand (pand x1 x2) (pand x3 x4)
+case5 = plam4 $ \x1 x2 x3 x4 -> pand (pand x1 x2) (pand x3 x4)

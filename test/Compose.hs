@@ -22,10 +22,10 @@ goldens =
 -- Constructed left associatively
 case1 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case1 =
-  let fun1 = plam' $ \y -> y #+ pconstant 2
-      fun3 = plam' $ \z1 -> z1 #- pconstant 5
-   in plam' $ \x ->
-        let fun2 = plam' $ \z -> x #* z
+  let fun1 = plam1 $ \y -> y #+ pconstant 2
+      fun3 = plam1 $ \z1 -> z1 #- pconstant 5
+   in plam1 $ \x ->
+        let fun2 = plam1 $ \z -> x #* z
          in pcompose (pcompose fun1 fun2) fun3 # x
 
 -- Case 2: \x -> (compose [\y -> y + 2, \z -> x * z, \z1 -> z1 - 5]) x
@@ -33,21 +33,21 @@ case1 =
 -- Constructed right associatively
 case2 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case2 =
-  let fun1 = plam' $ \y -> y #+ pconstant 2
-      fun3 = plam' $ \z1 -> z1 #- pconstant 5
-   in plam' $ \x ->
-        let fun2 = plam' $ \z -> x #* z
+  let fun1 = plam1 $ \y -> y #+ pconstant 2
+      fun3 = plam1 $ \z1 -> z1 #- pconstant 5
+   in plam1 $ \x ->
+        let fun2 = plam1 $ \z -> x #* z
          in (pcompose fun1 . pcompose fun2 $ fun3) # x
 
 -- Case 3: \x -> (compose [\y -> y + 2, \z -> z + 2, \z1 -> z1 + 2]) x
 case3 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case3 =
-  let fun = plam' $ \y -> y #+ pconstant 2
-   in plam' $ \x -> (pcompose fun . pcompose fun $ fun) # x
+  let fun = plam1 $ \y -> y #+ pconstant 2
+   in plam1 $ \x -> (pcompose fun . pcompose fun $ fun) # x
 
 -- Case 4: \x -> (compose [\y -> y * y, \z -> z + 2]) x
 case4 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case4 =
-  let f = plam' $ \y -> y #* y
-      g = plam' $ \z -> z #+ pconstant 2
-   in plam' $ \x -> pcompose f g # x
+  let f = plam1 $ \y -> y #* y
+      g = plam1 $ \z -> z #+ pconstant 2
+   in plam1 $ \x -> pcompose f g # x

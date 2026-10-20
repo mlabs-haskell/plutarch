@@ -304,7 +304,7 @@ derivePDebug tyVars tyName constructors =
           pdebug t f =
             f
               ( pfix
-                  ( \self -> plam' $ \x -> pmatch x $ \y ->
+                  ( \self -> $plam'E $ \x -> pmatch x $ \y ->
                       $(mkMatchesRec 'self 'y)
                   )
                   # t
@@ -396,8 +396,8 @@ derivePValidateData tyVars tyName cs =
         instance ($ctx) => PValidateData $name where
           pwithValidated d res =
             pfix
-              ( \self -> plam' $ \d' ->
-                  plam' $ \resInner -> pmatch ($punConstrDataE # d') $ \(PBPair tag fields) ->
+              ( \self -> $plam'E $ \d' ->
+                  $plam'E $ \resInner -> pmatch ($punConstrDataE # d') $ \(PBPair tag fields) ->
                     $(mkCases 'self 'resInner 'tag 'fields)
               )
               # d

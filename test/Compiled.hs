@@ -21,10 +21,9 @@ goldens =
 case1 ::
   forall (s :: S).
   Term s (PBool :--> PInteger :--> PInteger :--> PInteger)
-case1 = plam' $ \cond -> plam' $ \ifT -> plam' $ \ifF ->
-  pcompiled go # cond # ifT # ifF
+case1 = plam3 $ \cond ifT ifF -> pcompiled go # cond # ifT # ifF
   where
     go ::
       forall (s' :: S).
       Term s' (PBool :--> PInteger :--> PInteger :--> PInteger)
-    go = plam' $ \cond' -> plam' $ \ifT' -> plam' $ \ifF' -> pif cond' ifT' ifF'
+    go = plam3 $ \cond' ifT' ifF' -> pif cond' ifT' ifF'
