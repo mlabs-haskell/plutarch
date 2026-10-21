@@ -240,6 +240,10 @@ optimizeUplc (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm optimizeOpts 
     -- Note (Koz, 05/10/2026): The full list is in
     -- UntypedPlutusCore.Optimize.Opts. The defaults are fine, but re-inlining
     -- of constants blows out code size by no small margin, so we disable it.
+    -- Note (Sean, 10/20/2026): ooInlineUnconditionalGrowth seems to fix this but
+    -- given the sparsity of docs and complexity of the implementation it isn't obviously clear how.
+    -- The only other relevant option would be ooInlineCallsiteGrowth, but low values of that don't fix this
+    -- and only modify other goldens.
     optimizeOpts :: UPLC.OptimizeOpts UPLC.Name ()
     optimizeOpts =
       UPLC.defaultOptimizeOpts
