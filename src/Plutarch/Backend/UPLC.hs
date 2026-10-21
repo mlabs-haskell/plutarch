@@ -241,7 +241,11 @@ optimizeUplc (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm optimizeOpts 
     -- UntypedPlutusCore.Optimize.Opts. The defaults are fine, but re-inlining
     -- of constants blows out code size by no small margin, so we disable it.
     optimizeOpts :: UPLC.OptimizeOpts UPLC.Name ()
-    optimizeOpts = UPLC.defaultOptimizeOpts {UPLC._ooInlineConstants = False}
+    optimizeOpts =
+      UPLC.defaultOptimizeOpts
+        { UPLC._ooInlineConstants = False,
+          UPLC._ooInlineUnconditionalGrowth = 0
+        }
 
 -- Helpers
 

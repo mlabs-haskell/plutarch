@@ -1,7 +1,6 @@
-\il jl ->
-  case il
-    [ \kl ->
-        case jl [\ll -> EqualsInteger # kl # ll, \unused_ml -> (False :: Bool)]
-    , \nl ->
-        case jl [\unused_ol -> (False :: Bool), \pl -> EqualsInteger # nl # pl]
-    ]
+\gl hl ->
+  let bind_il = \unused_nl -> (False :: Bool)
+  in case gl
+       [ \jl -> case hl [\kl -> EqualsInteger # jl # kl, bind_il]
+       , \ll -> case hl [bind_il, \ml -> EqualsInteger # ll # ml]
+       ]
