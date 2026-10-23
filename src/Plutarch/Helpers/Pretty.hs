@@ -25,7 +25,6 @@ module Plutarch.Helpers.Pretty
   )
 where
 
-import Control.Lens.Plated
 import Data.ByteString ()
 import Data.Kind (Type)
 import Data.Text (Text)
@@ -35,8 +34,10 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
 import Data.Word (Word64)
+import Optics.Plated (Plated, children)
 import PlutusCore.Data qualified as PD
-import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
+import PlutusCore.Default (DefaultUni, Esc, Some (Some), ValueOf (ValueOf))
+import PlutusCore.Default qualified as D
 import Prettyprinter
   ( Doc,
     Pretty (pretty),
@@ -88,31 +89,31 @@ prettyValueOf uni x = case prettyUni uni of
   where
     prettyUni :: forall (b :: Type). DefaultUni (Esc b) -> (Doc ann, b -> Doc ann)
     prettyUni = \case
-      DefaultUniInteger -> ("Integer", pretty)
-      DefaultUniByteString -> ("Bytestring", viaShow)
-      DefaultUniString -> ("String", dquotes . pretty)
-      DefaultUniUnit -> ("()", pretty)
-      DefaultUniBool -> ("Bool", pretty)
-      (DefaultUniProtoPair `DefaultUniApply` tX `DefaultUniApply` tY) ->
+      D.DefaultUniInteger -> ("Integer", pretty)
+      D.DefaultUniByteString -> ("Bytestring", viaShow)
+      D.DefaultUniString -> ("String", dquotes . pretty)
+      D.DefaultUniUnit -> ("()", pretty)
+      D.DefaultUniBool -> ("Bool", pretty)
+      (D.DefaultUniProtoPair `D.DefaultUniApply` tX `D.DefaultUniApply` tY) ->
         let (innerX, fX) = prettyUni tX
             (innerY, fY) = prettyUni tY
             fXY (x', y) = tupled [fX x', fY y]
          in (tupled [innerX, innerY], fXY)
-      DefaultUniApply DefaultUniProtoList uniA ->
+      D.DefaultUniApply D.DefaultUniProtoList uniA ->
         let (inner, f) = prettyUni uniA
          in (brackets inner, list . fmap f)
-      DefaultUniApply DefaultUniProtoArray uniA ->
+      D.DefaultUniApply D.DefaultUniProtoArray uniA ->
         let (inner, f) = prettyUni uniA
             f' = list . SV.toList . fmap f
          in case uniA of
-              DefaultUniApply DefaultUniProtoArray _ -> ("Array" <+> parens inner, f')
+              D.DefaultUniApply D.DefaultUniProtoArray _ -> ("Array" <+> parens inner, f')
               _ -> ("Array" <+> inner, f')
-      DefaultUniData -> ("Data", prettyData)
-      DefaultUniBLS12_381_G1_Element -> ("Bls12_381_G1_element", pretty)
-      DefaultUniBLS12_381_G2_Element -> ("Bls12_381_G2_element", pretty)
-      DefaultUniBLS12_381_MlResult -> ("Bls12_381_mlresult", pretty)
-      DefaultUniValue -> ("Value", pretty)
-      DefaultUniApply apF _ ->
+      D.DefaultUniData -> ("Data", prettyData)
+      D.DefaultUniBLS12_381_G1_Element -> ("Bls12_381_G1_element", pretty)
+      D.DefaultUniBLS12_381_G2_Element -> ("Bls12_381_G2_element", pretty)
+      D.DefaultUniBLS12_381_MlResult -> ("Bls12_381_mlresult", pretty)
+      D.DefaultUniValue -> ("Value", pretty)
+      D.DefaultUniApply apF _ ->
         error $
           "Error: Could not prettify a DefaultUniApply because the LHS is: "
             <> show apF
@@ -234,7 +235,7 @@ taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
 taggedNode lbl ann node = block' lbl "<" ">" node <> "@" <> ann
 
 prettyAnnotated ::
-  forall f a ann.
+  forall (f :: Type -> Type) (a :: Type) (ann :: Type).
   (Plated (f a), Pretty a) =>
   (f a -> a) ->
   (Doc ann -> Doc ann -> Doc ann) -> -- ann doc is first arg

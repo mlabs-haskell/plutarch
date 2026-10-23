@@ -109,10 +109,11 @@ library
     , generics-sop
     , hashable
     , indexed-traversable
-    , lens
     , mtl
     , nonempty-containers
     , nonempty-vector
+    , optics-core
+    , optics-plated
     , plutus-core          ==1.71.0.0
     , plutus-ledger-api
     , prettyprinter
@@ -126,6 +127,12 @@ library
     , vector
 
   hs-source-dirs:  src
+
+library optics-plated
+  import:          lang
+  exposed-modules: Optics.Plated
+  build-depends:   optics-core
+  hs-source-dirs:  optics-plated
 
 test-suite tests
   import:         lang
