@@ -59,9 +59,6 @@ instance PEq S.PPositive
 instance PEq S.PByte
 
 -- | @since 2.0.0
-instance PEq S.PNZInteger
-
--- | @since 2.0.0
 instance PEq S.PBLS12_381_G1_Element where
   peq = F.pbls12_381_G1_equal
 

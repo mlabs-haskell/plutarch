@@ -55,9 +55,6 @@ instance POrd S.PNatural
 instance POrd S.PPositive
 
 -- | @since 2.0.0
-instance POrd S.PNZInteger
-
--- | @since 2.0.0
 instance POrd S.PByte
 
 -- | @since 2.0.0

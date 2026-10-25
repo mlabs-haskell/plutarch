@@ -1,42 +1,22 @@
 ANF Hashes:
- #0 := dr5yy9ULU5j
- #1 := vyRIuwDii3A
- #2 := e30okZqI8FBN
- #3 := n275PtZtdlc
- #4 := qjJx7b4Msxl
- #5 := xcUTqGfS5jhN
- #6 := vjMEhbkCp9cN
- #7 := kq3kmmKulbi
- #8 := kJyDJt1oqtk
- #9 := uCesIanxnjmN
- #10 := h4jZYTTssvl
- #11 := xgwC00CiiQc
- #12 := aLMdW4SKsFv
- #13 := pLjx2BaODPi
- #14 := j0I67up1Igv
- #15 := iJcafqfGLJsN
- #16 := dgv5AtWDyVu
- #17 := s989CyXryMw
+ #0 := vjMEhbkCp9cN
+ #1 := nlTHvWhSkgAN
+ #2 := d42ltRryLuqN
+ #3 := vDADJ2DcO7g
+ #4 := vyRIuwDii3A
+ #5 := jWcn5Jxgcro
+ #6 := hX9VpwVF0FwN
+ #7 := csmdbRIfowl
 
 ANF Binds:
- #0 := EqualsInteger
- #1 := 1 :: Integer
- #2 := Apply #0 [a, #1]
- #3 := RemainderInteger
- #4 := 2 :: Integer
- #5 := Apply #3 [d, #4]
- #6 := MultiplyInteger
- #7 := QuotientInteger
- #8 := Apply #7 [d, #4]
- #9 := Apply c [#8]
- #10 := Apply #6 [#9, #9]
- #11 := Apply #6 [#10, b]
- #12 := Case #5 [#10, #11]
- #13 := Case #2 [#12, b]
- #14 := \d:2 -> #13
- #15 := Fix[c:1] #14
- #16 := Apply #15 [a]
- #17 := \a:2 b:2 -> #16
+ #0 := MultiplyInteger
+ #1 := Apply a [d]
+ #2 := Apply #0 [c, #1]
+ #3 := \c:1 d:1 -> #2
+ #4 := 1 :: Integer
+ #5 := Case b [#3, #4]
+ #6 := \b:1 -> #5
+ #7 := Fix[a:1] #6
 
 ANF Annotations:
  #0 := Inlined, required let-binds here: {}
@@ -47,13 +27,3 @@ ANF Annotations:
  #5 := Inlined, required let-binds here: {}
  #6 := Inlined, required let-binds here: {}
  #7 := Inlined, required let-binds here: {}
- #8 := Inlined, required let-binds here: {}
- #9 := Inlined, required let-binds here: {}
- #10 := Let-bound, required let-binds here: {}
- #11 := Inlined, required let-binds here: {}
- #12 := Inlined, required let-binds here: {Rank 0 -> {#10}}
- #13 := Inlined, required let-binds here: {}
- #14 := Inlined, required let-binds here: {}
- #15 := Inlined, required let-binds here: {}
- #16 := Inlined, required let-binds here: {}
- #17 := Inlined, required let-binds here: {}

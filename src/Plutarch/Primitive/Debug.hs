@@ -104,9 +104,6 @@ instance PDebug S.PPositive where
          in renderNum # q # r
       )
 
--- | @since 2.0.0
-instance PDebug S.PNZInteger
-
 -- | Displays as hex.
 --
 -- @since 2.0.0
