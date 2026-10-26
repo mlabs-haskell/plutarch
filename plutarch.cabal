@@ -127,6 +127,21 @@ library
 
   hs-source-dirs:  src
 
+library orphanage
+  import:          lang
+  exposed-modules: Orphanage
+  build-depends:
+    , bytestring
+    , containers
+    , plutarch
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , QuickCheck
+    , quickcheck-instances
+
+  hs-source-dirs:  orphanage
+
 test-suite tests
   import:         lang
   type:           exitcode-stdio-1.0
