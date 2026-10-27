@@ -15,9 +15,15 @@ module Plutarch.Primitive.Liftable
 
     -- * Derivation helper
     PLiftableDirect (..),
+
+    -- * Positive numbers in Haskell
+    Positive (..),
+    mkPositive,
+    unsafeMkPositive,
   )
 where
 
+import Control.Monad (guard)
 import Data.Bifunctor (bimap)
 import Data.Bitraversable (bitraverse)
 import Data.ByteString (ByteString)
@@ -170,6 +176,45 @@ instance (PlutusRepresentable a, PlutusRepresentable b) => PlutusRepresentable (
   haskToRepr = bimap haskToRepr haskToRepr
   reprToHask = bitraverse reprToHask reprToHask
 
+-- | Designed as a Haskell-level equivalent to 'PPositive'. As this is designed
+-- primarily for lifting, few if any instances are provided for it.
+--
+-- @since 2.0.0
+newtype Positive = UnsafePositive Natural
+  deriving
+    ( -- | @since 2.0.0
+      Eq,
+      -- | @since 2.0.0
+      Ord,
+      -- | @since 2.0.0
+      Show
+    )
+    via Natural
+
+-- | @since 2.0.0
+instance PlutusRepresentable Positive where
+  type AsPlutus Positive = Integer
+  haskToRepr (UnsafePositive n) = fromIntegral n
+  reprToHask i = case compare i 0 of
+    LT -> Left . UnexpectedNegative $ i
+    EQ -> Left UnexpectedZero
+    GT -> Right . UnsafePositive . fromIntegral $ i
+
+-- | Safely construct a 'Positive'.
+--
+-- @since 2.0.0
+mkPositive ::
+  forall (a :: Type).
+  (Integral a) => a -> Maybe Positive
+mkPositive n = UnsafePositive (fromIntegral n) <$ guard (n > 0)
+
+-- | Construct a 'Positive' directly from a 'Natural' with no checks. Use with
+-- care.
+--
+-- @since 2.0.0
+unsafeMkPositive :: Natural -> Positive
+unsafeMkPositive = UnsafePositive
+
 -- | Specifies that, for some Plutarch type @a@, there exists some Haskell type
 -- @AsHaskell a@ such that its Plutus representation terms can be \'lifted\' as
 -- constants into a Plutarch 'Term'. Additionally, specifies that any closed
@@ -259,6 +304,12 @@ instance PLiftable S.PNatural where
 -- | @since 2.0.0
 instance PLiftable S.PByte where
   type AsHaskell S.PByte = Word8
+  plutToRepr t = plutToRepr (pfundamental t)
+  reprToPlut = punsafeSecondary . reprToPlut @S.PInteger
+
+-- | @since 2.0.0
+instance PLiftable S.PPositive where
+  type AsHaskell S.PPositive = Positive
   plutToRepr t = plutToRepr (pfundamental t)
   reprToPlut = punsafeSecondary . reprToPlut @S.PInteger
 
