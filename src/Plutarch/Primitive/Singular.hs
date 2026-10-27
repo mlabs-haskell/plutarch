@@ -5,7 +5,6 @@ module Plutarch.Primitive.Singular
     PInteger,
     PNatural,
     PPositive,
-    PNZInteger,
     PByte,
     PByteString,
     PString,
@@ -49,11 +48,6 @@ type role PNatural nominal
 data PPositive (s :: S)
 
 type role PPositive nominal
-
--- | @since 2.0.0
-data PNZInteger (s :: S)
-
-type role PNZInteger nominal
 
 -- | @since 2.0.0
 data PByte (s :: S)

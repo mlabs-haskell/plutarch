@@ -83,11 +83,6 @@ module Plutarch.Prelude
     -- *** Type marker
     S.PPositive,
 
-    -- ** Non-zero integer
-
-    -- *** Type marker
-    S.PNZInteger,
-
     -- ** BLS12-381
 
     -- *** Type markers

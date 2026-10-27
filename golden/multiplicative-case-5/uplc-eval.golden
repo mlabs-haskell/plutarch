@@ -1,16 +1,17 @@
-\a b ->
-  let mArg_c = \d e ->
-                 case 
-                   (EqualsInteger # a # (1 :: Integer))
-                   [  (\bind_f ->
-                        case 
-                          (RemainderInteger # e # (2 :: Integer))
-                          [bind_f, MultiplyInteger # bind_f # b]
-                      )
-                      # (
-                          (\cse_g -> MultiplyInteger # cse_g # cse_g)
-                          # (d # d # (QuotientInteger # e # (2 :: Integer)))
-                        ) 
-                   , b
-                   ]
-  in mArg_c # mArg_c # a
+\a ->
+  case a
+    [ \b c ->
+         MultiplyInteger
+         # b
+         # (
+             (\d ->
+               case c
+                 [\e f -> MultiplyInteger # e # (d # d # f), (1 :: Integer)]
+             )
+             # (\g h ->
+                 case h
+                   [\i j -> MultiplyInteger # i # (g # g # j), (1 :: Integer)]
+               )
+           ) 
+    , (1 :: Integer)
+    ]
