@@ -83,6 +83,10 @@ module Plutarch.Prelude
     -- *** Type marker
     S.PPositive,
 
+    -- *** Haskell equivalent
+    Lift.Positive,
+    Lift.mkPositive,
+
     -- ** Non-zero integer
 
     -- *** Type marker
