@@ -19,7 +19,9 @@ goldens =
       releaseGolden EvaluateUPLC "pif a then (b c) else (d e)" "Term Case 4" case4,
       releaseGolden EvaluateUPLC "sum 0 .. 9" "Term Case 5" case5,
       releaseGolden Don'tEvaluateUPLC "parallel let" "Term Case 6" case6,
-      releaseGolden Don'tEvaluateUPLC "serial let" "Term Case 7" case7
+      releaseGolden Don'tEvaluateUPLC "serial let" "Term Case 7" case7,
+      releaseGolden Don'tEvaluateUPLC "two-let parallelizable" "Term Case 8" case8,
+      releaseGolden Don'tEvaluateUPLC "two-let not parallelizable" "Term Case 9" case9
     ]
 
 -- Cases
@@ -77,3 +79,13 @@ case7 = plam1 $ \x ->
   let squareX = x #* x
       doubleSquareX = squareX #+ squareX
    in doubleSquareX #+ doubleSquareX
+
+case8 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case8 = plam1 $ \x -> plet (x #* x) $ \squared ->
+  plet (x #+ x) $ \doubled ->
+    (doubled #+ squared) #+ (squared #+ doubled)
+
+case9 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case9 = plam1 $ \x -> plet (x #* x) $ \squareX ->
+  plet (squareX #+ squareX) $ \doubleSquareX ->
+    doubleSquareX #+ doubleSquareX

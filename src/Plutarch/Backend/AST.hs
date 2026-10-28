@@ -48,6 +48,7 @@ import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
+import GHC.Stack (HasCallStack)
 import Plutarch.Backend.PosTree
   ( PosTree
       ( PCase,
