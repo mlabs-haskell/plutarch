@@ -4,13 +4,13 @@
 
 module Orphanage () where
 
-import Control.Applicative ((<|>))
+import Control.Applicative (asum, (<|>))
 import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Coerce (coerce)
-import Data.Foldable (foldl')
 import Data.Kind (Type)
+import Data.Maybe (fromJust)
 import Data.Proxy (Proxy (Proxy))
 import Data.Set qualified as Set
 import GHC.TypeNats (KnownNat, Nat, natVal)
@@ -42,6 +42,19 @@ import Test.QuickCheck
     vectorOf,
   )
 import Test.QuickCheck.Instances ()
+
+instance Arbitrary V4.Rational where
+  arbitrary = do
+    num <- arbitrary
+    den <- getNonZero <$> arbitrary
+    -- We know `den` must be nonzero, but we can't prove it to GHC, sigh
+    -- We can't use the unsafe method either, because we still need reductions
+    pure . fromJust . V4.ratio num $ den
+  shrink r = do
+    let n = V4.numerator r
+    let d = V4.denominator r
+    n' <- shrink n
+    pure . fromJust . V4.ratio n' $ d
 
 deriving via Blake2b224Hash instance Arbitrary V4.ScriptHash
 
@@ -135,15 +148,15 @@ instance Arbitrary V4.TxCert where
   shrink = \case
     V4.TxCertRegAccount aid ll -> V4.TxCertRegAccount aid <$> shrink ll
     V4.TxCertUnRegAccount aid ll -> V4.TxCertUnRegAccount aid <$> shrink ll
-    V4.TxCertDelegAccount _ _ -> [] -- neither field shrinks
+    V4.TxCertDelegAccount _ _ -> []
     V4.TxCertRegAccountDeleg aid d ll -> V4.TxCertRegAccountDeleg aid d <$> shrink ll
     V4.TxCertRegDRep cred ll -> V4.TxCertRegDRep cred <$> shrink ll
-    V4.TxCertUpdateDRep _ -> [] -- credentials don't shrink
+    V4.TxCertUpdateDRep _ -> []
     V4.TxCertUnRegDRep cred ll -> V4.TxCertUnRegDRep cred <$> shrink ll
-    V4.TxCertPoolRegister _ _ -> [] -- pubkeyhashes don't shrink
+    V4.TxCertPoolRegister _ _ -> []
     V4.TxCertPoolRetire pkh i -> V4.TxCertPoolRetire pkh <$> shrink i
-    V4.TxCertAuthHotCommittee _ _ -> [] -- credentials don't shrink
-    V4.TxCertResignColdCommittee _ -> [] -- credentials don't shrink
+    V4.TxCertAuthHotCommittee _ _ -> []
+    V4.TxCertResignColdCommittee _ -> []
 
 instance Arbitrary V4.Voter where
   arbitrary =
@@ -160,9 +173,8 @@ deriving via Blake2b224Hash instance Arbitrary V4.TxId
 
 instance Arbitrary V4.GovernanceActionId where
   arbitrary = V4.GovernanceActionId <$> arbitrary <*> (getNonNegative <$> arbitrary)
-  shrink (V4.GovernanceActionId tid ix) = do
-    ix' <- getNonNegative <$> shrink (NonNegative ix)
-    pure . V4.GovernanceActionId tid $ ix'
+  shrink (V4.GovernanceActionId tid ix) =
+    V4.GovernanceActionId tid . getNonNegative <$> shrink (NonNegative ix)
 
 instance Arbitrary V4.Committee where
   arbitrary = do
@@ -314,9 +326,7 @@ instance Arbitrary V4.TxOutRef where
 
 instance Arbitrary V4.Address where
   arbitrary = V4.Address <$> arbitrary <*> arbitrary
-  shrink (V4.Address cred mAccId) = do
-    mAccId' <- shrink mAccId
-    pure . V4.Address cred $ mAccId'
+  shrink (V4.Address cred mAccId) = V4.Address cred <$> shrink mAccId
 
 deriving via Blake2b256Hash instance Arbitrary V4.DatumHash
 
@@ -341,16 +351,24 @@ instance Arbitrary V4.TxOut where
       <*> (getUtxoValue <$> arbitrary)
       <*> arbitrary
       <*> arbitrary
-  shrink (V4.TxOut addr val outD refScript) = do
-    addr' <- shrink addr
-    UTxOValue val' <- shrink (UTxOValue val)
-    outD' <- shrink outD
-    refScript' <- shrink refScript
-    let shrink1 = V4.TxOut addr val outD refScript'
-    let shrink2 = V4.TxOut addr val outD' refScript
-    let shrink3 = V4.TxOut addr val' outD refScript
-    let shrink4 = V4.TxOut addr' val outD refScript
-    foldl' (<|>) [shrink1] [[shrink2], [shrink3], [shrink4]]
+  shrink (V4.TxOut addr val outD refScript) =
+    asum
+      [ shrAddr,
+        shrVal,
+        shrOutD,
+        shrRefScript
+      ]
+    where
+      shrAddr :: [V4.TxOut]
+      shrAddr = V4.TxOut <$> shrink addr <*> pure val <*> pure outD <*> pure refScript
+      shrVal :: [V4.TxOut]
+      shrVal = do
+        UTxOValue val' <- shrink (UTxOValue val)
+        pure . V4.TxOut addr val' outD $ refScript
+      shrOutD :: [V4.TxOut]
+      shrOutD = V4.TxOut addr val <$> shrink outD <*> pure refScript
+      shrRefScript :: [V4.TxOut]
+      shrRefScript = V4.TxOut addr val outD <$> shrink refScript
 
 instance Arbitrary V4.TxInInfo where
   arbitrary = V4.TxInInfo <$> arbitrary <*> arbitrary
@@ -416,7 +434,7 @@ instance Arbitrary V4.POSIXTimeRange where
         -- lower and upper
         do
           range <- arbitrary
-          start <- arbitrary
+          start <- getPositive <$> arbitrary
           pure . V4.POSIXTimeRange (Just start) . Just $ start + range
       ]
 
@@ -434,45 +452,13 @@ instance Arbitrary V4.ScriptPurpose where
         V4.Guarding <$> arbitrary <*> arbitrary
       ]
   shrink = \case
-    V4.Minting sh cs -> do
-      sh' <- shrink sh
-      cs' <- shrink cs
-      (pure . V4.Minting sh $ cs')
-        <|> (pure . V4.Minting sh' $ cs)
-    V4.Spending sh tor -> do
-      sh' <- shrink sh
-      tor' <- shrink tor
-      (pure . V4.Spending sh $ tor')
-        <|> (pure . V4.Spending sh' $ tor)
-    V4.Withdrawing sh cred -> do
-      sh' <- shrink sh
-      cred' <- shrink cred
-      (pure . V4.Withdrawing sh $ cred')
-        <|> (pure . V4.Withdrawing sh' $ cred)
-    V4.Certifying sh i cert -> do
-      sh' <- shrink sh
-      i' <- shrink i
-      cert' <- shrink cert
-      (pure . V4.Certifying sh i $ cert')
-        <|> (pure . V4.Certifying sh i' $ cert)
-        <|> (pure . V4.Certifying sh' i $ cert)
-    V4.Voting sh v -> do
-      sh' <- shrink sh
-      v' <- shrink v
-      (pure . V4.Voting sh $ v')
-        <|> (pure . V4.Voting sh' $ v)
-    V4.Proposing sh i pp -> do
-      sh' <- shrink sh
-      i' <- shrink i
-      pp' <- shrink pp
-      (pure . V4.Proposing sh i $ pp')
-        <|> (pure . V4.Proposing sh i' $ pp)
-        <|> (pure . V4.Proposing sh' i $ pp)
-    V4.Guarding sh i -> do
-      sh' <- shrink sh
-      i' <- shrink i
-      (pure . V4.Guarding sh $ i')
-        <|> (pure . V4.Guarding sh' $ i)
+    V4.Minting sh cs -> V4.Minting sh <$> shrink cs
+    V4.Spending sh tor -> V4.Spending sh <$> shrink tor
+    V4.Withdrawing _ _ -> []
+    V4.Certifying sh i cert -> V4.Certifying sh <$> shrink i <*> shrink cert
+    V4.Voting sh v -> V4.Voting sh <$> shrink v
+    V4.Proposing sh i pp -> V4.Proposing sh <$> shrink i <*> shrink pp
+    V4.Guarding sh i -> V4.Guarding sh <$> shrink i
 
 instance Arbitrary V4.TxInfo where
   arbitrary = do
@@ -519,9 +505,8 @@ instance Arbitrary V4.TxInfo where
   shrink (V4.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) = do
     ins' <- getNonEmpty <$> shrink (NonEmpty ins)
     outs' <- getNonEmpty <$> shrink (NonEmpty outs)
-    V4.TxInfo
-      <$> shrink iid
-      <*> shrink subTxIx
+    V4.TxInfo iid
+      <$> shrink subTxIx
       <*> pure ins'
       <*> shrink refIns
       <*> pure outs'
