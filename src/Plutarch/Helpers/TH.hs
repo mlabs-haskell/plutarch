@@ -72,7 +72,7 @@ import Plutarch.Primitive.BuiltinFun
   )
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
 import Plutarch.Primitive.DerivedFun (pheadTailList)
-import Plutarch.Primitive.Singular (PAsData, PData, (:-->))
+import Plutarch.Primitive.Singular (PAsData, PData, (:~>))
 import Plutarch.Primitive.Term
   ( plam',
     punsafeCase,
@@ -345,6 +345,8 @@ conToPTypeProduct = \case
       let errMsg = "Constructor " <> show conName <> " has a field " <> show fieldName <> " whose type is not wrapped in 'Term'."
        in dig errMsg t
     dig :: String -> Type -> Q PType
+    -- Field inspection still expects two arguments to Term; migration to
+    -- the single-argument form is pending.
     dig errMsg = \case
       AppT (AppT (ConT n) _) x -> do
         unless (n == ''Term) (fail errMsg)
@@ -368,5 +370,5 @@ classifyType t = case t of
 
 isTypePFunction :: Type -> Bool
 isTypePFunction = \case
-  InfixT _ name _ -> name == ''(:-->)
+  InfixT _ name _ -> name == ''(:~>)
   _ -> False

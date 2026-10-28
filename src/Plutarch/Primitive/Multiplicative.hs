@@ -13,7 +13,7 @@ module Plutarch.Primitive.Multiplicative
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Helpers.Numeric (pbySquaring)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite qualified as C
@@ -33,20 +33,19 @@ import Plutarch.Primitive.Singular
   ( PInteger,
     PNatural,
     PPositive,
-    (:-->),
+    (:~>),
   )
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (pfix, plam', punsafeCoerce)
 
 -- | @since 2.0.0
-class (PlutarchType a) => PMultiplicativeSemigroup (a :: S -> Type) where
-  pmultiply :: forall (s :: S). Term s (a :--> a :--> a)
+class (PlutarchType a) => PMultiplicativeSemigroup (a :: Type) where
+  pmultiply :: Term (a :~> a :~> a)
   default pmultiply ::
-    forall (s :: S).
     (PMultiplicativeSemigroup (PRepresentation a)) =>
-    Term s (a :--> a :--> a)
+    Term (a :~> a :~> a)
   pmultiply = punsafeCoerce (pmultiply @(PRepresentation a))
-  ppowPositive :: forall (s :: S). Term s (PPositive :--> a :--> a)
+  ppowPositive :: Term (PPositive :~> a :~> a)
   ppowPositive = plam' $ \e -> plam' $ pbySquaring pmultiply (pfundamental e)
 
 -- | @since 2.0.0
@@ -64,14 +63,13 @@ instance PMultiplicativeSemigroup S.PBLS12_381_MlResult where
   pmultiply = BF.pbls12_381_mulMlResult
 
 -- | @since 2.0.0
-class (PMultiplicativeSemigroup a) => PMultiplicativeMonoid (a :: S -> Type) where
-  pone :: forall (s :: S). Term s a
+class (PMultiplicativeSemigroup a) => PMultiplicativeMonoid (a :: Type) where
+  pone :: Term a
   default pone ::
-    forall (s :: S).
     (PMultiplicativeMonoid (PRepresentation a)) =>
-    Term s a
+    Term a
   pone = punsafeSecondary (pone @(PRepresentation a))
-  ppowNatural :: forall (s :: S). Term s (PNatural :--> a :--> a)
+  ppowNatural :: Term (PNatural :~> a :~> a)
   ppowNatural = plam' $ \e -> plam' $ \b ->
     pif
       (e #== pconstant 1)
@@ -90,18 +88,18 @@ instance PMultiplicativeMonoid PPositive
 
 -- | @since 2.0.0
 (#*) ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PMultiplicativeSemigroup a) =>
-  Term s a -> Term s a -> Term s a
+  Term a -> Term a -> Term a
 x #* y = pmultiply # x # y
 
 infix 6 #*
 
 -- | @since 2.0.0
 pproduct ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PMultiplicativeMonoid a) =>
-  Term s (C.PBList a :--> a)
+  Term (C.PBList a :~> a)
 pproduct = pfix $ \self -> plam' $ \ell -> pmatch ell $ \case
   C.PBNil -> pone
   C.PBCons x xs -> pmultiply # x #$ self # xs

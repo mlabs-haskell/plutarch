@@ -13,26 +13,26 @@ where
 import Data.Kind (Type)
 import Plutarch.Prelude
 
-data PThese (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThis (Term s a)
-  | PThat (Term s b)
-  | PThese (Term s a) (Term s b)
+data PThese (a :: Type) (b :: Type)
+  = PThis (Term a)
+  | PThat (Term b)
+  | PThese (Term a) (Term b)
 
 deriveFor ''PThese SOP AllInstances
 
-data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PLeft (Term s a)
-  | PRight (Term s b)
+data PEither (a :: Type) (b :: Type)
+  = PLeft (Term a)
+  | PRight (Term b)
 
 deriveFor ''PEither SOP AllInstances
 
-data PSOPList (a :: S -> Type) (s :: S)
+data PSOPList (a :: Type)
   = PSOPNil
-  | PSOPCons (Term s a) (Term s (PSOPList a))
+  | PSOPCons (Term a) (Term (PSOPList a))
 
 deriveFor ''PSOPList SOP AllInstances
 
-newtype PSOPOp (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PSopOp (Term s (b :--> a))
+newtype PSOPOp (a :: Type) (b :: Type)
+  = PSopOp (Term (b :~> a))
 
 deriveFor ''PSOPOp SOP NoEqDebug

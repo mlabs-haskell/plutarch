@@ -1,5 +1,4 @@
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE ImpredicativeTypes #-}
 
 -- | @since 2.0.0
 module Plutarch.Test.Size
@@ -19,7 +18,7 @@ import Plutarch.Backend.ANF (analyzeDeps, fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
-import Plutarch.Backend.Term (S, Term, releaseTermEnv)
+import Plutarch.Backend.Term (Term, releaseTermEnv)
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Helpers.Compile (compileTerm)
 import PlutusCore qualified as PLC
@@ -45,13 +44,13 @@ import UntypedPlutusCore qualified as UPLC
 --
 -- @since 2.0.0
 noLargerThan ::
-  forall (a :: S -> Type) (b :: S -> Type).
+  forall (a :: Type) (b :: Type).
   (Typeable a, Typeable b) =>
   String ->
   -- | Computation of interest
-  (forall (s :: S). Term s a) ->
+  Term a ->
   -- | Computation whose size is an upper bound
-  (forall (s :: S). Term s b) ->
+  Term b ->
   TestTree
 noLargerThan name t bound = singleTest name (CmpTermSize t bound)
 
@@ -74,7 +73,7 @@ noLargerThanUPLC name t bound = singleTest name (CmpUPLCSize t bound)
 data CmpTermSize :: Type where
   CmpTermSize ::
     (Typeable a, Typeable b) =>
-    (forall (s :: S). Term s a) -> (forall (s :: S). Term s b) -> CmpTermSize
+    Term a -> Term b -> CmpTermSize
   CmpUPLCSize :: UPLCTerm -> UPLCTerm -> CmpTermSize
 
 instance IsTest CmpTermSize where

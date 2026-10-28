@@ -112,16 +112,15 @@ data WhichInstances
 --
 -- = Important note
 --
--- All 'Strategy' choices assume that the type is formed correctly to be a
--- Plutarch type. This means the following in practice:
+-- Plutarch types have kind @Type@, and every field of every \'arm\' must be
+-- wrapped in 'Term'.
 --
--- * The type's /last/ type parameter must be of kind 'S'.
--- * Every field of every \'arm\' must be wrapped in @'Term' s@, where @s@ is
---  the type parameter of kind 'S'.
+-- Migration of the derivation implementation is pending: it still removes the
+-- last type parameter and expects two arguments to 'Term' in fields.
 --
--- While 'deriveFor' will check for all of these, it cannot \'look through\' type
--- synonyms. Please make sure that you do not use a type synonym as a field of any data
--- type that you wish to use 'deriveFor' with.
+-- 'deriveFor' cannot \'look through\' type synonyms. Please make sure that you
+-- do not use a type synonym as a field of any data type that you wish to use
+-- 'deriveFor' with.
 --
 -- @since 2.0.0
 deriveFor :: Name -> Strategy -> WhichInstances -> Q [Dec]

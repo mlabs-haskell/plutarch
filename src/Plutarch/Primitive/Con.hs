@@ -6,7 +6,7 @@ module Plutarch.Primitive.Con
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Primitive.BuiltinFun (pmkCons, pmkPairData)
 import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Composite qualified as C
@@ -27,8 +27,8 @@ import PlutusCore qualified as PLC
 -- 2. @'pmatch' x 'pcon'@ @=@ @x@
 --
 -- @since 2.0.0
-class (PMatch a) => PCon (a :: S -> Type) where
-  pcon' :: forall (s :: S). a s -> Term s (PRepresentation a)
+class (PMatch a) => PCon (a :: Type) where
+  pcon' :: a -> Term (PRepresentation a)
 
 -- | @since 2.0.0
 instance (PLiftable a) => PCon (C.PBList a) where
@@ -42,6 +42,6 @@ instance (PCanData a, PCanData b) => PCon (C.PBPair (PAsData a) (PAsData b)) whe
 
 -- | @since 2.0.0
 pcon ::
-  forall (a :: S -> Type) (s :: S).
-  (PCon a) => a s -> Term s a
+  forall (a :: Type).
+  (PCon a) => a -> Term a
 pcon = punsafeCoerce . pcon'

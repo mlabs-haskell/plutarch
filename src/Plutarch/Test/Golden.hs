@@ -20,7 +20,6 @@ import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.Term
   ( OptimizationMode (InternalExternal, OnlyInternal),
-    S,
     Term,
     TermEnv (TermEnv),
     TermError,
@@ -78,7 +77,7 @@ data Evaluation
 --
 -- @since 2.0.0
 plutarchGoldenWith ::
-  forall (a :: S -> Type).
+  forall (a :: Type).
   -- | Should we evaluate the result?
   Evaluation ->
   -- | Optimization and tracing level.
@@ -90,7 +89,7 @@ plutarchGoldenWith ::
   -- locations, and thus, should be unique, as described above.
   String ->
   -- | A closed 'Term'.
-  (forall (s :: S). Term s a) ->
+  Term a ->
   TestTree
 plutarchGoldenWith evaluation env@(TermEnv _ opt) testDescription testName t =
   let folderName = toFolderName testName
@@ -131,7 +130,7 @@ plutarchGoldenWith evaluation env@(TermEnv _ opt) testDescription testName t =
 --
 -- @since 2.0.0
 debugGolden ::
-  forall (a :: S -> Type).
+  forall (a :: Type).
   -- | Should we evaluate the result?
   Evaluation ->
   -- | A description for the test. This is what you will see when you run the
@@ -141,7 +140,7 @@ debugGolden ::
   -- locations, and thus, should be unique, as described above.
   String ->
   -- | A closed 'Term'.
-  (forall (s :: S). Term s a) ->
+  Term a ->
   TestTree
 debugGolden evaluation = plutarchGoldenWith evaluation debugTermEnv
 
@@ -149,7 +148,7 @@ debugGolden evaluation = plutarchGoldenWith evaluation debugTermEnv
 --
 -- @since 2.0.0
 releaseGolden ::
-  forall (a :: S -> Type).
+  forall (a :: Type).
   -- | Should we evaluate the result?
   Evaluation ->
   -- | A description for the test. This is what you will see when you run the
@@ -159,7 +158,7 @@ releaseGolden ::
   -- locations, and thus, should be unique, as described above.
   String ->
   -- | A closed 'Term'.
-  (forall (s :: S). Term s a) ->
+  Term a ->
   TestTree
 releaseGolden evaluation = plutarchGoldenWith evaluation releaseTermEnv
 

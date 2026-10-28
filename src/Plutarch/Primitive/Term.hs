@@ -19,7 +19,6 @@ module Plutarch.Primitive.Term
     punsafeCase,
     pcompiled,
     punsafeCompiled,
-    phoistAcyclic,
   )
 where
 
@@ -76,7 +75,6 @@ import Plutarch.Backend.RawTerm
 import Plutarch.Backend.Term
   ( OptimizationMode (InternalExternal, OnlyInternal),
     PDelayed,
-    S,
     SomeTerm (SomeTerm),
     Term (Term),
     TermEnv (TermEnv),
@@ -101,7 +99,7 @@ import Plutarch.Backend.VarMap
     vmSingleton,
   )
 import Plutarch.Helpers.Backend (getFresh)
-import Plutarch.Primitive.Singular ((:-->))
+import Plutarch.Primitive.Singular ((:~>))
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
 
@@ -110,8 +108,8 @@ import PlutusCore qualified as PLC
 --
 -- @since 2.0.0
 plam' ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  (Term s a -> Term s b) -> Term s (a :--> b)
+  forall (a :: Type) (b :: Type).
+  (Term a -> Term b) -> Term (a :~> b)
 plam' f = Term $ do
   fresh <- getFresh
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Argument)
@@ -131,8 +129,8 @@ plam' f = Term $ do
 --
 -- @since 2.0.0
 plet ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  Term s a -> (Term s a -> Term s b) -> Term s b
+  forall (a :: Type) (b :: Type).
+  Term a -> (Term a -> Term b) -> Term b
 plet v f = Term $ do
   fresh <- getFresh
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () LetBinding)
@@ -150,9 +148,9 @@ plet v f = Term $ do
 --
 -- @since 2.0.0
 pfix ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  (Term s (a :--> b) -> Term s (a :--> b)) ->
-  Term s (a :--> b)
+  forall (a :: Type) (b :: Type).
+  (Term (a :~> b) -> Term (a :~> b)) ->
+  Term (a :~> b)
 pfix f = Term $ do
   fresh <- getFresh
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Self)
@@ -172,10 +170,10 @@ pfix f = Term $ do
 --
 -- @since 2.0.0
 pcompose ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
-  Term s (a :--> b) ->
-  Term s (c :--> a) ->
-  Term s (c :--> b)
+  forall (a :: Type) (b :: Type) (c :: Type).
+  Term (a :~> b) ->
+  Term (c :~> a) ->
+  Term (c :~> b)
 pcompose f g = Term $ do
   (fvm, ft) <- asRawTerm f
   (gvm, gt) <- asRawTerm g
@@ -228,8 +226,8 @@ pcompose f g = Term $ do
 --
 -- @since 2.0.0
 pthrow ::
-  forall (a :: S -> Type) (s :: S).
-  (HasCallStack) => Text -> Term s a
+  forall (a :: Type).
+  (HasCallStack) => Text -> Term a
 pthrow = Term . throwError . UserSpecified callStack
 
 -- | Given the code for a function, and the code for its argument, construct the
@@ -237,8 +235,8 @@ pthrow = Term . throwError . UserSpecified callStack
 --
 -- @since 2.0.0
 papp ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  Term s (a :--> b) -> Term s a -> Term s b
+  forall (a :: Type) (b :: Type).
+  Term (a :~> b) -> Term a -> Term b
 papp f x = Term $ do
   (fvm, ft) <- asRawTerm f
   (xvm, xt) <- asRawTerm x
@@ -251,8 +249,8 @@ papp f x = Term $ do
 --
 -- @since 2.0.0
 pdelay ::
-  forall (a :: S -> Type) (s :: S).
-  Term s a -> Term s (PDelayed a)
+  forall (a :: Type).
+  Term a -> Term (PDelayed a)
 pdelay t = Term $ do
   (vm, t') <- asRawTerm t
   pure (vmMap POne vm, RDelay () t')
@@ -262,8 +260,8 @@ pdelay t = Term $ do
 --
 -- @since 2.0.0
 pforce ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (PDelayed a) -> Term s a
+  forall (a :: Type).
+  Term (PDelayed a) -> Term a
 pforce t = Term $ do
   (vm, t') <- asRawTerm t
   pure (vmMap POne vm, RForce () t')
@@ -271,7 +269,7 @@ pforce t = Term $ do
 -- | Construct the canonical UPLC error.
 --
 -- @since 2.0.0
-perror :: forall (a :: S -> Type) (s :: S). Term s a
+perror :: forall (a :: Type). Term a
 perror = Term . pure $ (vmEmpty, RError ())
 
 -- | Constructs a placeholder term. It is extremely unlikely that you need to
@@ -281,8 +279,8 @@ perror = Term . pure $ (vmEmpty, RError ())
 --
 -- @since 2.0.0
 pplaceholder ::
-  forall (a :: S -> Type) (s :: S).
-  Integer -> Term s a
+  forall (a :: Type).
+  Integer -> Term a
 pplaceholder i = Term . pure $ (vmEmpty, RPlaceholder () i)
 
 -- | \'Retag\' a 'Term' to specify it as producing a different result. This is
@@ -291,8 +289,8 @@ pplaceholder i = Term . pure $ (vmEmpty, RPlaceholder () i)
 --
 -- @since 2.0.0
 punsafeCoerce ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  Term s a -> Term s b
+  forall (a :: Type) (b :: Type).
+  Term a -> Term b
 punsafeCoerce = Term . asRawTerm
 
 -- | Produce code corresponding to the stated builtin. This is marked as unsafe,
@@ -303,8 +301,8 @@ punsafeCoerce = Term . asRawTerm
 --
 -- @since 2.0.0
 punsafeBuiltin ::
-  forall (a :: S -> Type) (s :: S).
-  PLC.DefaultFun -> Term s a
+  forall (a :: Type).
+  PLC.DefaultFun -> Term a
 punsafeBuiltin f = Term . pure $ (vmEmpty, RBuiltin () f)
 
 -- | Given some element of the Plutus default universe, produce code that yields
@@ -314,8 +312,8 @@ punsafeBuiltin f = Term . pure $ (vmEmpty, RBuiltin () f)
 --
 -- @since 2.0.0
 punsafeConstant ::
-  forall (a :: S -> Type) (s :: S).
-  Some (ValueOf PLC.DefaultUni) -> Term s a
+  forall (a :: Type).
+  Some (ValueOf PLC.DefaultUni) -> Term a
 punsafeConstant c = Term . pure $ (vmEmpty, RConstant () c)
 
 -- | Given a tag, and an existentially-erased 'Vector' of fields, construct a
@@ -330,10 +328,10 @@ punsafeConstant c = Term . pure $ (vmEmpty, RConstant () c)
 --
 -- @since 2.0.0
 punsafeConstr ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   Word64 ->
-  Vector (SomeTerm s) ->
-  Term s a
+  Vector SomeTerm ->
+  Term a
 punsafeConstr ix fields = Term $ do
   -- Note (Koz, 28/05/2026): We need to use the constructor explicitly here, as
   -- `asRawTerm` can't solve for the existential for some reason.
@@ -362,10 +360,10 @@ punsafeConstr ix fields = Term $ do
 --
 -- @since 2.0.0
 punsafeCase ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  Term s a ->
-  NonEmptyVector (SomeTerm s) ->
-  Term s b
+  forall (a :: Type) (b :: Type).
+  Term a ->
+  NonEmptyVector SomeTerm ->
+  Term b
 punsafeCase scrut handlers = Term $ do
   (vmScrut, tscrut) <- asRawTerm scrut
   -- Note (Koz, 28/05/2026): We need to use the constructor explicitly here, as
@@ -383,6 +381,7 @@ punsafeCase scrut handlers = Term $ do
 
 -- | Given a closed 'Term', compile it \'on the spot\', and embed the resulting
 -- UPLC into a 'Term'.
+-- The input must have no free variables; the type does not enforce this.
 --
 -- = Note
 --
@@ -397,9 +396,9 @@ punsafeCase scrut handlers = Term $ do
 --
 -- @since 2.0.0
 pcompiled ::
-  forall (a :: S -> Type) (s :: S).
-  (forall (s' :: S). Term s' a) ->
-  Term s a
+  forall (a :: Type).
+  Term a ->
+  Term a
 pcompiled t = Term $ do
   env@(TermEnv _ opt) <- ask
   case runRWS (runExceptT . asRawTerm $ t) env 0 of
@@ -407,7 +406,7 @@ pcompiled t = Term $ do
     -- here, as otherwise, we would get a dependency loop.
     (res, _, _) -> case res of
       Left err -> throwError err
-      -- We know the term is closed, so we can ignore the varmap.
+      -- Embedding discards the variable map, assuming the input is closed.
       Right (_, rt) -> do
         let ast = fromRawTerm rt
         let anf = fromHashedAST ast
@@ -429,30 +428,10 @@ pcompiled t = Term $ do
 --
 -- @since 2.0.0
 punsafeCompiled ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   UPLCTerm ->
-  Term s a
+  Term a
 punsafeCompiled t = Term . pure $ (vmEmpty, RCompiled () t)
-
--- | Given a 'Term' which is \'relatively closed\', \'hoist\' it into the
--- current 'Term' context.
---
--- = Note
---
--- \'Relative closure\' refers to not re-using anything from the context being
--- \'hoisted into\'. Essentially, 'phoistAcyclic' asserts that the subterm is
--- truly independent of whatever computation it's being \'hoisted\' into.
---
--- This exists only for backwards compatibility with earlier versions of
--- Plutarch. It no longer does anything, as the need for it has been completely
--- superceded.
---
--- @since 2.0.0
-phoistAcyclic ::
-  forall (a :: S -> Type) (s :: S).
-  (forall (s' :: S). Term s' a) ->
-  Term s a
-phoistAcyclic f = Term $ asRawTerm f
 
 -- Helpers
 

@@ -123,18 +123,18 @@ goldens =
 
 -- Cases
 
-case4 :: forall (s :: S). Term s PBool
+case4 :: Term PBool
 case4 = peq # ell1 # ell2
   where
-    ell1 :: Term s (PSOPList PInteger)
+    ell1 :: Term (PSOPList PInteger)
     ell1 = pcon PSOPNil
-    ell2 :: Term s (PSOPList PInteger)
+    ell2 :: Term (PSOPList PInteger)
     ell2 = pcon sopList
 
-case6 :: forall (s :: S). Term s PString
+case6 :: Term PString
 case6 = pshow . pcon $ trip
 
-case7 :: forall (s :: S). Term s PString
+case7 :: Term PString
 case7 =
   pshow
     . pcon @(PEither PInteger PByteString)
@@ -142,13 +142,13 @@ case7 =
     . pconstant @PInteger
     $ 2
 
-case8 :: forall (s :: S). Term s PString
+case8 :: Term PString
 case8 = pshow . pcon $ sopList
 
-case9 :: forall (s :: S). Term s PString
+case9 :: Term PString
 case9 = pshow pthese
 
-case10 :: forall (s :: S). Term s PString
+case10 :: Term PString
 case10 =
   pshow
     . pcon @(PTheseMS PInteger PBool)
@@ -157,7 +157,7 @@ case10 =
 
 -- Helpers
 
-sopList :: forall (s :: S). PSOPList PInteger s
+sopList :: PSOPList PInteger
 sopList =
   PSOPCons
     (pconstant @PInteger 3)
@@ -168,10 +168,10 @@ sopList =
         )
     )
 
-trip :: forall (s :: S). PTriple PBool s
+trip :: PTriple PBool
 trip = PTriple (ptoData pfalse) (ptoData pfalse) (ptoData pfalse)
 
-pthese :: forall (s :: S). Term s (PTheseData PInteger PByteString)
+pthese :: Term (PTheseData PInteger PByteString)
 pthese =
   pcon @(PTheseData PInteger PByteString)
     . PTheseData (ptoData . pconstant $ 2)
@@ -179,7 +179,7 @@ pthese =
     . pconstant
     $ "foo"
 
-plist :: forall (s :: S). Term s (PListData PInteger)
+plist :: Term (PListData PInteger)
 plist =
   pcon
     . PConsData (ptoData . pconstant $ 1)
@@ -190,7 +190,7 @@ plist =
     . pcon
     $ PNilData
 
-pnelist :: forall (s :: S). Term s (PNEList PInteger)
+pnelist :: Term (PNEList PInteger)
 pnelist =
   pcon
     . PCons (ptoData . pconstant $ 1)

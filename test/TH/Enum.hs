@@ -1,20 +1,24 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module TH.Enum (PColour (..), PTimeOfDay (..)) where
 
+import Data.Kind (Type)
 import Plutarch.Prelude
 import Plutarch.Prelude qualified as P
 
-data PColour (s :: S)
+type PColour :: Type
+data PColour
   = PRed
   | PGreen
   | PBlue
 
 deriveFor ''PColour P.Enum AllInstances
 
-data PTimeOfDay (s :: S)
+type PTimeOfDay :: Type
+data PTimeOfDay
   = PDay
   | PNight
 

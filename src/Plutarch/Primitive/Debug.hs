@@ -13,8 +13,7 @@ import Data.Kind (Type)
 import Data.Text qualified as Text
 import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.Term
-  ( S,
-    Term (Term),
+  ( Term (Term),
     TermEnv (TermEnv),
     TracingMode (NoTracing),
     asRawTerm,
@@ -33,7 +32,7 @@ import Plutarch.Primitive.Representation
     (#),
     (#$),
   )
-import Plutarch.Primitive.Singular (PInteger, PNatural, PString, (:-->))
+import Plutarch.Primitive.Singular (PInteger, PNatural, PString, (:~>))
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (pdelay, pfix, pforce, plam', punsafeCase)
 
@@ -54,15 +53,15 @@ import Plutarch.Primitive.Term (pdelay, pfix, pforce, plam', punsafeCase)
 -- you accidentally leave in any 'pshow's, your scripts won't suffer too much.
 --
 -- @since 2.0.0
-class (PlutarchType a) => PDebug (a :: S -> Type) where
+class (PlutarchType a) => PDebug (a :: Type) where
   pdebug ::
-    forall (r :: S -> Type) (s :: S).
+    forall (r :: Type).
     (PlutarchType r) =>
-    Term s a -> (Term s PString -> Term s r) -> Term s r
+    Term a -> (Term PString -> Term r) -> Term r
   default pdebug ::
-    forall (r :: S -> Type) (s :: S).
+    forall (r :: Type).
     (PlutarchType r, PDebug (PRepresentation a)) =>
-    Term s a -> (Term s PString -> Term s r) -> Term s r
+    Term a -> (Term PString -> Term r) -> Term r
   pdebug t = pdebug (pfundamental t)
 
 -- | @since 2.0.0
@@ -131,7 +130,7 @@ instance PDebug S.PByteString where
               )
       )
     where
-      go :: forall (s :: S). Term s (S.PByteString :--> PInteger :--> PInteger :--> PString)
+      go :: Term (S.PByteString :~> PInteger :~> PInteger :~> PString)
       go = pfix $ \self -> plam' $ \bs -> plam' $ \lim -> plam' $ \i ->
         let rendered = pshow $ BF.pindexByteString # bs # punsafeSecondary i
          in pif
@@ -150,11 +149,11 @@ instance (PDebug a, PDebug b) => PDebug (C.PBPair a b) where
 -- | @since 2.0.0
 instance PDebug S.PData where
   pdebug ::
-    forall (r :: S -> Type) (s :: S).
-    Term s S.PData -> (Term s PString -> Term s r) -> Term s r
+    forall (r :: Type).
+    Term S.PData -> (Term PString -> Term r) -> Term r
   pdebug t f = f (go # t)
     where
-      go :: Term s (S.PData :--> PString)
+      go :: Term (S.PData :~> PString)
       go = pfix $ \self -> plam' $ \dat ->
         pforce $
           BF.pchooseData
@@ -190,9 +189,9 @@ instance PDebug PString where
 --
 -- @since 2.0.0
 pshow ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PDebug a) =>
-  Term s a -> Term s PString
+  Term a -> Term PString
 pshow t = pdebug t $ \asString -> Term $ do
   TermEnv tracing _ <- ask
   asRawTerm $ case tracing of
@@ -202,10 +201,10 @@ pshow t = pdebug t $ \asString -> Term $ do
 -- Helpers
 
 -- Shorthand
-(#<|>) :: forall (s :: S). Term s PString -> Term s PString -> Term s PString
+(#<|>) :: Term PString -> Term PString -> Term PString
 t1 #<|> t2 = BF.pappendString # t1 # t2
 
-renderNum :: forall (s :: S). Term s (PInteger :--> PInteger :--> PString)
+renderNum :: Term (PInteger :~> PInteger :~> PString)
 renderNum = pfix $ \self -> plam' $ \q -> plam' $ \r ->
   let d = renderDigit # r
    in pif
@@ -216,13 +215,13 @@ renderNum = pfix $ \self -> plam' $ \q -> plam' $ \r ->
            in (self # q' # r') #<|> d
         )
 
-renderDigit :: forall (s :: S). Term s (PInteger :--> PString)
+renderDigit :: Term (PInteger :~> PString)
 renderDigit = plam' $ \i ->
   punsafeCase i
     . NEVector.generate1 10
     $ toSomeTerm . pconstant @PString . Text.pack . show
 
-renderHexDigit :: forall (s :: S). Term s (PInteger :--> PString)
+renderHexDigit :: Term (PInteger :~> PString)
 renderHexDigit = plam' $ \i ->
   punsafeCase i . NEVector.generate1 16 $
     toSomeTerm . pconstant @PString . \case
@@ -243,28 +242,28 @@ renderHexDigit = plam' $ \i ->
       14 -> "E"
       _ -> "F"
 
-ten :: forall (s :: S). Term s PInteger
+ten :: Term PInteger
 ten = pconstant 10
 
-zero :: forall (s :: S). Term s PInteger
+zero :: Term PInteger
 zero = pconstant 0
 
-sixteen :: forall (s :: S). Term s PInteger
+sixteen :: Term PInteger
 sixteen = pconstant 16
 
-one :: forall (s :: S). Term s PInteger
+one :: Term PInteger
 one = pconstant 1
 
 formatList ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (a :--> PString) ->
-  Term s (C.PBList a :--> PString)
+  Term (a :~> PString) ->
+  Term (C.PBList a :~> PString)
 formatList f = plam' $ \ell -> pmatch ell $ \case
   C.PBNil -> pconstant "[]"
   C.PBCons x xs -> pconstant "[" #<|> (go # x # xs) #<|> pconstant "]"
   where
-    go :: Term s (a :--> C.PBList a :--> PString)
+    go :: Term (a :~> C.PBList a :~> PString)
     go = pfix $ \self -> plam' $ \x ->
       let rendered = f # x
        in plam' $ \xs -> pmatch xs $ \case
@@ -272,10 +271,10 @@ formatList f = plam' $ \ell -> pmatch ell $ \case
             C.PBCons y ys -> rendered #<|> pconstant ", " #<|> (self # y # ys)
 
 formatPair ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> PString) ->
-  Term s (b :--> PString) ->
-  Term s (C.PBPair a b :--> PString)
+  Term (a :~> PString) ->
+  Term (b :~> PString) ->
+  Term (C.PBPair a b :~> PString)
 formatPair f g = plam' $ \p -> pmatch p $ \(C.PBPair x y) ->
   pconstant "(" #<|> (f # x) #<|> pconstant ", " #<|> (g # y) #<|> pconstant ")"

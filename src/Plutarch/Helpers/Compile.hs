@@ -13,7 +13,6 @@ import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
 import Plutarch.Backend.Term
   ( OptimizationMode (InternalExternal, OnlyInternal),
-    S,
     Term (Term),
     TermEnv (TermEnv),
     TermError,
@@ -22,17 +21,17 @@ import Plutarch.Backend.UPLC (UPLCTerm)
 
 -- | @since 2.0.0
 compileTerm ::
-  forall (a :: S -> Type).
+  forall (a :: Type).
   TermEnv ->
-  (forall (s :: S). Term s a) ->
+  Term a ->
   Either TermError (RawTerm ())
 compileTerm env (Term comp) = (\(x, _, _) -> fmap snd x) . runRWS (runExceptT comp) env $ 0
 
 -- | @since 2.0.0
 termToUPLC ::
-  forall (a :: S -> Type).
+  forall (a :: Type).
   TermEnv ->
-  (forall (s :: S). Term s a) ->
+  Term a ->
   Either TermError UPLCTerm
 termToUPLC env@(TermEnv _ opt) t = do
   let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True

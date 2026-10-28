@@ -33,7 +33,7 @@ import Data.Vector.Strict (Vector)
 import Data.Word (Word8)
 import Numeric.Natural (Natural)
 import Plutarch.Backend.Evaluate (EvalError, peval)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Primitive.Composite qualified as C
 import Plutarch.Primitive.Representation
   ( PlutarchType (PRepresentation),
@@ -247,11 +247,11 @@ class
   -- always holds and always should). While we could defer this problem to the
   -- specific instances that require it, doing so would create far too much
   -- typechecker noise, so we put it here.
-  PLiftable (a :: S -> Type)
+  PLiftable (a :: Type)
   where
   type AsHaskell a :: Type
-  plutToRepr :: (forall (s :: S). Term s a) -> Either LiftError (AsPlutus (AsHaskell a))
-  reprToPlut :: forall (s :: S). AsPlutus (AsHaskell a) -> Term s a
+  plutToRepr :: Term a -> Either LiftError (AsPlutus (AsHaskell a))
+  reprToPlut :: AsPlutus (AsHaskell a) -> Term a
 
 -- | @since 2.0.0
 deriving via (PLiftableDirect S.PBool Bool) instance PLiftable S.PBool
@@ -360,10 +360,10 @@ instance (PLiftable a) => PLiftable (S.PBArray a) where
 --
 -- @since 2.0.0
 pconstant ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PLiftable a) =>
   AsHaskell a ->
-  Term s a
+  Term a
 pconstant = reprToPlut . haskToRepr
 
 -- | Given a closed 'Term', evaluate it and produce the Haskell representation
@@ -376,9 +376,9 @@ pconstant = reprToPlut . haskToRepr
 --
 -- @since 2.0.0
 plift ::
-  forall (a :: S -> Type).
+  forall (a :: Type).
   (PLiftable a) =>
-  (forall (s :: S). Term s a) ->
+  Term a ->
   AsHaskell a
 plift t = case plutToRepr t of
   Left err -> error $ "lifting failed: " <> show err
@@ -395,7 +395,7 @@ plift t = case plutToRepr t of
 -- * @h@ is a part of the default Plutus universe.
 --
 -- @since 2.0.0
-newtype PLiftableDirect (a :: S -> Type) (h :: Type) (s :: S) = PLiftableDirect (a s)
+newtype PLiftableDirect (a :: Type) (h :: Type) = PLiftableDirect a
 
 -- | @since 2.0.0
 instance (PlutarchType a, PRepresentation a ~ a) => PlutarchType (PLiftableDirect a h) where

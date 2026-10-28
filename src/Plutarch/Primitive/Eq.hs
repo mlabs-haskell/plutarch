@@ -10,7 +10,7 @@ where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
-import Plutarch.Backend.Term (S, Term, toSomeTerm)
+import Plutarch.Backend.Term (Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun qualified as F
 import Plutarch.Primitive.Composite qualified as C
 import Plutarch.Primitive.DerivedFun (pfalse, pif, pnot, ptrue)
@@ -21,7 +21,7 @@ import Plutarch.Primitive.Representation
     pfundamental,
     (#),
   )
-import Plutarch.Primitive.Singular (PBool, (:-->))
+import Plutarch.Primitive.Singular (PBool, (:~>))
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term
   ( pfix,
@@ -33,11 +33,10 @@ import Plutarch.Primitive.Term
 import PlutusCore qualified as PLC
 
 -- | @since 2.0.0
-class (PlutarchType a) => PEq (a :: S -> Type) where
-  peq :: forall (s :: S). Term s (a :--> a :--> PBool)
+class (PlutarchType a) => PEq (a :: Type) where
+  peq :: Term (a :~> a :~> PBool)
   default peq ::
-    forall (s :: S).
-    (PEq (PRepresentation a)) => Term s (a :--> a :--> PBool)
+    (PEq (PRepresentation a)) => Term (a :~> a :~> PBool)
   peq = punsafeCoerce (peq @(PRepresentation a))
 
 -- | @since 2.0.0
@@ -95,11 +94,10 @@ instance (PEq a) => PEq (S.PBArray a) where
       pfalse
     where
       go ::
-        forall (s :: S).
-        Term s (S.PBArray a) ->
-        Term s (S.PBArray a) ->
-        Term s S.PNatural ->
-        Term s (S.PNatural :--> PBool)
+        Term (S.PBArray a) ->
+        Term (S.PBArray a) ->
+        Term S.PNatural ->
+        Term (S.PNatural :~> PBool)
       go xs ys limit = pfix $ \self -> plam' $ \i ->
         pif
           (peq # i # limit)
@@ -138,9 +136,9 @@ instance (PEq a, PEq b) => PEq (C.PBPair a b) where
 
 -- | @since 2.0.0
 (#==) ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PEq a) =>
-  Term s a -> Term s a -> Term s PBool
+  Term a -> Term a -> Term PBool
 x #== y = peq # x # y
 
 -- | @since 2.0.0
@@ -148,9 +146,9 @@ infix 4 #==
 
 -- | @since 2.0.0
 (#/=) ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PEq a) =>
-  Term s a -> Term s a -> Term s PBool
+  Term a -> Term a -> Term PBool
 x #/= y = pnot (peq # x # y)
 
 -- | @since 2.0.0

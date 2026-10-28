@@ -17,7 +17,7 @@ module Plutarch.Prelude.List
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Prelude.Maybe (PMaybe, pjust, pnothing)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
@@ -33,17 +33,17 @@ import Plutarch.Primitive.Representation
     (#),
     (#$),
   )
-import Plutarch.Primitive.Singular ((:-->))
+import Plutarch.Primitive.Singular ((:~>))
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (pfix, plam')
 
 -- | @since 2.0.0
 pcount ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (a :--> S.PBool) ->
-  Term s (PBList a) ->
-  Term s S.PNatural
+  Term (a :~> S.PBool) ->
+  Term (PBList a) ->
+  Term S.PNatural
 pcount p =
   pfoldr
     ( plam' $ \x -> plam' $ \acc ->
@@ -56,14 +56,14 @@ pcount p =
 
 -- | @since 2.0.0
 pfind ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (a :--> S.PBool) ->
-  Term s (PBList a) ->
-  Term s (PMaybe a)
+  Term (a :~> S.PBool) ->
+  Term (PBList a) ->
+  Term (PMaybe a)
 pfind p ell = go # ell
   where
-    go :: Term s (PBList a :--> PMaybe a)
+    go :: Term (PBList a :~> PMaybe a)
     go = pfix $ \self -> plam' $ \xs -> pmatch xs $ \case
       PBNil -> pnothing
       PBCons x xs' ->
@@ -74,14 +74,14 @@ pfind p ell = go # ell
 
 -- | @since 2.0.0
 pindex ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PBList a) ->
-  Term s S.PNatural ->
-  Term s (PMaybe a)
+  Term (PBList a) ->
+  Term S.PNatural ->
+  Term (PMaybe a)
 pindex ell ix = go # pfundamental ix # ell
   where
-    go :: Term s (S.PInteger :--> PBList a :--> PMaybe a)
+    go :: Term (S.PInteger :~> PBList a :~> PMaybe a)
     go = pfix $ \self -> plam' $ \currIx -> plam' $ \xs -> pmatch xs $ \case
       PBNil -> pnothing
       PBCons x xs' ->
@@ -92,38 +92,38 @@ pindex ell ix = go # pfundamental ix # ell
 
 -- | @since 2.0.0
 plength ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PBList a) ->
-  Term s S.PNatural
+  Term (PBList a) ->
+  Term S.PNatural
 plength = punsafeSecondary . pfoldr (plam' $ \_ -> BF.paddInteger # pconstant 1) (pconstant 0)
 
 -- | @since 2.0.0
 pfoldr ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> b :--> b) ->
-  Term s b ->
-  Term s (PBList a) ->
-  Term s b
+  Term (a :~> b :~> b) ->
+  Term b ->
+  Term (PBList a) ->
+  Term b
 pfoldr f acc xs = go # xs
   where
-    go :: Term s (PBList a :--> b)
+    go :: Term (PBList a :~> b)
     go = pfix $ \self -> plam' $ \ell -> pmatch ell $ \case
       PBNil -> acc
       PBCons h t -> f # h #$ self # t
 
 -- | @since 2.0.0
 pfoldl ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (b :--> a :--> b) ->
-  Term s b ->
-  Term s (PBList a) ->
-  Term s b
+  Term (b :~> a :~> b) ->
+  Term b ->
+  Term (PBList a) ->
+  Term b
 pfoldl f acc xs = go # xs
   where
-    go :: Term s (PBList a :--> b)
+    go :: Term (PBList a :~> b)
     go = pfix $ \self -> plam' $ \ell -> pmatch ell $ \case
       PBNil -> acc
       PBCons h t -> f # (self # t) # h
@@ -139,11 +139,11 @@ pfoldl f acc xs = go # xs
 --
 -- @since 2.0.0
 punsafeIndex ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PBList a) ->
-  Term s S.PNatural ->
-  Term s a
+  Term (PBList a) ->
+  Term S.PNatural ->
+  Term a
 punsafeIndex ell i = BF.pheadList #$ BF.pdropList # i # ell
 
 -- | Retrieves the first element of the argument. Faster than indexing or a
@@ -155,10 +155,10 @@ punsafeIndex ell i = BF.pheadList #$ BF.pdropList # i # ell
 --
 -- @since 2.0.0
 punsafeHead ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PBList a) ->
-  Term s a
+  Term (PBList a) ->
+  Term a
 punsafeHead ell = BF.pheadList # ell
 
 -- | As @'punsafeDrop' 1@, but faster and less code. This operation is unsafe
@@ -166,10 +166,10 @@ punsafeHead ell = BF.pheadList # ell
 --
 -- @since 2.0.0
 punsafeTail ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PBList a) ->
-  Term s (PBList a)
+  Term (PBList a) ->
+  Term (PBList a)
 punsafeTail ell = BF.ptailList # ell
 
 -- | Get both the first element and all but the first element of the argument,
@@ -178,11 +178,11 @@ punsafeTail ell = BF.ptailList # ell
 --
 -- @since 2.0.0
 punsafeUncons ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (PBList a) ->
-  Term s (a :--> PBList a :--> b) ->
-  Term s b
+  Term (PBList a) ->
+  Term (a :~> PBList a :~> b) ->
+  Term b
 punsafeUncons = DF.pheadTailList
 
 -- | Discards the given number of items from the argument list and returns
@@ -195,9 +195,9 @@ punsafeUncons = DF.pheadTailList
 --
 -- @since 2.0.0
 punsafeDrop ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s S.PNatural ->
-  Term s (PBList a) ->
-  Term s (PBList a)
+  Term S.PNatural ->
+  Term (PBList a) ->
+  Term (PBList a)
 punsafeDrop howMany ell = BF.pdropList # howMany # ell

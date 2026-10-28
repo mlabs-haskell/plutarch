@@ -11,14 +11,14 @@ where
 import Data.Kind (Type)
 import Plutarch.Prelude
 
-data PTheseMS (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThisMS (Term s a)
-  | PThatMS (Term s b)
-  | PTheseMS (Term s a) (Term s b)
+data PTheseMS (a :: Type) (b :: Type)
+  = PThisMS (Term a)
+  | PThatMS (Term b)
+  | PTheseMS (Term a) (Term b)
 
 deriveFor ''PTheseMS MogensenScott AllInstances
 
-newtype PMSOp (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PMSOp (Term s (b :--> a))
+newtype PMSOp (a :: Type) (b :: Type)
+  = PMSOp (Term (b :~> a))
 
 deriveFor ''PMSOp MogensenScott NoEqDebug
