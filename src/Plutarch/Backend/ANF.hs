@@ -50,7 +50,7 @@ import Data.Map.NonEmpty (NEMap)
 import Data.Map.NonEmpty qualified as NEMap
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
-import Data.Maybe (fromJust, mapMaybe)
+import Data.Maybe (fromJust)
 import Data.Monoid (Sum (Sum))
 import Data.Set (Set)
 import Data.Set qualified as Set
@@ -568,34 +568,42 @@ rankBindings ::
   NEMap Rank (NESet Id)
 rankBindings onlyDeps bindings = case NESet.deleteFindMin bindings of
   (lowestId, rest) ->
-    let start = NEMap.singleton (Rank 0) . NESet.singleton $ lowestId
-     in Set.foldl' go start rest
+    let forwardMap = NEMap.singleton (Rank 0) . NESet.singleton $ lowestId
+        reverseMap = NEMap.singleton lowestId . Rank $ 0
+        (completed, _) = Set.foldl' go (forwardMap, reverseMap) rest
+     in completed
   where
-    go :: NEMap Rank (NESet Id) -> Id -> NEMap Rank (NESet Id)
-    go acc letBinding@(Id letIx) =
-      let toInsert = NESet.singleton letBinding
-       in case onlyDeps NEVector.! letIx of
-            NoDeps -> NEMap.insertWith NESet.union (Rank 0) toInsert acc
-            Deps dir indir ->
-              let combinedDeps = GHC.toList . Set.union (NESet.toSet dir) $ indir
-               in case mapMaybe (rankOf acc) . GHC.toList $ combinedDeps of
-                    [] -> NEMap.insertWith NESet.union (Rank 0) toInsert acc
-                    ranks ->
-                      let Rank maxRank = maximum ranks
-                       in NEMap.insertWith NESet.union (Rank $ maxRank + 1) toInsert acc
-    -- Inefficient 'reverse lookup'
-    rankOf :: NEMap Rank (NESet Id) -> Id -> Maybe Rank
-    rankOf alreadyRanked i =
-      NEMap.foldrWithKey
-        ( \r ranked acc ->
-            if NESet.member i ranked
-              then case acc of
-                Nothing -> Just r
-                Just r' -> Just (max r r')
-              else acc
-        )
-        Nothing
-        alreadyRanked
+    -- We maintain both a 'forward' and 'reverse' accumulator here to make
+    -- checking already-ranked `Id`s easy. We can do this because we know that
+    -- for the 'forward' direction, any given `Id` belongs to at most one value
+    -- (that is, any two values of that `NEMap` are disjoint), but GHC can't
+    -- know this in general.
+    go ::
+      (NEMap Rank (NESet Id), NEMap Id Rank) ->
+      Id ->
+      (NEMap Rank (NESet Id), NEMap Id Rank)
+    go acc letBinding@(Id letIx) = case onlyDeps NEVector.! letIx of
+      NoDeps -> insertRanked letBinding (Rank 0) acc
+      Deps dir indir ->
+        let combinedDeps = Set.union (NESet.toSet dir) indir
+            r = Set.foldl' (rankUpperBound (snd acc)) (Rank 0) combinedDeps
+         in insertRanked letBinding r acc
+    insertRanked ::
+      Id ->
+      Rank ->
+      (NEMap Rank (NESet Id), NEMap Id Rank) ->
+      (NEMap Rank (NESet Id), NEMap Id Rank)
+    insertRanked letBinding r (forwardAcc, reverseAcc) =
+      ( NEMap.insertWith NESet.union r (NESet.singleton letBinding) forwardAcc,
+        NEMap.insert letBinding r reverseAcc
+      )
+    rankUpperBound :: NEMap Id Rank -> Rank -> Id -> Rank
+    rankUpperBound alreadyRanked acc@(Rank accVal) i = case NEMap.lookup i alreadyRanked of
+      Nothing -> acc
+      Just (Rank rVal) ->
+        if accVal <= rVal
+          then Rank (rVal + 1)
+          else acc
 
 toBindingsBySite :: Map Id Id -> Map Id (NESet Id)
 toBindingsBySite = Map.foldrWithKey go Map.empty

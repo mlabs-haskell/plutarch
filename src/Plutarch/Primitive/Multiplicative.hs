@@ -60,9 +60,6 @@ instance PMultiplicativeSemigroup PNatural
 instance PMultiplicativeSemigroup PPositive
 
 -- | @since 2.0.0
-instance PMultiplicativeSemigroup S.PNZInteger
-
--- | @since 2.0.0
 instance PMultiplicativeSemigroup S.PBLS12_381_MlResult where
   pmultiply = BF.pbls12_381_mulMlResult
 
@@ -90,9 +87,6 @@ instance PMultiplicativeMonoid PNatural
 
 -- | @since 2.0.0
 instance PMultiplicativeMonoid PPositive
-
--- | @since 2.0.0
-instance PMultiplicativeMonoid S.PNZInteger
 
 -- | @since 2.0.0
 (#*) ::

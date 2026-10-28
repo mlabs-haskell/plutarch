@@ -21,11 +21,15 @@ module Plutarch.Unsafe
 
     -- * Unsafe 'PMaybe' operations
     Maybe.punsafeFromJust,
+
+    -- * Unsafe 'Positive' construction
+    Liftable.unsafeMkPositive,
   )
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
+import Plutarch.Primitive.Liftable qualified as Liftable
 import Plutarch.Primitive.Representation qualified as Representation
 import Plutarch.Primitive.Term qualified as PrimTerm
