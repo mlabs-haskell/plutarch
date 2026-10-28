@@ -84,10 +84,6 @@ instance PlutarchType S.PPositive where
   type PRepresentation S.PPositive = S.PInteger
 
 -- | @since 2.0.0
-instance PlutarchType S.PNZInteger where
-  type PRepresentation S.PNZInteger = S.PInteger
-
--- | @since 2.0.0
 instance PlutarchType S.PByte where
   type PRepresentation S.PByte = S.PInteger
 

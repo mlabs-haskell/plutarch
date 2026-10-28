@@ -44,7 +44,6 @@ import Plutarch.Primitive.Singular
     PByteString,
     PData,
     PInteger,
-    PNZInteger,
     PNatural,
     PPositive,
   )
@@ -89,9 +88,6 @@ instance PCanData PInteger where
 
 -- | @since 2.0.0
 instance PCanData PNatural
-
--- | @since 2.0.0
-instance PCanData PNZInteger
 
 -- | @since 2.0.0
 instance PCanData PPositive

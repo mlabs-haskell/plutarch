@@ -87,11 +87,6 @@ module Plutarch.Prelude
     Lift.Positive,
     Lift.mkPositive,
 
-    -- ** Non-zero integer
-
-    -- *** Type marker
-    S.PNZInteger,
-
     -- ** BLS12-381
 
     -- *** Type markers

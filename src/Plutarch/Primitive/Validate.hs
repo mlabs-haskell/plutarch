@@ -19,7 +19,6 @@ import Plutarch.Primitive.DerivedFun
     pisNegative,
     pisPositive,
   )
-import Plutarch.Primitive.Eq ((#==))
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Representation (PlutarchType, (#))
@@ -67,15 +66,6 @@ instance PValidateData S.PPositive where
           (pisPositive asI)
           res
           perror
-
--- | @since 2.0.0
-instance PValidateData S.PNZInteger where
-  pwithValidated d res =
-    let asI = BF.punIData # d
-     in pif
-          (asI #== pconstant 0)
-          perror
-          res
 
 -- | @since 2.0.0
 instance PValidateData S.PByte where
