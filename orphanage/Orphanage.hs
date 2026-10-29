@@ -515,7 +515,7 @@ instance Arbitrary V4.TxInfo where
       <*> shrink wdrls
       <*> shrink directs
       <*> shrink abints
-      <*> shrink valid
+      <*> pure valid
       <*> shrink guards
       <*> shrink reqGuards
       <*> shrink reds
@@ -578,7 +578,7 @@ instance Arbitrary V4.TopTxInfoSimplified where
       <*> shrink certs
       <*> shrink wdrls
       <*> shrink dds
-      <*> shrink valid
+      <*> pure valid
       <*> shrink guards
       <*> shrink reqGuards
       <*> shrink reds
@@ -637,7 +637,7 @@ instance Arbitrary V4.ScriptInfo where
 instance Arbitrary V4.ScriptContext where
   arbitrary = V4.ScriptContext <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
   shrink (V4.ScriptContext info red si sh) =
-    V4.ScriptContext <$> shrink info <*> shrink red <*> shrink si <*> shrink sh
+    V4.ScriptContext <$> shrink info <*> shrink red <*> shrink si <*> pure sh
 
 -- Helpers
 
