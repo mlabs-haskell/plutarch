@@ -345,10 +345,8 @@ conToPTypeProduct = \case
       let errMsg = "Constructor " <> show conName <> " has a field " <> show fieldName <> " whose type is not wrapped in 'Term'."
        in dig errMsg t
     dig :: String -> Type -> Q PType
-    -- Field inspection still expects two arguments to Term; migration to
-    -- the single-argument form is pending.
     dig errMsg = \case
-      AppT (AppT (ConT n) _) x -> do
+      AppT (ConT n) x -> do
         unless (n == ''Term) (fail errMsg)
         classifyType x
       _ -> fail errMsg
@@ -371,4 +369,5 @@ classifyType t = case t of
 isTypePFunction :: Type -> Bool
 isTypePFunction = \case
   InfixT _ name _ -> name == ''(:~>)
+  AppT (AppT (ConT name) _) _ -> name == ''(:~>)
   _ -> False
