@@ -43,7 +43,6 @@ import PlutusCore qualified as PLC
 -- @since 2.0.0
 data VarTag
   = Argument
-  | LetBinding
   | Self
   deriving stock
     ( -- | @since 2.0.0
@@ -60,8 +59,7 @@ instance Hashable VarTag where
   hash =
     hash @Int . \case
       Argument -> 0
-      LetBinding -> 1
-      Self -> 2
+      Self -> 1
 
 -- | Plutarch-specific version of the @Structure@ definition from the paper
 -- _Hashing Modulo Alpha-Equivalence_. We provide the ability to annotate these.
@@ -118,14 +116,6 @@ data RawTerm (ann :: Type)
     --
     --    @since 2.0.0
     RCase ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
-  | -- | An explicit @let@ binding. These do not directly translate to UPLC,
-    --    but exist to aid prettyprinting and code analysis.
-    --
-    --    @Structure@-ally speaking, this is a hybrid between a lambda and an
-    --    application, both arity 1.
-    --
-    --    @since 2.0.0
-    RLet ann (Maybe PosTree) (RawTerm ann) (RawTerm ann)
   | -- | An explicit fixpoint of a functional. This does not directly translate
     --    to UPLC, but exists to aid prettyprinting, code analysis and generation.
     --
@@ -166,6 +156,5 @@ getRawTermAnn = \case
   RPlaceholder x _ -> x
   RConstr x _ _ -> x
   RCase x _ _ -> x
-  RLet x _ _ _ -> x
   RFix x _ _ -> x
   RCompose x _ -> x

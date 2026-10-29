@@ -5,9 +5,11 @@
            , \e ->
                case e
                  [ \f g ->
-                     let _ = UnIData # f
-                     in case g
+                      (\_ ->
+                        case g
                           [\h i -> a_self # h # (case i [\_ _ -> ERROR, c])]
+                      )
+                      # (UnIData # f) 
                  ]
            ]
        )

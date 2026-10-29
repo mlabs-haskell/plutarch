@@ -1,6 +1,0 @@
-\a ->
-  let b_letBound = MultiplyInteger # a # a
-  in let c_letBound = AddInteger # a # a
-     in  AddInteger
-         # (AddInteger # c_letBound # b_letBound)
-         # (AddInteger # b_letBound # c_letBound) 

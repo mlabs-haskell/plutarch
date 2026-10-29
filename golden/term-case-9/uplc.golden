@@ -1,4 +1,0 @@
-\ee ->
-  let fe = MultiplyInteger # ee # ee
-  let ge = AddInteger # fe # fe
-  in AddInteger # ge # ge

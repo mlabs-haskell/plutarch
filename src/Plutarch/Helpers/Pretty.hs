@@ -20,7 +20,6 @@ module Plutarch.Helpers.Pretty
     caseTemplate,
     ctorTemplate,
     composeTemplate,
-    letTemplate,
     PrintMode (PrintDefault, PrintAtomic),
   )
 where
@@ -298,32 +297,6 @@ appTemplate = appLike "#"
 
 composeTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 composeTemplate = appLike "."
-
--- Var -> Binding -> Body -> Result
-letTemplate :: forall (ann :: Type). PrintMode -> Doc ann -> Doc ann -> Doc ann -> Doc ann
-letTemplate mode var bind body = case mode of
-  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
-  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
-  where
-    myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> ""
-
-    mkMultiline :: Doc ann -> Doc ann -> Doc ann
-    mkMultiline l r =
-      align . group $
-        l
-          <> "let"
-          <+> var
-          <+> "="
-          <+> align (group bind)
-          <> hardline
-          <> "in"
-          <+> align (group body)
-          <> myLine
-          <> r
-
-    oneLineNoParens :: Doc ann
-    oneLineNoParens = "let" <+> var <+> "=" <+> bind <+> "in" <+> body
 
 caseTemplate :: forall (ann :: Type). PrintMode -> Bool -> Doc ann -> [Doc ann] -> Doc ann
 caseTemplate mode scrutIsSmall scrut handlers = case mode of

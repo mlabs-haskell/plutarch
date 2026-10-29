@@ -70,7 +70,6 @@ import Plutarch.Backend.RawTerm
         RFix,
         RForce,
         RLamAbs,
-        RLet,
         RPlaceholder,
         RVar
       ),
@@ -83,7 +82,6 @@ import Plutarch.Backend.VarMap
     vmFirst,
     vmFold,
     vmMap,
-    vmMerge,
   )
 import Plutarch.Helpers.Backend (getFresh)
 import Plutarch.Helpers.Pretty
@@ -161,7 +159,6 @@ instance Pretty (Leaf ann) where
 --
 -- More precisely, this closely follows 'RawTerm', except that:
 --
--- * 'RLet' nodes have been removed
 -- * Lambdas and applications have been uncurried
 -- * Position trees have been replaced by 'BoundVar's, whose hashes are
 --  hashes of the corresponding position tree
@@ -297,14 +294,6 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
         (structuralHashBody, body') <- local (vmExtend fresh pt . vmMap stepDownOne) (go body)
         let structuralHash = hash (7 :: Int, structuralHashBody)
         mkHashed structuralHash (\h -> ASTFix h boundVar body')
-      RLet _ mpt v f -> do
-        let node = RApply () (RLamAbs () mpt f) v
-        (vmv, vmf) <- asks (vmFold separateTwo (vmEmpty, vmEmpty))
-        let vmf' = vmMap POne vmf
-        let extendedVMV = vmMap (PTwo . That) vmv
-        let extendedVMF = vmMap (PTwo . This) vmf'
-        let vm' = vmMerge mergeLet extendedVMF extendedVMV
-        local (const vm') (go node)
       RConstr _ tag fields -> do
         let len = Vector.length fields
         fieldVMs <- asks (vmFold separateConstr (Vector.replicate len vmEmpty))
@@ -438,16 +427,6 @@ alignBVsArgs bvs args =
               (arg', restArgs') <- Vector.uncons restArgs
               go mBV' arg' restBVs' restArgs'
         _ -> Nothing
-
-mergeLet :: PosTree -> PosTree -> PosTree
-mergeLet (PTwo (This body)) (PTwo (That value)) = PTwo (These body value)
-mergeLet arg1 arg2 =
-  error $
-    "Expected both PTwo arguments to mergeLet but got:\n"
-      <> "  arg1: "
-      <> show arg1
-      <> "  arg2: "
-      <> show arg2
 
 mkHashed ::
   forall (m :: Type -> Type).
