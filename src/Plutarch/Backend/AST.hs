@@ -32,7 +32,6 @@ module Plutarch.Backend.AST
   )
 where
 
-import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Control.Monad.RWS.CPS
   ( MonadReader (ask, local),
@@ -48,7 +47,6 @@ import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
-import GHC.Stack (HasCallStack)
 import Plutarch.Backend.PosTree
   ( PosTree
       ( PCase,
@@ -442,8 +440,14 @@ alignBVsArgs bvs args =
         _ -> Nothing
 
 mergeLet :: PosTree -> PosTree -> PosTree
-mergeLet (PCase f1 xs1) (PCase f2 xs2) = PCase (f1 <|> f2) (NEVector.zipWith (<|>) xs1 xs2)
-mergeLet x _ = x -- impossible
+mergeLet (PTwo (This body)) (PTwo (That value)) = PTwo (These body value)
+mergeLet arg1 arg2 =
+  error $
+    "Expected both PTwo arguments to mergeLet but got:\n"
+      <> "  arg1: "
+      <> show arg1
+      <> "  arg2: "
+      <> show arg2
 
 mkHashed ::
   forall (m :: Type -> Type).

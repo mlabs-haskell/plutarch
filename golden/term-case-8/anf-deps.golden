@@ -1,0 +1,41 @@
+ANF Hashes:
+ #0 := m5XKL3leqWoN
+ #1 := lMDuGRYnL3pN
+ #2 := eCzd4Kqlm5c
+ #3 := lblZXYH2CKyN
+ #4 := qnHnh5qZ9tpN
+ #5 := pfoAlLMvd4vN
+ #6 := zgG2pm8TKA
+ #7 := gY7QCAPtMLg
+ #8 := vjMEhbkCp9cN
+ #9 := yI8DIugRYDcN
+ #10 := e1izmm8reDpN
+ #11 := fvRid5Z0sTbN
+
+ANF Binds:
+ #0 := AddInteger
+ #1 := Apply #0 [c, b]
+ #2 := Apply #0 [b, c]
+ #3 := Apply #0 [#1, #2]
+ #4 := \c:2 -> #3
+ #5 := Apply #0 [a, a]
+ #6 := Apply #4 [#5]
+ #7 := \b:2 -> #6
+ #8 := MultiplyInteger
+ #9 := Apply #8 [a, a]
+ #10 := Apply #7 [#9]
+ #11 := \a:4 -> #10
+
+ANF Annotations:
+ #0 := No dependencies
+ #1 := Direct: {#0}, indirect: {}
+ #2 := Direct: {#0}, indirect: {}
+ #3 := Direct: {#0, #1, #2}, indirect: {}
+ #4 := Direct: {#3}, indirect: {#0, #1, #2}
+ #5 := Direct: {#0}, indirect: {}
+ #6 := Direct: {#4, #5}, indirect: {#0, #1, #2, #3}
+ #7 := Direct: {#6}, indirect: {#0, #1, #2, #3, #4, #5}
+ #8 := No dependencies
+ #9 := Direct: {#8}, indirect: {}
+ #10 := Direct: {#7, #9}, indirect: {#0, #1, #2, #3, #4, #5, #6, #8}
+ #11 := Direct: {#10}, indirect: {#0, #1, #2, #3, #4, #5, #6, #7, #8, #9}
