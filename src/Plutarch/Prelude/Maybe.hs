@@ -12,7 +12,7 @@ module Plutarch.Prelude.Maybe
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.Con (pcon)
 import Plutarch.Primitive.Debug (pshow)
@@ -30,9 +30,9 @@ import Plutarch.TH.Strategy
   )
 
 -- | @since 2.0.0
-data PMaybe (a :: S -> Type) (s :: S)
+data PMaybe (a :: Type)
   = PNothing
-  | PJust (Term s a)
+  | PJust (Term a)
 
 deriveFor ''PMaybe SOP AllInstances
 
@@ -53,45 +53,45 @@ instance (POrd a) => POrd (PMaybe a) where
 
 -- | @since 2.0.0
 pnothing ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PMaybe a)
+  Term (PMaybe a)
 pnothing = pcon PNothing
 
 -- | @since 2.0.0
 pjust ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s a ->
-  Term s (PMaybe a)
+  Term a ->
+  Term (PMaybe a)
 pjust = pcon . PJust
 
 -- | @since 2.0.0
 pisNothing ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PMaybe a) ->
-  Term s PBool
+  Term (PMaybe a) ->
+  Term PBool
 pisNothing t = pmatch t $ \case
   PNothing -> ptrue
   PJust _ -> pfalse
 
 -- | @since 2.0.0
 pisJust ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PMaybe a) ->
-  Term s PBool
+  Term (PMaybe a) ->
+  Term PBool
 pisJust t = pmatch t $ \case
   PNothing -> pfalse
   PJust _ -> ptrue
 
 -- | @since 2.0.0
 punsafeFromJust ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PMaybe a) ->
-  Term s a
+  Term (PMaybe a) ->
+  Term a
 punsafeFromJust t = pmatch t $ \case
   PNothing -> perror
   PJust x -> x

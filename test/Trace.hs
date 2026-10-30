@@ -23,13 +23,13 @@ goldens =
 
 -- Cases
 
-case1 :: forall (s :: S). Term s PInteger
+case1 :: Term PInteger
 case1 = pconstant 10
 
-case2 :: forall (s :: S). Term s PInteger
+case2 :: Term PInteger
 case2 = ptraceDebug (pconstant @PString "foo") case1
 
-case3 :: forall (s :: S). Term s PInteger
+case3 :: Term PInteger
 case3 = ptraceError (pconstant @PString "foo") case1
 
 -- Helpers

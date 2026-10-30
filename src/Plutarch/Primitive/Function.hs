@@ -25,8 +25,8 @@ import Generics.SOP
     Shape (ShapeCons, ShapeNil),
     shape,
   )
-import Plutarch.Backend.Term (S, Term)
-import Plutarch.Primitive.Singular ((:-->))
+import Plutarch.Backend.Term (Term)
+import Plutarch.Primitive.Singular ((:~>))
 import Plutarch.Primitive.Term (plam')
 
 -- | A type-heterogenous cons list of 'Term's. Designed to allow constructing a
@@ -34,19 +34,19 @@ import Plutarch.Primitive.Term (plam')
 -- taking the same number of arguments.
 --
 -- @since 2.0.0
-data PLamArgs (ts :: [S -> Type]) (s :: S) where
-  Done :: PLamArgs '[] s
+data PLamArgs (ts :: [Type]) where
+  Done :: PLamArgs '[]
   Arg ::
-    forall (a :: S -> Type) (ts :: [S -> Type]) (s :: S).
-    Term s a -> PLamArgs ts s -> PLamArgs (a ': ts) s
+    forall (a :: Type) (ts :: [Type]).
+    Term a -> PLamArgs ts -> PLamArgs (a ': ts)
 
 -- | Needed to successfully type 'plam'. Essentially, @'PlutarchArrow' [a_1,
--- a_2, ... , a_k] b@ is the same as @a_1 :--> a_2 :--> ... :--> a_k :--> b@.
+-- a_2, ... , a_k] b@ is the same as @a_1 :~> a_2 :~> ... :~> a_k :~> b@.
 --
 -- @since 2.0.0
-type family PlutarchArrow (ts :: [S -> Type]) (r :: S -> Type) where
+type family PlutarchArrow (ts :: [Type]) (r :: Type) where
   PlutarchArrow '[] r = r
-  PlutarchArrow (a ': as) r = a :--> PlutarchArrow as r
+  PlutarchArrow (a ': as) r = a :~> PlutarchArrow as r
 
 -- | Given a code transformation involving any number of 'Term's to produce
 -- another 'Term', construct a Plutus lambda taking the same number of arguments,
@@ -62,13 +62,13 @@ type family PlutarchArrow (ts :: [S -> Type]) (r :: S -> Type) where
 --
 -- @since 2.0.0
 plam ::
-  forall (ts :: [S -> Type]) (r :: S -> Type) (s :: S).
+  forall (ts :: [Type]) (r :: Type).
   (SListI ts) =>
-  (PLamArgs ts s -> Term s r) -> Term s (PlutarchArrow ts r)
-plam f = case shape @(S -> Type) @ts of
+  (PLamArgs ts -> Term r) -> Term (PlutarchArrow ts r)
+plam f = case shape @Type @ts of
   ShapeNil -> f Done
   ShapeCons @ts' @a _ ->
-    let g :: Term s a -> PLamArgs ts' s -> Term s r
+    let g :: Term a -> PLamArgs ts' -> Term r
         g x rest = f (Arg x rest)
      in plam' $ \arg -> plam (g arg)
 
@@ -77,16 +77,16 @@ plam f = case shape @(S -> Type) @ts of
 --
 -- @since 2.0.0
 plam1 ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  (Term s a -> Term s b) -> Term s (a :--> b)
+  forall (a :: Type) (b :: Type).
+  (Term a -> Term b) -> Term (a :~> b)
 plam1 = plam'
 
 -- | As 'plam1', but for two arguments.
 --
 -- @since 2.0.0
 plam2 ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
-  (Term s a -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
+  forall (a :: Type) (b :: Type) (c :: Type).
+  (Term a -> Term b -> Term c) -> Term (a :~> b :~> c)
 plam2 f = plam @[a, b] $ \case
   Arg t1 (Arg t2 Done) -> f t1 t2
 
@@ -95,13 +95,12 @@ plam2 f = plam @[a, b] $ \case
 -- @since 2.0.0
 plam3 ::
   forall
-    (a :: S -> Type)
-    (b :: S -> Type)
-    (c :: S -> Type)
-    (d :: S -> Type)
-    (s :: S).
-  (Term s a -> Term s b -> Term s c -> Term s d) ->
-  Term s (a :--> b :--> c :--> d)
+    (a :: Type)
+    (b :: Type)
+    (c :: Type)
+    (d :: Type).
+  (Term a -> Term b -> Term c -> Term d) ->
+  Term (a :~> b :~> c :~> d)
 plam3 f = plam @[a, b, c] $ \case
   Arg t1 (Arg t2 (Arg t3 Done)) -> f t1 t2 t3
 
@@ -110,14 +109,13 @@ plam3 f = plam @[a, b, c] $ \case
 -- @since 2.0.0
 plam4 ::
   forall
-    (a :: S -> Type)
-    (b :: S -> Type)
-    (c :: S -> Type)
-    (d :: S -> Type)
-    (e :: S -> Type)
-    (s :: S).
-  (Term s a -> Term s b -> Term s c -> Term s d -> Term s e) ->
-  Term s (a :--> b :--> c :--> d :--> e)
+    (a :: Type)
+    (b :: Type)
+    (c :: Type)
+    (d :: Type)
+    (e :: Type).
+  (Term a -> Term b -> Term c -> Term d -> Term e) ->
+  Term (a :~> b :~> c :~> d :~> e)
 plam4 f = plam @[a, b, c, d] $ \case
   Arg t1 (Arg t2 (Arg t3 (Arg t4 Done))) -> f t1 t2 t3 t4
 
@@ -126,15 +124,14 @@ plam4 f = plam @[a, b, c, d] $ \case
 -- @since 2.0.0
 plam5 ::
   forall
-    (a :: S -> Type)
-    (b :: S -> Type)
-    (c :: S -> Type)
-    (d :: S -> Type)
-    (e :: S -> Type)
-    (f :: S -> Type)
-    (s :: S).
-  (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f) ->
-  Term s (a :--> b :--> c :--> d :--> e :--> f)
+    (a :: Type)
+    (b :: Type)
+    (c :: Type)
+    (d :: Type)
+    (e :: Type)
+    (f :: Type).
+  (Term a -> Term b -> Term c -> Term d -> Term e -> Term f) ->
+  Term (a :~> b :~> c :~> d :~> e :~> f)
 plam5 f = plam @[a, b, c, d, e] $ \case
   Arg t1 (Arg t2 (Arg t3 (Arg t4 (Arg t5 Done)))) -> f t1 t2 t3 t4 t5
 
@@ -143,15 +140,14 @@ plam5 f = plam @[a, b, c, d, e] $ \case
 -- @since 2.0.0
 plam6 ::
   forall
-    (a :: S -> Type)
-    (b :: S -> Type)
-    (c :: S -> Type)
-    (d :: S -> Type)
-    (e :: S -> Type)
-    (f :: S -> Type)
-    (g :: S -> Type)
-    (s :: S).
-  (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f -> Term s g) ->
-  Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)
+    (a :: Type)
+    (b :: Type)
+    (c :: Type)
+    (d :: Type)
+    (e :: Type)
+    (f :: Type)
+    (g :: Type).
+  (Term a -> Term b -> Term c -> Term d -> Term e -> Term f -> Term g) ->
+  Term (a :~> b :~> c :~> d :~> e :~> f :~> g)
 plam6 f = plam @[a, b, c, d, e, f] $ \case
   Arg t1 (Arg t2 (Arg t3 (Arg t4 (Arg t5 (Arg t6 Done))))) -> f t1 t2 t3 t4 t5 t6

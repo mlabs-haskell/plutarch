@@ -9,7 +9,7 @@ where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
-import Plutarch.Backend.Term (S, Term, toSomeTerm)
+import Plutarch.Backend.Term (Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Composite qualified as C
@@ -27,11 +27,10 @@ import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (perror, plam', punsafeCase, punsafeCoerce)
 
 -- | @since 2.0.0
-class (PCanData a) => PValidateData (a :: S -> Type) where
+class (PCanData a) => PValidateData (a :: Type) where
   pwithValidated ::
-    forall (s :: S).
-    Term s PData ->
-    (forall (r :: S -> Type). (PlutarchType r) => Term s r -> Term s r)
+    Term PData ->
+    (forall (r :: Type). (PlutarchType r) => Term r -> Term r)
 
 -- | @since 2.0.0
 instance PValidateData S.PBool where
@@ -110,8 +109,8 @@ instance PValidateData (C.PBPair S.PData S.PData) where
 
 -- | @since 2.0.0
 pvalidateData ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PValidateData a) =>
-  Term s PData ->
-  Term s (PAsData a)
+  Term PData ->
+  Term (PAsData a)
 pvalidateData d = pwithValidated @a d (punsafeCoerce d)

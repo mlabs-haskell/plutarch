@@ -1,6 +1,8 @@
+{-# LANGUAGE StandaloneKindSignatures #-}
+
 -- | @since 2.0.0
 module Plutarch.Primitive.Singular
-  ( (:-->),
+  ( (:~>),
     PBool,
     PInteger,
     PNatural,
@@ -20,86 +22,75 @@ module Plutarch.Primitive.Singular
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S)
 
 -- | @since 2.0.0
-data (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
+type (:~>) :: Type -> Type -> Type
+data (:~>) a b
 
-type role (:-->) representational representational nominal
+type role (:~>) representational representational
 
-infixr 0 :-->
-
--- | @since 2.0.0
-data PBool (s :: S)
-
-type role PBool nominal
+infixr 0 :~>
 
 -- | @since 2.0.0
-data PInteger (s :: S)
-
-type role PInteger nominal
-
--- | @since 2.0.0
-data PNatural (s :: S)
-
-type role PNatural nominal
+type PBool :: Type
+data PBool
 
 -- | @since 2.0.0
-data PPositive (s :: S)
-
-type role PPositive nominal
-
--- | @since 2.0.0
-data PByte (s :: S)
-
-type role PByte nominal
+type PInteger :: Type
+data PInteger
 
 -- | @since 2.0.0
-data PByteString (s :: S)
-
-type role PByteString nominal
-
--- | @since 2.0.0
-data PString (s :: S)
-
-type role PString nominal
+type PNatural :: Type
+data PNatural
 
 -- | @since 2.0.0
-data PBLS12_381_G1_Element (s :: S)
-
-type role PBLS12_381_G1_Element nominal
-
--- | @since 2.0.0
-data PBLS12_381_G2_Element (s :: S)
-
-type role PBLS12_381_G2_Element nominal
+type PPositive :: Type
+data PPositive
 
 -- | @since 2.0.0
-data PBLS12_381_MlResult (s :: S)
-
-type role PBLS12_381_MlResult nominal
-
--- | @since 2.0.0
-data PData (s :: S)
-
-type role PData nominal
+type PByte :: Type
+data PByte
 
 -- | @since 2.0.0
-data PAsData (a :: S -> Type) (s :: S)
-
-type role PAsData nominal nominal
-
--- | @since 2.0.0
-data PBArray (a :: S -> Type) (s :: S)
-
-type role PBArray representational nominal
+type PByteString :: Type
+data PByteString
 
 -- | @since 2.0.0
-data PBValue (s :: S)
-
-type role PBValue nominal
+type PString :: Type
+data PString
 
 -- | @since 2.0.0
-data PSOP (s :: S)
+type PBLS12_381_G1_Element :: Type
+data PBLS12_381_G1_Element
 
-type role PSOP nominal
+-- | @since 2.0.0
+type PBLS12_381_G2_Element :: Type
+data PBLS12_381_G2_Element
+
+-- | @since 2.0.0
+type PBLS12_381_MlResult :: Type
+data PBLS12_381_MlResult
+
+-- | @since 2.0.0
+type PData :: Type
+data PData
+
+-- | @since 2.0.0
+type PAsData :: Type -> Type
+data PAsData a
+
+type role PAsData nominal
+
+-- | @since 2.0.0
+type PBArray :: Type -> Type
+data PBArray a
+
+type role PBArray representational
+
+-- | @since 2.0.0
+type PBValue :: Type
+data PBValue
+
+-- | @since 2.0.0
+type PSOP :: Type
+data PSOP

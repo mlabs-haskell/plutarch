@@ -1,6 +1,5 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeData #-}
 {-# LANGUAGE ViewPatterns #-}
 
 -- | The full definition of Plutarch 'Term's, as well as eDSL primitives which
@@ -10,16 +9,11 @@
 -- Alpha-Equivalence/. However, we also work in a monadic stack providing access
 -- to some configuration information, as well as a source of unique identifiers
 -- to ensure that the Barendregt convention is followed by any code generated in
--- Plutarch. Lastly, we provide an \'indicator\' to ensure that we never attempt
--- to compile terms that aren't closed, using something akin to the \'@ST@
--- trick\'.
+-- Plutarch.
 --
 -- = Links
 --
 -- - [The original paper](https://arxiv.org/pdf/2105.02856)
--- - [_Lazy Functional State
--- Threads_](https://www.microsoft.com/en-us/research/wp-content/uploads/1994/06/lazy-functional-state-threads.pdf),
--- which describes the \'@ST@ trick\'
 --
 -- @since 2.0.0
 module Plutarch.Backend.Term
@@ -28,7 +22,6 @@ module Plutarch.Backend.Term
     TermEnv (..),
     debugTermEnv,
     releaseTermEnv,
-    S,
     Term (..),
     SomeTerm (..),
     toSomeTerm,
@@ -110,17 +103,6 @@ import Prettyprinter
     (<+>),
   )
 import Universe (Some (Some), ValueOf (ValueOf))
-
--- Note (Koz, 08/06/2026): `type data` is a particularly hideous GHCism used to
--- define (effectively) a kind without forcing us to promote a type. Whenever
--- you see `type data Foo = Bar | Baz`, you can read that as a declaration of a
--- new _kind_ `Foo`, containing the types `Bar` and `Baz`.
-
--- | An empty kind to ensure that the @s@ parameter never gets used for
--- anything.
---
--- @since 2.0.0
-type data S
 
 -- | What level of tracing to use in a compiled result.
 --
@@ -224,22 +206,20 @@ data TermError
       Show
     )
 
--- | A basic unit of Plutarch eDSL construction. More precisely, a @'Term' s a@
+-- | A basic unit of Plutarch eDSL construction. More precisely, a @'Term' a@
 -- is the code which corresponds to a computation that, when run, will either
--- produce the UPLC equivalent of @a@, or error. The @s@ is used to track free
--- variable dependencies, specifically to ensure that we never attempt to
--- compile a 'Term' with free variables.
+-- produce the UPLC equivalent of @a@, or error.
 --
 -- @since 2.0.0
-newtype Term (s :: S) (a :: S -> Type)
+newtype Term (a :: Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
-type role Term nominal representational
+type role Term representational
 
-instance Pretty (Term s a) where
+instance Pretty (Term a) where
   pretty = prettyTerm
 
-prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc ann
+prettyTerm :: forall (px :: Type) (ann :: Type). Term px -> Doc ann
 prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
   (res, _, _) -> case res of
     Left e -> "Encountered an error when attempting to pretty print a term: " <> pretty (show e)
@@ -420,15 +400,15 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
 -- heterogenous types to be used in both.
 --
 -- @since 2.0.0
-data SomeTerm (s :: S) where
-  SomeTerm :: Term s a -> SomeTerm s
+data SomeTerm where
+  SomeTerm :: Term a -> SomeTerm
 
 -- | \'Forgets\' the result of a computation represented by a 'Term'.
 --
 -- @since 2.0.0
 toSomeTerm ::
-  forall (a :: S -> Type) (s :: S).
-  Term s a -> SomeTerm s
+  forall (a :: Type).
+  Term a -> SomeTerm
 toSomeTerm = SomeTerm
 
 -- | A type-level tag indicating a Plutarch computation that has been
@@ -436,4 +416,4 @@ toSomeTerm = SomeTerm
 -- 'pdelay'.
 --
 -- @since 2.0.0
-data PDelayed (a :: S -> Type) (s :: S)
+data PDelayed (a :: Type)

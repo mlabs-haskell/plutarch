@@ -15,9 +15,9 @@ module Plutarch.Primitive.Representation
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (PDelayed, S, Term)
+import Plutarch.Backend.Term (PDelayed, Term)
 import Plutarch.Primitive.Composite as C
-import Plutarch.Primitive.Singular ((:-->))
+import Plutarch.Primitive.Singular ((:~>))
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (papp, punsafeCoerce)
 
@@ -51,19 +51,19 @@ import Plutarch.Primitive.Term (papp, punsafeCoerce)
 -- @since 2.0.0
 class
   (PlutarchType (PRepresentation a), PRepresentation a ~ PRepresentation (PRepresentation a)) =>
-  PlutarchType (a :: S -> Type)
+  PlutarchType (a :: Type)
   where
-  type PRepresentation a :: S -> Type
+  type PRepresentation a :: Type
   type PRepresentation a = a
   papply ::
-    forall (b :: S -> Type) (s :: S).
+    forall (b :: Type).
     (PlutarchType b) =>
-    Term s (PRepresentation a :--> PRepresentation b) -> Term s a -> Term s b
+    Term (PRepresentation a :~> PRepresentation b) -> Term a -> Term b
   papply f x = punsafeSecondary (papp (punsafeCoerce f) (pfundamental x))
 
 -- | @since 2.0.0
-instance (PlutarchType a, PlutarchType b) => PlutarchType (a :--> b) where
-  type PRepresentation (a :--> b) = a :--> PRepresentation b
+instance (PlutarchType a, PlutarchType b) => PlutarchType (a :~> b) where
+  type PRepresentation (a :~> b) = a :~> PRepresentation b
 
 -- | @since 2.0.0
 instance (PlutarchType a) => PlutarchType (PDelayed a) where
@@ -132,8 +132,8 @@ instance (PlutarchType a, PlutarchType b) => PlutarchType (C.PBPair a b) where
 --
 -- @since 2.0.0
 pfundamental ::
-  forall (a :: S -> Type) (s :: S).
-  (PlutarchType a) => Term s a -> Term s (PRepresentation a)
+  forall (a :: Type).
+  (PlutarchType a) => Term a -> Term (PRepresentation a)
 pfundamental = punsafeCoerce
 
 -- | Given a fundamental representation of some type @a@, declare unconditionally
@@ -145,8 +145,8 @@ pfundamental = punsafeCoerce
 --
 -- @since 2.0.0
 punsafeSecondary ::
-  forall (a :: S -> Type) (s :: S).
-  (PlutarchType a) => Term s (PRepresentation a) -> Term s a
+  forall (a :: Type).
+  (PlutarchType a) => Term (PRepresentation a) -> Term a
 punsafeSecondary = punsafeCoerce
 
 -- | A combination of 'pfundamental' and 'punsafeSecondary'. Given two types @a@
@@ -159,9 +159,9 @@ punsafeSecondary = punsafeCoerce
 --
 -- @since 2.0.0
 punsafeTranslate ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b, PRepresentation a ~ PRepresentation b) =>
-  Term s a -> Term s b
+  Term a -> Term b
 punsafeTranslate = punsafeCoerce
 
 -- | Infix synonym of 'papply', without the additional \'noise\' of
@@ -174,9 +174,9 @@ punsafeTranslate = punsafeCoerce
 --
 -- @since 2.0.0
 (#) ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> b) -> Term s a -> Term s b
+  Term (a :~> b) -> Term a -> Term b
 f # x = papply (punsafeCoerce f) x
 
 infixl 8 #
@@ -198,9 +198,9 @@ infixl 8 #
 --
 -- @since 2.0.0
 (#$) ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> b) -> Term s a -> Term s b
+  Term (a :~> b) -> Term a -> Term b
 (#$) = (#)
 
 infixr 0 #$

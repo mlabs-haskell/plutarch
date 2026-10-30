@@ -16,9 +16,9 @@ import Plutarch.Unsafe
   )
 import Test.Tasty (TestTree, testGroup)
 
-data PMaybeOld (a :: S -> Type) (s :: S)
+data PMaybeOld (a :: Type)
   = PNothingOld
-  | PJustOld (Term s (PAsData a))
+  | PJustOld (Term (PAsData a))
 
 instance (PlutarchType a) => PlutarchType (PMaybeOld a) where
   type PRepresentation (PMaybeOld a) = PData
@@ -36,9 +36,9 @@ instance (PlutarchType a) => PCon (PMaybeOld a) where
     PNothingOld -> BF.pconstrData # pconstant 0 # pcon PBNil
     PJustOld t -> BF.pconstrData # pconstant 1 # pcon (PBCons (pfundamental t) . pcon $ PBNil)
 
-data PMaybeNew (a :: S -> Type) (s :: S)
+data PMaybeNew (a :: Type)
   = PNothingNew
-  | PJustNew (Term s (PAsData a))
+  | PJustNew (Term (PAsData a))
 
 instance (PlutarchType a) => PlutarchType (PMaybeNew a) where
   type PRepresentation (PMaybeNew a) = PData
@@ -57,10 +57,10 @@ instance (PlutarchType a) => PCon (PMaybeNew a) where
     PNothingNew -> BF.pconstrData # pconstant 0 # pcon PBNil
     PJustNew t -> BF.pconstrData # pconstant 1 # pcon (PBCons (pfundamental t) . pcon $ PBNil)
 
-data PTheseNew (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThisNew (Term s (PAsData a))
-  | PThatNew (Term s (PAsData b))
-  | PTheseNew (Term s (PAsData a)) (Term s (PAsData b))
+data PTheseNew (a :: Type) (b :: Type)
+  = PThisNew (Term (PAsData a))
+  | PThatNew (Term (PAsData b))
+  | PTheseNew (Term (PAsData a)) (Term (PAsData b))
 
 instance (PlutarchType a, PlutarchType b) => PlutarchType (PTheseNew a b) where
   type PRepresentation (PTheseNew a b) = PData
@@ -82,10 +82,10 @@ instance (PlutarchType a, PlutarchType b) => PCon (PTheseNew a b) where
     PThatNew y -> BF.pconstrData # pconstant 1 # (pcon . PBCons (pfundamental y) $ pcon PBNil)
     PTheseNew x y -> BF.pconstrData # pconstant 2 # (pcon . PBCons (pfundamental x) . pcon . PBCons (pfundamental y) $ pcon PBNil)
 
-data PTheseOld (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThisOld (Term s (PAsData a))
-  | PThatOld (Term s (PAsData b))
-  | PTheseOld (Term s (PAsData a)) (Term s (PAsData b))
+data PTheseOld (a :: Type) (b :: Type)
+  = PThisOld (Term (PAsData a))
+  | PThatOld (Term (PAsData b))
+  | PTheseOld (Term (PAsData a)) (Term (PAsData b))
 
 instance (PlutarchType a, PlutarchType b) => PlutarchType (PTheseOld a b) where
   type PRepresentation (PTheseOld a b) = PData
@@ -118,23 +118,23 @@ goldens =
       debugGolden EvaluateUPLC "New-style These Maybe" "Constr Case 4" case4
     ]
 
-case1 :: forall (s :: S). Term s PInteger
+case1 :: Term PInteger
 case1 = pmatch (pcon . PJustOld . ptoData . pconstant $ 2) $ \case
   PNothingOld -> pconstant (-1)
   PJustOld t -> pfromData t
 
-case2 :: forall (s :: S). Term s PInteger
+case2 :: Term PInteger
 case2 = pmatch (pcon . PJustNew . ptoData . pconstant $ 2) $ \case
   PNothingNew -> pconstant (-1)
   PJustNew t -> pfromData t
 
-case3 :: forall (s :: S). Term s PInteger
+case3 :: Term PInteger
 case3 = pmatch (pcon . PTheseOld (ptoData . pconstant $ 1) . ptoData . pconstant $ 2) $ \case
   PThisOld x -> pfromData x
   PThatOld y -> pfromData y
   PTheseOld x y -> pfromData x #+ pfromData y
 
-case4 :: forall (s :: S). Term s PInteger
+case4 :: Term PInteger
 case4 = pmatch (pcon . PTheseNew (ptoData . pconstant $ 1) . ptoData . pconstant $ 2) $ \case
   PThisNew x -> pfromData x
   PThatNew y -> pfromData y

@@ -22,11 +22,11 @@ goldens =
 -- Cases
 
 -- Case 1: [[2]] (for pretty printing)
-case1 :: forall (s :: S). Term s (PBList (PBList (PBPair PInteger PInteger)))
+case1 :: Term (PBList (PBList (PBPair PInteger PInteger)))
 case1 = pconstant [[(2, 3)]]
 
 -- Case 2: \f x -> let lol = toPrettyString (f # x) in pconstant (T.pack . show $ lol)
-case2 :: forall (s :: S). Term s ((PBool :--> PBool) :--> PBool :--> PString)
+case2 :: Term ((PBool :~> PBool) :~> PBool :~> PString)
 case2 = plam2 $ \f x ->
   let lol = toPrettyString (f # x)
    in pconstant (Text.pack . show $ lol)

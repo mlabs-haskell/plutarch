@@ -36,7 +36,7 @@ import Language.Haskell.TH
     nameBase,
     newName,
   )
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Helpers.TH
   ( PType,
     PTypeProduct (PTypeProduct),
@@ -54,7 +54,7 @@ import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Representation (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Singular (PBool, PString, (:-->))
+import Plutarch.Primitive.Singular (PBool, PString, (:~>))
 import Plutarch.Primitive.Term (papp, plam', punsafeCoerce)
 
 -- | = Example
@@ -62,13 +62,13 @@ import Plutarch.Primitive.Term (papp, plam', punsafeCoerce)
 -- If you have the following data type:
 --
 -- @
--- data PListMS a s = PNilMS | PConsMS (Term s a) (Term s (PListMS a))
+-- data PListMS a = PNilMS | PConsMS (Term a) (Term (PListMS a))
 -- @
 --
 -- its Mogensen-Scott encoding is essentially
 --
 -- @
--- forall a s . Term s (forall r . r :--> (a :--> PListMS a :--> r) :--> r)
+-- forall a . Term (forall r . r :~> (a :~> PListMS a :~> r) :~> r)
 -- @
 --
 -- @since 2.0.0
@@ -128,8 +128,8 @@ derivePMatch tyVars tyName cs c =
   [d|
     instance ($ctx) => PMatch $name where
       pmatch' ::
-        forall (b :: S -> GHC.Type) (s :: S).
-        Term s (PRepresentation $name) -> ($name s -> Term s b) -> Term s b
+        forall (b :: GHC.Type).
+        Term (PRepresentation $name) -> ($name -> Term b) -> Term b
       pmatch' x f = $(mkPMatchBody 'x 'f ''b)
     |]
   where
@@ -366,4 +366,4 @@ mkConFunType :: Type -> (Name, Vector (Bool, Type)) -> Q Type
 mkConFunType rType (_, fields) = foldrM mkArrow rType . fmap snd $ fields
 
 mkArrow :: Type -> Type -> Q Type
-mkArrow t acc = [t|$(pure t) :--> $(pure acc)|]
+mkArrow t acc = [t|$(pure t) :~> $(pure acc)|]

@@ -112,16 +112,12 @@ data WhichInstances
 --
 -- = Important note
 --
--- All 'Strategy' choices assume that the type is formed correctly to be a
--- Plutarch type. This means the following in practice:
+-- Plutarch types have kind @Type@, and every field of every \'arm\' must be
+-- wrapped in 'Term'.
 --
--- * The type's /last/ type parameter must be of kind 'S'.
--- * Every field of every \'arm\' must be wrapped in @'Term' s@, where @s@ is
---  the type parameter of kind 'S'.
---
--- While 'deriveFor' will check for all of these, it cannot \'look through\' type
--- synonyms. Please make sure that you do not use a type synonym as a field of any data
--- type that you wish to use 'deriveFor' with.
+-- 'deriveFor' cannot \'look through\' type synonyms. Please make sure that you
+-- do not use a type synonym as a field of any data type that you wish to use
+-- 'deriveFor' with.
 --
 -- @since 2.0.0
 deriveFor :: Name -> Strategy -> WhichInstances -> Q [Dec]
@@ -129,40 +125,36 @@ deriveFor tyName strat insts = do
   tyDec <- checkTyName tyName
   case tyDec of
     DataD _ name tyVarBinds _ constructors _ -> do
-      let tvbAsVec = Vector.fromList tyVarBinds
+      let tvbs = Vector.fromList tyVarBinds
       let consAsVec = Vector.fromList constructors
       typeStructure <- consToPTypeSum consAsVec
       let deriveEqDebug = case insts of
             AllInstances -> True
             NoEqDebug -> False
-      case Vector.unsnoc tvbAsVec of
-        Nothing -> fail "Types must have an s :: S type parameter in last position."
-        Just (tvbs, _) -> case strat of
-          Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
-          DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
-          DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
-          DataPlutusCompact -> deriveDataPlutusCompact tvbs name typeStructure deriveEqDebug
-          SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
-          MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
-          Newtype -> fail "Cannot use the Newtype strategy on a non-newtype."
-          NewtypeData -> fail "Cannot use the NewtypeData strategy on a non-newtype."
+      case strat of
+        Enum -> deriveEnum tvbs name typeStructure deriveEqDebug
+        DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
+        DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
+        DataPlutusCompact -> deriveDataPlutusCompact tvbs name typeStructure deriveEqDebug
+        SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
+        MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
+        Newtype -> fail "Cannot use the Newtype strategy on a non-newtype."
+        NewtypeData -> fail "Cannot use the NewtypeData strategy on a non-newtype."
     NewtypeD _ name tyVarBinds _ con _ -> do
-      let tvbAsVec = Vector.fromList tyVarBinds
+      let tvbs = Vector.fromList tyVarBinds
       let conAsVec = Vector.singleton con
       typeStructure <- consToPTypeSum conAsVec
       let deriveEqDebug = case insts of
             AllInstances -> True
             NoEqDebug -> False
-      case Vector.unsnoc tvbAsVec of
-        Nothing -> fail "Types must have an s :: S type parameter in last position."
-        Just (tvbs, _) -> case strat of
-          Enum -> fail "As a newtype must have one field, it cannot use the Enum strategy."
-          DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
-          DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
-          DataPlutusCompact -> deriveDataPlutusCompact tvbs name typeStructure deriveEqDebug
-          SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
-          MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
-          Newtype -> deriveNewtype tvbs name typeStructure deriveEqDebug False
-          NewtypeData -> deriveNewtype tvbs name typeStructure deriveEqDebug True
+      case strat of
+        Enum -> fail "As a newtype must have one field, it cannot use the Enum strategy."
+        DataList -> deriveDataList tvbs name typeStructure deriveEqDebug
+        DataPlutus -> deriveDataPlutus tvbs name typeStructure deriveEqDebug
+        DataPlutusCompact -> deriveDataPlutusCompact tvbs name typeStructure deriveEqDebug
+        SOP -> deriveSOP tvbs name typeStructure deriveEqDebug
+        MogensenScott -> deriveMS tvbs name typeStructure deriveEqDebug
+        Newtype -> deriveNewtype tvbs name typeStructure deriveEqDebug False
+        NewtypeData -> deriveNewtype tvbs name typeStructure deriveEqDebug True
     TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
     _ -> fail $ "Not a valid type name: " <> show tyName

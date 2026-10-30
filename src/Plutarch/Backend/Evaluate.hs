@@ -6,7 +6,7 @@ where
 
 import Control.Monad.Except (throwError)
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term, TermError, releaseTermEnv)
+import Plutarch.Backend.Term (Term, TermError, releaseTermEnv)
 import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Helpers.Compile (termToUPLC)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
@@ -24,8 +24,8 @@ data EvalError
 
 -- | @since 2.0.0
 peval ::
-  forall (a :: S -> Type).
-  (forall (s :: S). Term s a) ->
+  forall (a :: Type).
+  Term a ->
   Either EvalError (Either (PLC.Some (PLC.ValueOf PLC.DefaultUni)) UPLCTerm)
 peval t = case termToUPLC releaseTermEnv t of
   Left err -> throwError . ATermError $ err

@@ -19,11 +19,9 @@ goldens =
 
 -- Case 1: \cond ifT ifF -> (compiled (\cond' ifT' ifF' -> pif cond' ifT' ifF') cond ifT ifF
 case1 ::
-  forall (s :: S).
-  Term s (PBool :--> PInteger :--> PInteger :--> PInteger)
+  Term (PBool :~> PInteger :~> PInteger :~> PInteger)
 case1 = plam3 $ \cond ifT ifF -> pcompiled go # cond # ifT # ifF
   where
     go ::
-      forall (s' :: S).
-      Term s' (PBool :--> PInteger :--> PInteger :--> PInteger)
+      Term (PBool :~> PInteger :~> PInteger :~> PInteger)
     go = plam3 $ \cond' ifT' ifF' -> pif cond' ifT' ifF'
