@@ -169,10 +169,10 @@ derivePMatch tyVars tyName cs (nameLast, fieldsLast) =
     -- Consider the following data type:
     --
     -- ```
-    -- data PThese a b s =
-    --     PThis (Term s (PAsData a)) |
-    --     PThat (Term s (PAsData b)) |
-    --     PThese (Term s (PAsData a)) (Term s (PAsData b))
+    -- data PThese a b =
+    --     PThis (Term (PAsData a)) |
+    --     PThat (Term (PAsData b)) |
+    --     PThese (Term (PAsData a)) (Term (PAsData b))
     -- ```
     --
     -- The most straightforward @Data@ encoding would do something like the

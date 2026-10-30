@@ -35,105 +35,105 @@ goldens =
 
 -- Cases
 
-case1 :: forall (s :: S). Term s (PPullArray PInteger)
+case1 :: Term (PPullArray PInteger)
 case1 = Array.pmap psquare . Array.pmap pinc $ parr
 
-case2 :: forall (s :: S). Term s (PPullArray PInteger)
+case2 :: Term (PPullArray PInteger)
 case2 = Array.pmap (pcompose psquare pinc) parr
 
-case3 :: forall (s :: S). Term s (PPullArray PInteger)
+case3 :: Term (PPullArray PInteger)
 case3 =
   Array.pzipWith
     padd
     (Array.pmap pinc parr)
     (Array.pmap psquare parr2)
 
-case4 :: forall (s :: S). Term s (PPullArray PInteger)
+case4 :: Term (PPullArray PInteger)
 case4 =
   Array.pzipWith
     (plam2 $ \x1 x2 -> (pinc # x1) #+ (psquare # x2))
     parr
     parr2
 
-case5 :: forall (s :: S). Term s (PPullArray PInteger)
+case5 :: Term (PPullArray PInteger)
 case5 = Array.pzipWith padd parr parr
 
-case6 :: forall (s :: S). Term s (PPullArray PInteger)
+case6 :: Term (PPullArray PInteger)
 case6 = Array.pmap (plam1 $ \x -> x #+ x) parr
 
-case7 :: forall (s :: S). Term s (PPullArray PInteger)
+case7 :: Term (PPullArray PInteger)
 case7 =
   Array.pzipWith
     padd
     (Array.pmap pinc parr)
     (Array.pmap pinc parr)
 
-case8 :: forall (s :: S). Term s (PPullArray PInteger)
+case8 :: Term (PPullArray PInteger)
 case8 = Array.pmap (plam1 $ \x -> (pinc # x) #+ (pinc # x)) parr
 
-case9 :: forall (s :: S). Term s PInteger
+case9 :: Term PInteger
 case9 = Array.pfoldr padd (pconstant 5) . Array.pmap psquare $ parr
 
-case10 :: forall (s :: S). Term s PInteger
+case10 :: Term PInteger
 case10 = Array.pfoldr (plam2 $ \z acc -> (psquare # z) #+ acc) (pconstant 5) parr
 
-case11 :: forall (s :: S). Term s (PPullArray PInteger)
+case11 :: Term (PPullArray PInteger)
 case11 = Array.pimap pscale parr
 
-case12 :: forall (s :: S). Term s (PPullArray PInteger)
+case12 :: Term (PPullArray PInteger)
 case12 = Array.pzipWith pscale (Array.piota len) parr
   where
-    len :: Term s PNatural
+    len :: Term PNatural
     len = punsafeSecondary $ pconstant @PInteger 3
 
-case13 :: forall (s :: S). Term s (PPullArray PInteger)
+case13 :: Term (PPullArray PInteger)
 case13 = pzipWith3Naive pfma parr parr2 parr3
 
-case14 :: forall (s :: S). Term s (PPullArray PInteger)
+case14 :: Term (PPullArray PInteger)
 case14 = pzipWith3Fused pfma parr parr2 parr3
 
 -- Helpers
 
-pfma :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
+pfma :: Term (PInteger :~> PInteger :~> PInteger :~> PInteger)
 pfma = plam3 $ \x y z -> x #* (y #+ z)
 
-pscale :: forall (s :: S). Term s (PNatural :--> PInteger :--> PInteger)
+pscale :: Term (PNatural :~> PInteger :~> PInteger)
 pscale = plam2 $ \n i -> pfundamental n #* i
 
-psquare :: forall (s :: S). Term s (PInteger :--> PInteger)
+psquare :: Term (PInteger :~> PInteger)
 psquare = plam1 $ \x -> x #* x
 
-pinc :: forall (s :: S). Term s (PInteger :--> PInteger)
+pinc :: Term (PInteger :~> PInteger)
 pinc = plam1 $ \x -> x #+ pconstant 1
 
-parr :: forall (s :: S). Term s (PPullArray PInteger)
+parr :: Term (PPullArray PInteger)
 parr = Array.pfromArray $ pconstant @(PBArray PInteger) [1, 2, 3]
 
-parr2 :: forall (s :: S). Term s (PPullArray PInteger)
+parr2 :: Term (PPullArray PInteger)
 parr2 = Array.pfromArray $ pconstant @(PBArray PInteger) [4, 6, 8]
 
-parr3 :: forall (s :: S). Term s (PPullArray PInteger)
+parr3 :: Term (PPullArray PInteger)
 parr3 = Array.pfromArray $ pconstant @(PBArray PInteger) [3, 6, 9]
 
 pzipWith3Naive ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type) (c :: Type) (d :: Type).
   (PlutarchType a, PlutarchType b, PlutarchType c, PlutarchType d) =>
-  Term s (a :--> b :--> c :--> d) ->
-  Term s (PPullArray a) ->
-  Term s (PPullArray b) ->
-  Term s (PPullArray c) ->
-  Term s (PPullArray d)
+  Term (a :~> b :~> c :~> d) ->
+  Term (PPullArray a) ->
+  Term (PPullArray b) ->
+  Term (PPullArray c) ->
+  Term (PPullArray d)
 pzipWith3Naive f xs ys =
   Array.pzipWith (plam2 $ \f' z -> f' # z) (Array.pzipWith (plam2 $ \x y -> f # x # y) xs ys)
 
 pzipWith3Fused ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (d :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type) (c :: Type) (d :: Type).
   (PlutarchType a, PlutarchType b, PlutarchType c, PlutarchType d) =>
-  Term s (a :--> b :--> c :--> d) ->
-  Term s (PPullArray a) ->
-  Term s (PPullArray b) ->
-  Term s (PPullArray c) ->
-  Term s (PPullArray d)
+  Term (a :~> b :~> c :~> d) ->
+  Term (PPullArray a) ->
+  Term (PPullArray b) ->
+  Term (PPullArray c) ->
+  Term (PPullArray d)
 pzipWith3Fused f xs ys zs = pmatch xs $ \(Array.PPullArray len1 g1) ->
   pmatch ys $ \(Array.PPullArray len2 g2) ->
     pmatch zs $ \(Array.PPullArray len3 g3) ->

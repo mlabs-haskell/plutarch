@@ -72,7 +72,7 @@ import Plutarch.Primitive.BuiltinFun
   )
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
 import Plutarch.Primitive.DerivedFun (pheadTailList)
-import Plutarch.Primitive.Singular (PAsData, PData, (:-->))
+import Plutarch.Primitive.Singular (PAsData, PData, (:~>))
 import Plutarch.Primitive.Term
   ( plam',
     punsafeCase,
@@ -346,7 +346,7 @@ conToPTypeProduct = \case
        in dig errMsg t
     dig :: String -> Type -> Q PType
     dig errMsg = \case
-      AppT (AppT (ConT n) _) x -> do
+      AppT (ConT n) x -> do
         unless (n == ''Term) (fail errMsg)
         classifyType x
       _ -> fail errMsg
@@ -368,5 +368,6 @@ classifyType t = case t of
 
 isTypePFunction :: Type -> Bool
 isTypePFunction = \case
-  InfixT _ name _ -> name == ''(:-->)
+  InfixT _ name _ -> name == ''(:~>)
+  AppT (AppT (ConT name) _) _ -> name == ''(:~>)
   _ -> False

@@ -25,20 +25,20 @@ goldens =
 
 -- Cases
 
-case1 :: forall (s :: S). Term s PString
+case1 :: Term PString
 case1 = pshow ptrue
 
-case2 :: forall (s :: S). Term s PString
+case2 :: Term PString
 case2 = pshow . pconstant @PInteger $ -12345
 
-case3 :: forall (s :: S). Term s PString
+case3 :: Term PString
 case3 = pshow . pconstant @PByte $ 0x1F
 
-case4 :: forall (s :: S). Term s PString
+case4 :: Term PString
 case4 = pshow . pconstant @PByteString $ "cat goes nya"
 
-case5 :: forall (s :: S). Term s PString
+case5 :: Term PString
 case5 = pshow . pconstant @(PBList PInteger) $ [1, 2, 3, 4]
 
-case6 :: forall (s :: S). Term s PString
+case6 :: Term PString
 case6 = pshow . pconstant @(PBPair PInteger PByteString) $ (10, "nyaaa")

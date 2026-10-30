@@ -26,8 +26,8 @@ main =
         (pcon . PSOPJust . pconstant @PInteger $ 3)
         (pcon . PMSJust . pconstant @PInteger $ 3),
       noLargerThan
-        @(PInteger :--> PSOPMaybe PInteger)
-        @(PInteger :--> PMSMaybe PInteger)
+        @(PInteger :~> PSOPMaybe PInteger)
+        @(PInteger :~> PMSMaybe PInteger)
         "pcon SOP Maybe vs MS Maybe"
         (plam1 $ pcon . PSOPJust)
         (plam1 $ pcon . PMSJust),
@@ -58,8 +58,8 @@ main =
           )
           (plam1 $ \ell -> pfindCPS (plam1 $ \e -> e #== pconstant 3) ell (pconstant @PInteger (-1)) (plam1 id)),
       noLargerThan
-        @(PMaybeNew PBool :--> PInteger :--> (PAsData PBool :--> PInteger) :--> PInteger)
-        @(PMaybeOld PBool :--> PInteger :--> (PAsData PBool :--> PInteger) :--> PInteger)
+        @(PMaybeNew PBool :~> PInteger :~> (PAsData PBool :~> PInteger) :~> PInteger)
+        @(PMaybeOld PBool :~> PInteger :~> (PAsData PBool :~> PInteger) :~> PInteger)
         "case on Constr vs current (PMaybe)"
         ( plam3 $ \t handleNothing handleJust -> pmatch t $ \case
             PNothingNew -> handleNothing
@@ -71,8 +71,8 @@ main =
         ),
       expectFail $
         noLargerThan
-          @(PThese PBool PBool :--> (PAsData PBool :--> PInteger) :--> (PAsData PBool :--> PInteger) :--> PInteger)
-          @(PTheseNow PBool PBool :--> (PAsData PBool :--> PInteger) :--> (PAsData PBool :--> PInteger) :--> PInteger)
+          @(PThese PBool PBool :~> (PAsData PBool :~> PInteger) :~> (PAsData PBool :~> PInteger) :~> PInteger)
+          @(PTheseNow PBool PBool :~> (PAsData PBool :~> PInteger) :~> (PAsData PBool :~> PInteger) :~> PInteger)
           "case on Constr vs current (PThese)"
           ( plam3 $ \t handleX handleY -> pmatch t $ \case
               PThis x -> handleX # x

@@ -9,7 +9,7 @@ where
 import Data.Kind (Type)
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
-import Plutarch.Backend.Term (S, SomeTerm, Term, toSomeTerm)
+import Plutarch.Backend.Term (SomeTerm, Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun
   ( pbData,
     pconstrData,
@@ -54,22 +54,18 @@ import Plutarch.Primitive.Term
   )
 
 -- | @since 2.0.0
-class (PlutarchType a) => PCanData (a :: S -> Type) where
+class (PlutarchType a) => PCanData (a :: Type) where
   pfromData ::
-    forall (s :: S).
-    Term s (PAsData a) -> Term s a
+    Term (PAsData a) -> Term a
   default pfromData ::
-    forall (s :: S).
     (PCanData (PRepresentation a)) =>
-    Term s (PAsData a) -> Term s a
+    Term (PAsData a) -> Term a
   pfromData = punsafeCoerce . pfromData @(PRepresentation a) . punsafeCoerce
   ptoData ::
-    forall (s :: S).
-    Term s a -> Term s (PAsData a)
+    Term a -> Term (PAsData a)
   default ptoData ::
-    forall (s :: S).
     (PCanData (PRepresentation a)) =>
-    Term s a -> Term s (PAsData a)
+    Term a -> Term (PAsData a)
   ptoData = punsafeCoerce . ptoData . pfundamental
 
 -- | Booleans on chain are represented as @Constr 0 []@ for false, @Constr 1 []@
@@ -118,15 +114,14 @@ instance PCanData (PBList PData) where
 -- | @since 2.0.0
 instance (PCanData a, PCanData b) => PCanData (PBPair (PAsData a) (PAsData b)) where
   pfromData ::
-    forall (s :: S).
-    Term s (PAsData (PBPair (PAsData a) (PAsData b))) ->
-    Term s (PBPair (PAsData a) (PAsData b))
+    Term (PAsData (PBPair (PAsData a) (PAsData b))) ->
+    Term (PBPair (PAsData a) (PAsData b))
   pfromData x =
     let asConstr = punConstrData # pfundamental x
         fields = psndPair # asConstr
      in punsafeCase fields handler
     where
-      handler :: NonEmptyVector (SomeTerm s)
+      handler :: NonEmptyVector SomeTerm
       handler =
         let t = plam' $ \h1 -> plam' $ \rest ->
               pmkPairData # h1 #$ pheadList # rest
@@ -145,15 +140,14 @@ instance (PCanData a, PCanData b) => PCanData (PBPair (PAsData a) (PAsData b)) w
 -- | @since 2.0.0
 instance PCanData (PBPair PData PData) where
   pfromData ::
-    forall (s :: S).
-    Term s (PAsData (PBPair PData PData)) ->
-    Term s (PBPair PData PData)
+    Term (PAsData (PBPair PData PData)) ->
+    Term (PBPair PData PData)
   pfromData x =
     let asConstr = punConstrData # pfundamental x
         fields = psndPair # asConstr
      in punsafeCase fields handler
     where
-      handler :: NonEmptyVector (SomeTerm s)
+      handler :: NonEmptyVector SomeTerm
       handler =
         let t = plam' $ \h1 -> plam' $ \rest ->
               pmkPairData # h1 #$ pheadList # rest

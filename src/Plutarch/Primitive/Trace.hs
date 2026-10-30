@@ -7,8 +7,7 @@ where
 import Control.Monad.Reader (ask)
 import Data.Kind (Type)
 import Plutarch.Backend.Term
-  ( S,
-    Term (Term),
+  ( Term (Term),
     TermEnv (TermEnv),
     TracingMode (DebugTracing, NoTracing),
     asRawTerm,
@@ -19,11 +18,11 @@ import Plutarch.Primitive.Singular (PString)
 
 -- | @since wip
 ptraceDebug ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s PString ->
-  Term s a ->
-  Term s a
+  Term PString ->
+  Term a ->
+  Term a
 ptraceDebug msg t = Term $ do
   TermEnv mode _ <- ask
   asRawTerm $ case mode of
@@ -32,11 +31,11 @@ ptraceDebug msg t = Term $ do
 
 -- | @since wip
 ptraceError ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s PString ->
-  Term s a ->
-  Term s a
+  Term PString ->
+  Term a ->
+  Term a
 ptraceError msg t = Term $ do
   TermEnv mode _ <- ask
   asRawTerm $ case mode of

@@ -15,10 +15,10 @@ import Plutarch.Unsafe
     toSomeTerm,
   )
 
-data PThese (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThis (Term s (PAsData a))
-  | PThat (Term s (PAsData b))
-  | PThese (Term s (PAsData a)) (Term s (PAsData b))
+data PThese (a :: Type) (b :: Type)
+  = PThis (Term (PAsData a))
+  | PThat (Term (PAsData b))
+  | PThese (Term (PAsData a)) (Term (PAsData b))
 
 instance (PlutarchType a, PlutarchType b) => PlutarchType (PThese a b) where
   type PRepresentation (PThese a b) = PData
@@ -40,10 +40,10 @@ instance (PlutarchType a, PlutarchType b) => PCon (PThese a b) where
     PThat y -> BF.pconstrData # pconstant 1 # (pcon . PBCons (pfundamental y) $ pcon PBNil)
     PThese x y -> BF.pconstrData # pconstant 2 # (pcon . PBCons (pfundamental x) . pcon . PBCons (pfundamental y) $ pcon PBNil)
 
-data PTheseNow (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThisNow (Term s (PAsData a))
-  | PThatNow (Term s (PAsData b))
-  | PTheseNow (Term s (PAsData a)) (Term s (PAsData b))
+data PTheseNow (a :: Type) (b :: Type)
+  = PThisNow (Term (PAsData a))
+  | PThatNow (Term (PAsData b))
+  | PTheseNow (Term (PAsData a)) (Term (PAsData b))
 
 instance (PlutarchType a, PlutarchType b) => PlutarchType (PTheseNow a b) where
   type PRepresentation (PTheseNow a b) = PData

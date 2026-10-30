@@ -37,7 +37,7 @@ module Plutarch.Array
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite qualified as C
 import Plutarch.Primitive.Con (pcon)
@@ -52,7 +52,7 @@ import Plutarch.Primitive.Representation
     (#),
     (#$),
   )
-import Plutarch.Primitive.Singular (PBArray, PNatural, (:-->))
+import Plutarch.Primitive.Singular (PBArray, PNatural, (:~>))
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (pcompose, pfix, plam')
 import Plutarch.TH.Strategy
@@ -62,78 +62,76 @@ import Plutarch.TH.Strategy
   )
 
 -- | @since 2.0.0
-data PPullArray (a :: S -> Type) (s :: S)
-  = PPullArray (Term s PNatural) (Term s (PNatural :--> a))
+data PPullArray (a :: Type)
+  = PPullArray (Term PNatural) (Term (PNatural :~> a))
 
 deriveFor ''PPullArray MogensenScott NoEqDebug
 
 -- | @since 2.0.0
 pfromArray ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PBArray a) -> Term s (PPullArray a)
+  Term (PBArray a) -> Term (PPullArray a)
 pfromArray t = pcon . PPullArray (BF.plengthOfArray # t) $ BF.pindexArray # t
 
 -- | @since 2.0.0
 pfromByteString ::
-  forall (s :: S).
-  Term s S.PByteString -> Term s (PPullArray S.PByte)
+  Term S.PByteString -> Term (PPullArray S.PByte)
 pfromByteString t =
   pcon . PPullArray (BF.plengthOfByteString # t) $
     BF.pindexByteString # t
 
 -- | @since 2.0.0
 pfromList ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (C.PBList a) -> Term s (PPullArray a)
+  Term (C.PBList a) -> Term (PPullArray a)
 pfromList t = pfromArray (BF.plistToArray # t)
 
 -- | @since 2.0.0
 pgenerate ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s PNatural ->
-  Term s (PNatural :--> a) ->
-  Term s (PPullArray a)
+  Term PNatural ->
+  Term (PNatural :~> a) ->
+  Term (PPullArray a)
 pgenerate len = pcon . PPullArray len
 
 -- | @since 2.0.0
 piota ::
-  forall (s :: S).
-  Term s PNatural -> Term s (PPullArray PNatural)
+  Term PNatural -> Term (PPullArray PNatural)
 piota len = pcon . PPullArray len . plam' $ id
 
 -- | @since 2.0.0
 ptoList ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PLiftable a) =>
-  Term s (PPullArray a) ->
-  Term s (C.PBList a)
+  Term (PPullArray a) ->
+  Term (C.PBList a)
 ptoList = pfoldr (plam' $ \x -> plam' $ pcon . C.PBCons x) (pcon C.PBNil)
 
 -- | @since 2.0.0
 ptoArray ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PLiftable a) =>
-  Term s (PPullArray a) ->
-  Term s (PBArray a)
+  Term (PPullArray a) ->
+  Term (PBArray a)
 ptoArray t = BF.plistToArray # ptoList t
 
 -- | @since 2.0.0
 pfoldr ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> b :--> b) ->
-  Term s b ->
-  Term s (PPullArray a) ->
-  Term s b
+  Term (a :~> b :~> b) ->
+  Term b ->
+  Term (PPullArray a) ->
+  Term b
 pfoldr f acc t = pmatch t $ \(PPullArray len getIx) -> go (pfundamental len) getIx # pconstant 0
   where
     go ::
-      Term s S.PInteger ->
-      Term s (PNatural :--> a) ->
-      Term s (S.PInteger :--> b)
+      Term S.PInteger ->
+      Term (PNatural :~> a) ->
+      Term (S.PInteger :~> b)
     go len getIx = pfix $ \self -> plam' $ \currIx ->
       pif
         (currIx #== len)
@@ -145,18 +143,18 @@ pfoldr f acc t = pmatch t $ \(PPullArray len getIx) -> go (pfundamental len) get
 
 -- | @since 2.0.0
 pifoldr ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (PNatural :--> a :--> b :--> b) ->
-  Term s b ->
-  Term s (PPullArray a) ->
-  Term s b
+  Term (PNatural :~> a :~> b :~> b) ->
+  Term b ->
+  Term (PPullArray a) ->
+  Term b
 pifoldr f acc t = pmatch t $ \(PPullArray len getIx) -> go (pfundamental len) getIx # pconstant 0
   where
     go ::
-      Term s S.PInteger ->
-      Term s (PNatural :--> a) ->
-      Term s (S.PInteger :--> b)
+      Term S.PInteger ->
+      Term (PNatural :~> a) ->
+      Term (S.PInteger :~> b)
     go len getIx = pfix $ \self -> plam' $ \currIx ->
       pif
         (currIx #== len)
@@ -168,19 +166,19 @@ pifoldr f acc t = pmatch t $ \(PPullArray len getIx) -> go (pfundamental len) ge
 
 -- | @since 2.0.0
 pfoldl ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (b :--> a :--> b) ->
-  Term s b ->
-  Term s (PPullArray a) ->
-  Term s b
+  Term (b :~> a :~> b) ->
+  Term b ->
+  Term (PPullArray a) ->
+  Term b
 pfoldl f acc t = pmatch t $ \(PPullArray len getIx) ->
   let lastIx = BF.psubtractInteger # pfundamental len # pconstant 1
    in go getIx # lastIx
   where
     go ::
-      Term s (PNatural :--> a) ->
-      Term s (S.PInteger :--> b)
+      Term (PNatural :~> a) ->
+      Term (S.PInteger :~> b)
     go getIx = pfix $ \self -> plam' $ \currIx ->
       pif
         (pisNegative currIx)
@@ -192,19 +190,19 @@ pfoldl f acc t = pmatch t $ \(PPullArray len getIx) ->
 
 -- | @since 2.0.0
 pifoldl ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (PNatural :--> b :--> a :--> b) ->
-  Term s b ->
-  Term s (PPullArray a) ->
-  Term s b
+  Term (PNatural :~> b :~> a :~> b) ->
+  Term b ->
+  Term (PPullArray a) ->
+  Term b
 pifoldl f acc t = pmatch t $ \(PPullArray len getIx) ->
   let lastIx = BF.psubtractInteger # pfundamental len # pconstant 1
    in go getIx # lastIx
   where
     go ::
-      Term s (PNatural :--> a) ->
-      Term s (S.PInteger :--> b)
+      Term (PNatural :~> a) ->
+      Term (S.PInteger :~> b)
     go getIx = pfix $ \self -> plam' $ \currIx ->
       pif
         (pisNegative currIx)
@@ -216,40 +214,40 @@ pifoldl f acc t = pmatch t $ \(PPullArray len getIx) ->
 
 -- | @since 2.0.0
 plength ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (PPullArray a) ->
-  Term s PNatural
+  Term (PPullArray a) ->
+  Term PNatural
 plength t = pmatch t $ \(PPullArray len _) -> len
 
 -- | @since 2.0.0
 pmap ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> b) ->
-  Term s (PPullArray a) ->
-  Term s (PPullArray b)
+  Term (a :~> b) ->
+  Term (PPullArray a) ->
+  Term (PPullArray b)
 pmap f t = pmatch t $ \(PPullArray len g) ->
   pcon . PPullArray len . pcompose f $ g
 
 -- | @since 2.0.0
 pimap ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (PNatural :--> a :--> b) ->
-  Term s (PPullArray a) ->
-  Term s (PPullArray b)
+  Term (PNatural :~> a :~> b) ->
+  Term (PPullArray a) ->
+  Term (PPullArray b)
 pimap f t = pmatch t $ \(PPullArray len g) ->
   pcon . PPullArray len $ plam' $ \i -> f # i #$ g # i
 
 -- | @since 2.0.0
 pzipWith ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type) (c :: Type).
   (PlutarchType a, PlutarchType b, PlutarchType c) =>
-  Term s (a :--> b :--> c) ->
-  Term s (PPullArray a) ->
-  Term s (PPullArray b) ->
-  Term s (PPullArray c)
+  Term (a :~> b :~> c) ->
+  Term (PPullArray a) ->
+  Term (PPullArray b) ->
+  Term (PPullArray c)
 pzipWith f t1 t2 = pmatch t1 $ \(PPullArray len1 g1) ->
   pmatch t2 $ \(PPullArray len2 g2) ->
     let len = pif (BF.plessThanEqualsInteger # pfundamental len1 # pfundamental len2) len1 len2
@@ -257,12 +255,12 @@ pzipWith f t1 t2 = pmatch t1 $ \(PPullArray len1 g1) ->
 
 -- | @since 2.0.0
 pizipWith ::
-  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type) (c :: Type).
   (PlutarchType a, PlutarchType b, PlutarchType c) =>
-  Term s (PNatural :--> a :--> b :--> c) ->
-  Term s (PPullArray a) ->
-  Term s (PPullArray b) ->
-  Term s (PPullArray c)
+  Term (PNatural :~> a :~> b :~> c) ->
+  Term (PPullArray a) ->
+  Term (PPullArray b) ->
+  Term (PPullArray c)
 pizipWith f t1 t2 = pmatch t1 $ \(PPullArray len1 g1) ->
   pmatch t2 $ \(PPullArray len2 g2) ->
     let len = pif (BF.plessThanEqualsInteger # pfundamental len1 # pfundamental len2) len1 len2

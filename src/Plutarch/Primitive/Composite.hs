@@ -6,13 +6,13 @@ module Plutarch.Primitive.Composite
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 
 -- | @since 2.0.0
-data PBList (a :: S -> Type) (s :: S)
+data PBList (a :: Type)
   = PBNil
-  | PBCons (Term s a) (Term s (PBList a))
+  | PBCons (Term a) (Term (PBList a))
 
 -- | @since 2.0.0
-data PBPair (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PBPair (Term s a) (Term s b)
+data PBPair (a :: Type) (b :: Type)
+  = PBPair (Term a) (Term b)

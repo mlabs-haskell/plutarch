@@ -2,25 +2,25 @@ module Plutarch.Helpers.Numeric (pbySquaring) where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
-import Plutarch.Backend.Term (S, Term, toSomeTerm)
+import Plutarch.Backend.Term (Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.DerivedFun (pif)
 import Plutarch.Primitive.Eq ((#==))
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Representation (PlutarchType, (#))
-import Plutarch.Primitive.Singular (PInteger, (:-->))
+import Plutarch.Primitive.Singular (PInteger, (:~>))
 import Plutarch.Primitive.Term (pfix, plam', punsafeCase)
 
 pbySquaring ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (a :--> a :--> a) ->
-  Term s PInteger ->
-  Term s a ->
-  Term s a
+  Term (a :~> a :~> a) ->
+  Term PInteger ->
+  Term a ->
+  Term a
 pbySquaring f e b = go # e
   where
-    go :: Term s (PInteger :--> a)
+    go :: Term (PInteger :~> a)
     go = pfix $ \self -> plam' $ \currE ->
       pif
         (e #== pconstant 1)

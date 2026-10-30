@@ -1,6 +1,5 @@
 module Plutarch.Prelude
   ( -- * DSL types
-    BackendTerm.S,
     BackendTerm.Term,
     BackendTerm.TracingMode (..),
     BackendTerm.OptimizationMode (..),
@@ -45,7 +44,7 @@ module Plutarch.Prelude
     -- * Target language
 
     -- ** Functions
-    (S.:-->),
+    (S.:~>),
 
     -- ** Bool
 

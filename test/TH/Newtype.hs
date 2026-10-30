@@ -9,11 +9,11 @@ import Data.Kind (Type)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeSecondary)
 
-newtype PIdentity (a :: S -> Type) (s :: S) = PIdentity (Term s a)
+newtype PIdentity (a :: Type) = PIdentity (Term a)
 
 deriveFor ''PIdentity NewtypeData AllInstances
 
-newtype PArrow (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PArrow (Term s (a :--> b))
+newtype PArrow (a :: Type) (b :: Type)
+  = PArrow (Term (a :~> b))
 
 deriveFor ''PArrow Newtype NoEqDebug

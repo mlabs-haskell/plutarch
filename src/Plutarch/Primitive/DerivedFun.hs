@@ -19,7 +19,7 @@ where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
-import Plutarch.Backend.Term (S, Term, toSomeTerm)
+import Plutarch.Backend.Term (Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite (PBList)
 import Plutarch.Primitive.Liftable (pconstant)
@@ -31,7 +31,7 @@ import Plutarch.Primitive.Representation
 import Plutarch.Primitive.Singular
   ( PBool,
     PInteger,
-    (:-->),
+    (:~>),
   )
 import Plutarch.Primitive.Term (punsafeCase, punsafeConstant)
 import PlutusCore qualified as PLC
@@ -39,24 +39,24 @@ import PlutusCore qualified as PLC
 -- | Canonical true 'Term'.
 --
 -- @since 2.0.0
-ptrue :: forall (s :: S). Term s PBool
+ptrue :: Term PBool
 ptrue = punsafeConstant . PLC.someValue @Bool $ True
 
 -- | Canonical false 'Term'.
 --
 -- @since 2.0.0
-pfalse :: forall (s :: S). Term s PBool
+pfalse :: Term PBool
 pfalse = punsafeConstant . PLC.someValue @Bool $ False
 
 -- | Lazy if-then-else: only the branch that gets taken will be evaluated.
 --
 -- @since 2.0.0
 pif ::
-  forall (a :: S -> Type) (s :: S).
-  Term s PBool ->
-  Term s a ->
-  Term s a ->
-  Term s a
+  forall (a :: Type).
+  Term PBool ->
+  Term a ->
+  Term a ->
+  Term a
 pif cond ifT ifF =
   let tAsSome = toSomeTerm ifT
       fAsSome = toSomeTerm ifF
@@ -69,10 +69,9 @@ pif cond ifT ifF =
 --
 -- @since 2.0.0
 por ::
-  forall (s :: S).
-  Term s PBool ->
-  Term s PBool ->
-  Term s PBool
+  Term PBool ->
+  Term PBool ->
+  Term PBool
 por x = pif x ptrue
 
 -- | Lazy inclusive and: if the first argument evaluates as false, second
@@ -80,19 +79,17 @@ por x = pif x ptrue
 --
 -- @since 2.0.0
 pand ::
-  forall (s :: S).
-  Term s PBool ->
-  Term s PBool ->
-  Term s PBool
+  Term PBool ->
+  Term PBool ->
+  Term PBool
 pand x y = pif x y pfalse
 
 -- | Logical negation.
 --
 -- @since 2.0.0
 pnot ::
-  forall (s :: S).
-  Term s PBool ->
-  Term s PBool
+  Term PBool ->
+  Term PBool
 pnot x = pif x pfalse ptrue
 
 -- | Checks if a given numeric type is negative. This is slightly more efficient
@@ -100,20 +97,20 @@ pnot x = pif x pfalse ptrue
 --
 -- @since 2.0.0
 pisNegative ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a, PRepresentation a ~ PInteger) =>
-  Term s a ->
-  Term s PBool
+  Term a ->
+  Term PBool
 pisNegative t = BF.plessThanEqualsInteger # pfundamental t # pconstant (-1)
 
 -- | Checks if a given numeric type is positive.
 --
 -- @since 2.0.0
 pisPositive ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a, PRepresentation a ~ PInteger) =>
-  Term s a ->
-  Term s PBool
+  Term a ->
+  Term PBool
 pisPositive t = BF.plessThanEqualsInteger # pconstant 1 # pfundamental t
 
 -- | If a 'PBList' is known non-empty, and you need both the head and tail, this
@@ -121,8 +118,8 @@ pisPositive t = BF.plessThanEqualsInteger # pconstant 1 # pfundamental t
 --
 -- @since 2.0.0
 pheadTailList ::
-  forall (a :: S -> Type) (r :: S -> Type) (s :: S).
-  Term s (PBList a) ->
-  Term s (a :--> PBList a :--> r) ->
-  Term s r
+  forall (a :: Type) (r :: Type).
+  Term (PBList a) ->
+  Term (a :~> PBList a :~> r) ->
+  Term r
 pheadTailList ell = punsafeCase ell . NEVector.singleton . toSomeTerm

@@ -15,7 +15,7 @@ module Plutarch.Primitive.Additive
 where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term)
+import Plutarch.Backend.Term (Term)
 import Plutarch.Helpers.Numeric (pbySquaring)
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite qualified as C
@@ -35,7 +35,7 @@ import Plutarch.Primitive.Singular
   ( PInteger,
     PNatural,
     PPositive,
-    (:-->),
+    (:~>),
   )
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (pfix, plam', punsafeCoerce)
@@ -43,14 +43,13 @@ import PlutusCore.Crypto.BLS12_381.G1 as G1
 import PlutusCore.Crypto.BLS12_381.G2 as G2
 
 -- | @since 2.0.0
-class (PlutarchType a) => PAdditiveSemigroup (a :: S -> Type) where
-  padd :: forall (s :: S). Term s (a :--> a :--> a)
+class (PlutarchType a) => PAdditiveSemigroup (a :: Type) where
+  padd :: Term (a :~> a :~> a)
   default padd ::
-    forall (s :: S).
     (PAdditiveSemigroup (PRepresentation a)) =>
-    Term s (a :--> a :--> a)
+    Term (a :~> a :~> a)
   padd = punsafeCoerce (padd @(PRepresentation a))
-  pscalePositive :: forall (s :: S). Term s (PPositive :--> a :--> a)
+  pscalePositive :: Term (PPositive :~> a :~> a)
   pscalePositive = plam' $ \e -> plam' $ pbySquaring padd (pfundamental e)
 
 -- | @since 2.0.0
@@ -75,14 +74,13 @@ instance PAdditiveSemigroup S.PBLS12_381_G2_Element where
   pscalePositive = punsafeCoerce BF.pbls12_381_G2_scalarMul
 
 -- | @since 2.0.0
-class (PAdditiveSemigroup a) => PAdditiveMonoid (a :: S -> Type) where
-  pzero :: forall (s :: S). Term s a
+class (PAdditiveSemigroup a) => PAdditiveMonoid (a :: Type) where
+  pzero :: Term a
   default pzero ::
-    forall (s :: S).
     (PAdditiveMonoid (PRepresentation a)) =>
-    Term s a
+    Term a
   pzero = punsafeSecondary (pzero @(PRepresentation a))
-  pscaleNatural :: forall (s :: S). Term s (PNatural :--> a :--> a)
+  pscaleNatural :: Term (PNatural :~> a :~> a)
   pscaleNatural = plam' $ \e -> plam' $ \b ->
     pif
       (e #== pconstant 0)
@@ -108,12 +106,12 @@ instance PAdditiveMonoid S.PBLS12_381_G2_Element where
   pscaleNatural = punsafeCoerce BF.pbls12_381_G2_scalarMul
 
 -- | @since 2.0.0
-class (PAdditiveMonoid a) => PAdditiveGroup (a :: S -> Type) where
-  psubtract :: Term s (a :--> a :--> a)
+class (PAdditiveMonoid a) => PAdditiveGroup (a :: Type) where
+  psubtract :: Term (a :~> a :~> a)
   psubtract = plam' $ \x -> plam' $ \y -> padd # x #$ pnegate # y
-  pnegate :: Term s (a :--> a)
+  pnegate :: Term (a :~> a)
   pnegate = plam' $ \x -> psubtract # pzero # x
-  pscaleInteger :: forall (s :: S). Term s (PInteger :--> a :--> a)
+  pscaleInteger :: Term (PInteger :~> a :~> a)
   pscaleInteger = plam' $ \e -> plam' $ \b ->
     pif
       (pisNegative e)
@@ -137,27 +135,27 @@ instance PAdditiveGroup S.PBLS12_381_G2_Element where
 
 -- | @since 2.0.0
 (#+) ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PAdditiveSemigroup a) =>
-  Term s a -> Term s a -> Term s a
+  Term a -> Term a -> Term a
 x #+ y = padd # x # y
 
 infix 6 #+
 
 -- | @since 2.0.0
 psum ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PAdditiveMonoid a) =>
-  Term s (C.PBList a :--> a)
+  Term (C.PBList a :~> a)
 psum = pfix $ \self -> plam' $ \ell -> pmatch ell $ \case
   C.PBNil -> pzero
   C.PBCons x xs -> padd # x #$ self # xs
 
 -- | @since 2.0.0
 (#-) ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PAdditiveGroup a) =>
-  Term s a -> Term s a -> Term s a
+  Term a -> Term a -> Term a
 x #- y = psubtract # x # y
 
 infix 6 #-
