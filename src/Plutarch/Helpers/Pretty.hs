@@ -17,10 +17,10 @@ module Plutarch.Helpers.Pretty
     blockParens,
     lambdaTemplate,
     appTemplate,
+    letTemplate,
     caseTemplate,
     ctorTemplate,
     composeTemplate,
-    letTemplate,
     PrintMode (PrintDefault, PrintAtomic),
   )
 where
@@ -307,7 +307,6 @@ letTemplate mode var bind body = case mode of
   where
     myLine :: Doc ann
     myLine = case mode of PrintAtomic -> hardline; _ -> ""
-
     mkMultiline :: Doc ann -> Doc ann -> Doc ann
     mkMultiline l r =
       align . group $
@@ -321,7 +320,6 @@ letTemplate mode var bind body = case mode of
           <+> align (group body)
           <> myLine
           <> r
-
     oneLineNoParens :: Doc ann
     oneLineNoParens = "let" <+> var <+> "=" <+> bind <+> "in" <+> body
 

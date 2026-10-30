@@ -15,8 +15,8 @@ case
       case b
         [ \c d ->
             case a
-              [ let _ = UnIData # c
-                in case d
+              [  (\_ ->
+                   case d
                      [ \_ _ -> ERROR
                      ,  ConstrData
                         # 2 :: Integer
@@ -30,8 +30,10 @@ case
                               )
                           ) 
                      ]
-              , let _ = UnBData # c
-                in case d
+                 )
+                 # (UnIData # c) 
+              ,  (\_ ->
+                   case d
                      [ \_ _ -> ERROR
                      ,  ConstrData
                         # 2 :: Integer
@@ -45,11 +47,13 @@ case
                               )
                           ) 
                      ]
-              , let _ = UnIData # c
-                in case d
+                 )
+                 # (UnBData # c) 
+              ,  (\_ ->
+                   case d
                      [ \e f ->
-                         let _ = UnBData # e
-                         in case f
+                          (\_ ->
+                            case f
                               [ \_ _ -> ERROR
                               ,  ConstrData
                                  # 2 :: Integer
@@ -63,7 +67,11 @@ case
                                        )
                                    ) 
                               ]
+                          )
+                          # (UnBData # e) 
                      ]
+                 )
+                 # (UnIData # c) 
               ]
         ]
   ]
