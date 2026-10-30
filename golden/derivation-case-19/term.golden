@@ -6,10 +6,12 @@
                case e
                  [ \f g ->
                      case d
-                       [ let _ = UnIData # f in case g [\_ _ -> ERROR, c]
-                       , let _ = UnIData # f
-                         in case g
+                       [ (\_ -> case g [\_ _ -> ERROR, c]) # (UnIData # f)
+                       ,  (\_ ->
+                            case g
                               [\h i -> a_self # h # (case i [\_ _ -> ERROR, c])]
+                          )
+                          # (UnIData # f) 
                        ]
                  ]
            ]

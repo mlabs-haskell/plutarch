@@ -23,7 +23,6 @@ module Plutarch.Prelude
     -- ** Others
     PrimTerm.pforce,
     PrimTerm.pdelay,
-    PrimTerm.plet,
     PrimTerm.pfix,
     PrimTerm.perror,
     PrimTerm.pcompiled,

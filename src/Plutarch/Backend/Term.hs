@@ -81,11 +81,10 @@ import Plutarch.Backend.RawTerm
         RFix,
         RForce,
         RLamAbs,
-        RLet,
         RPlaceholder,
         RVar
       ),
-    VarTag (Argument, LetBinding, Self),
+    VarTag (Argument, Self),
   )
 import Plutarch.Backend.VarMap (VarMap, vmFold)
 import Plutarch.Helpers.Pretty
@@ -97,7 +96,6 @@ import Plutarch.Helpers.Pretty
     composeTemplate,
     ctorTemplate,
     lambdaTemplate,
-    letTemplate,
     prettyValueOf,
   )
 import Prettyprinter
@@ -199,11 +197,6 @@ data TermError
     --
     --    @since 2.0.0
     UserSpecified CallStack Text
-  | -- | A @let@ binding construction caused a bad position tree merge. This is
-    --    something that should not happen normally and is /definitely/ a bug!
-    --
-    --    @since 2.0.0
-    BadMergeLet Word64 PosTree PosTree
   | -- | An @apply@ construction caused a bad position tree merge. This is
     --    something that should not happen normally, and is /definitely/ a bug!
     --
@@ -275,7 +268,6 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
             Nothing -> "_free"
             Just tag -> case tag of
               Argument -> ""
-              LetBinding -> "_letBound"
               Self -> "_self"
       pure (s <> suffix)
 
@@ -422,16 +414,6 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
         case mode of
           PrintDefault -> pure resNoParens
           PrintAtomic -> pure $ blockParens resNoParens
-      RLet _ mpt v f -> do
-        -- I think this is right? We don't bind anything for the var part
-        pv <- local (mapMaybe1 downL) $ go v
-        case mpt of
-          Nothing -> do
-            pf <- local (mapMaybe1 downR) $ go f
-            pure $ letTemplate mode "_" pv pf
-          Just pt -> do
-            (thisVar, pf) <- withBoundVar (LetBinding, pt) downR $ go f
-            pure $ letTemplate mode thisVar pv pf
 
 -- | A 'Term' whose result has been forgotten. Useful mainly together with
 -- 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of

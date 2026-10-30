@@ -32,7 +32,7 @@
                   baseName = baseNameOf path;
                   relPath = pkgs.lib.removePrefix (toString ./. + "/") (toString path);
                 in
-                pkgs.lib.any (p: pkgs.lib.hasPrefix p relPath) [ "src" "app" "test" ]
+                pkgs.lib.any (p: relPath == p || pkgs.lib.hasPrefix (p + "/") relPath) [ "src" "app" "test" "golden" "optics-plated" "bench" ]
                 || builtins.elem baseName [ "plutarch.cabal" "cabal.project" "CHANGELOG.md" "README.md" "LICENSE" ];
             };
             compiler-nix-name = "ghc984";
@@ -40,6 +40,11 @@
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };
+            modules = [
+              {
+                packages.plutarch.components.tests.tests.testFlags = [ "--no-create" ];
+              }
+            ];
             shell = {
               withHoogle = true;
               withHaddock = true;
