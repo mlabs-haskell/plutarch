@@ -176,7 +176,7 @@ instance Arbitrary V4.Voter where
 instance Arbitrary V4.Vote where
   arbitrary = elements [V4.VoteYes, V4.VoteNo, V4.Abstain]
 
-deriving via Blake2b224Hash instance Arbitrary V4.TxId
+deriving via Blake2b256Hash instance Arbitrary V4.TxId
 
 instance Arbitrary V4.GovernanceActionId where
   arbitrary = V4.GovernanceActionId <$> arbitrary <*> (getNonNegative <$> arbitrary)
@@ -351,7 +351,7 @@ instance Arbitrary V4.CurrencySymbol where
     V4.CurrencySymbol
       <$> frequency
         [ (1, pure ""),
-          (maxBound, getSizedByteString . getBlake2b244Hash <$> arbitrary)
+          (maxBound - 1, getSizedByteString . getBlake2b244Hash <$> arbitrary)
         ]
 
 deriving via PlutusTx.BuiltinData instance Arbitrary V4.Datum
