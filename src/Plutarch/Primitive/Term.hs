@@ -3,7 +3,6 @@
 -- @since wip
 module Plutarch.Primitive.Term
   ( plam',
-    plet,
     pfix,
     pcompose,
     pthrow,
@@ -66,11 +65,10 @@ import Plutarch.Backend.RawTerm
         RFix,
         RForce,
         RLamAbs,
-        RLet,
         RPlaceholder,
         RVar
       ),
-    VarTag (Argument, LetBinding, Self),
+    VarTag (Argument, Self),
   )
 import Plutarch.Backend.Term
   ( OptimizationMode (InternalExternal, OnlyInternal),
@@ -83,7 +81,6 @@ import Plutarch.Backend.Term
         BadMergeCase,
         BadMergeCompose,
         BadMergeConstr,
-        BadMergeLet,
         UnusedSelfArgument,
         UserSpecified
       ),
@@ -116,31 +113,6 @@ plam' f = Term $ do
   (vm, t) <- asRawTerm (f varTerm)
   let (mpt, vm') = vmDelete fresh vm
   pure (vmMap POne vm', RLamAbs () mpt t)
-
--- | Given a piece of code and a code transformation, use this to build a
--- @let@-binding.
---
--- = Note
---
--- This is provided purely for code clarity and better prettyprinting. The
--- Plutarch compiler already detects multiple-uses of the same code chunks
--- (modulo alpha equivalence) and performs the necessary transformations to
--- @let@-bind them automatically.
---
--- @since 2.0.0
-plet ::
-  forall (a :: Type) (b :: Type).
-  Term a -> (Term a -> Term b) -> Term b
-plet v f = Term $ do
-  fresh <- getFresh
-  let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () LetBinding)
-  (fvm, ft) <- asRawTerm (f varTerm)
-  (vvm, vt) <- asRawTerm v
-  let (fpt, fvm') = vmDelete fresh fvm
-  let vvmExtended = vmMap (PTwo . This) vvm
-  let fvmExtended = vmMap (PTwo . That) fvm'
-  vm <- vmMergeM (mergeTwo BadMergeLet) vvmExtended fvmExtended
-  pure (vm, RLet () fpt vt ft)
 
 -- | Given a code transformation that takes the code for a \'self\' argument and
 -- produces a fixpoint functional, construct the corresponding fixed point find.

@@ -30,6 +30,7 @@ import Data.Map.Merge.Strict (WhenMatched, mergeA, preserveMissing)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Word (Word64)
+import GHC.Stack (HasCallStack)
 import Plutarch.Backend.PosTree (PosTree)
 
 -- A variable map.
@@ -59,8 +60,10 @@ vmEmpty = VarMap Map.empty
 -- Will error if given the empty 'VarMap'.
 --
 -- @since 2.0.0
-vmFirst :: VarMap -> (Word64, PosTree)
-vmFirst (VarMap vm) = Map.findMin vm
+vmFirst :: (HasCallStack) => VarMap -> (Word64, PosTree)
+vmFirst (VarMap vm)
+  | Map.null vm = error "vmFirst given an empty VarMap"
+  | otherwise = Map.findMin vm
 
 -- | Produce a variable map mapping a single unique identifier to a position
 -- tree.

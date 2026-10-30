@@ -18,21 +18,21 @@ import Plutarch.Prelude
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Unsafe (punsafeCase, punsafeSecondary, toSomeTerm)
 
-data PSOPMaybe (a :: S -> Type) (s :: S)
+data PSOPMaybe (a :: Type)
   = PSOPNothing
-  | PSOPJust (Term s a)
+  | PSOPJust (Term a)
 
 deriveFor ''PSOPMaybe SOP AllInstances
 
-data PMSMaybe (a :: S -> Type) (s :: S)
+data PMSMaybe (a :: Type)
   = PMSNothing
-  | PMSJust (Term s a)
+  | PMSJust (Term a)
 
 deriveFor ''PMSMaybe MogensenScott AllInstances
 
-data PMaybeOld (a :: S -> Type) (s :: S)
+data PMaybeOld (a :: Type)
   = PNothingOld
-  | PJustOld (Term s (PAsData a))
+  | PJustOld (Term (PAsData a))
 
 instance (PlutarchType a) => PlutarchType (PMaybeOld a) where
   type PRepresentation (PMaybeOld a) = PData
@@ -50,9 +50,9 @@ instance (PlutarchType a) => PCon (PMaybeOld a) where
     PNothingOld -> BF.pconstrData # pconstant 0 # pcon PBNil
     PJustOld t -> BF.pconstrData # pconstant 1 # pcon (PBCons (pfundamental t) . pcon $ PBNil)
 
-data PMaybeNew (a :: S -> Type) (s :: S)
+data PMaybeNew (a :: Type)
   = PNothingNew
-  | PJustNew (Term s (PAsData a))
+  | PJustNew (Term (PAsData a))
 
 instance (PlutarchType a) => PlutarchType (PMaybeNew a) where
   type PRepresentation (PMaybeNew a) = PData
@@ -72,42 +72,42 @@ instance (PlutarchType a) => PCon (PMaybeNew a) where
     PJustNew t -> BF.pconstrData # pconstant 1 # pcon (PBCons (pfundamental t) . pcon $ PBNil)
 
 pfindSOP ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (a :--> PBool) ->
-  Term s (PBList a) ->
-  Term s (PSOPMaybe a)
+  Term (a :~> PBool) ->
+  Term (PBList a) ->
+  Term (PSOPMaybe a)
 pfindSOP p ell = go # ell
   where
-    go :: Term s (PBList a :--> PSOPMaybe a)
+    go :: Term (PBList a :~> PSOPMaybe a)
     go = pfix $ \self -> plam1 $ \xs -> pmatch xs $ \case
       PBNil -> pcon PSOPNothing
       PBCons x xs' -> pif (p # x) (pcon . PSOPJust $ x) (self # xs')
 
 pfindMS ::
-  forall (a :: S -> Type) (s :: S).
+  forall (a :: Type).
   (PlutarchType a) =>
-  Term s (a :--> PBool) ->
-  Term s (PBList a) ->
-  Term s (PMSMaybe a)
+  Term (a :~> PBool) ->
+  Term (PBList a) ->
+  Term (PMSMaybe a)
 pfindMS p ell = go # ell
   where
-    go :: Term s (PBList a :--> PMSMaybe a)
+    go :: Term (PBList a :~> PMSMaybe a)
     go = pfix $ \self -> plam1 $ \xs -> pmatch xs $ \case
       PBNil -> pcon PMSNothing
       PBCons x xs' -> pif (p # x) (pcon . PMSJust $ x) (self # xs')
 
 pfindCPS ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  forall (a :: Type) (b :: Type).
   (PlutarchType a, PlutarchType b) =>
-  Term s (a :--> PBool) ->
-  Term s (PBList a) ->
-  Term s b ->
-  Term s (a :--> b) ->
-  Term s b
+  Term (a :~> PBool) ->
+  Term (PBList a) ->
+  Term b ->
+  Term (a :~> b) ->
+  Term b
 pfindCPS p ell whenMissing whenFound = go # ell
   where
-    go :: Term s (PBList a :--> b)
+    go :: Term (PBList a :~> b)
     go = pfix $ \self -> plam1 $ \xs -> pmatch xs $ \case
       PBNil -> whenMissing
       PBCons x xs' ->

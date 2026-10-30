@@ -24,7 +24,7 @@ import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Representation (PlutarchType, (#))
 import Plutarch.Primitive.Singular (PAsData, PData)
 import Plutarch.Primitive.Singular qualified as S
-import Plutarch.Primitive.Term (perror, plam', plet, punsafeCase, punsafeCoerce)
+import Plutarch.Primitive.Term (perror, plam', punsafeCase, punsafeCoerce)
 
 -- | @since 2.0.0
 class (PCanData a) => PValidateData (a :: Type) where
@@ -46,7 +46,7 @@ instance PValidateData S.PBool where
 
 -- | @since 2.0.0
 instance PValidateData S.PInteger where
-  pwithValidated d res = plet (BF.punIData # d) $ const res
+  pwithValidated d res = plam' (const res) # (BF.punIData # d)
 
 -- | @since 2.0.0
 instance PValidateData S.PNatural where
@@ -81,7 +81,7 @@ instance PValidateData S.PByte where
 
 -- | @since 2.0.0
 instance PValidateData S.PByteString where
-  pwithValidated d res = plet (BF.punBData # d) $ const res
+  pwithValidated d res = plam' (const res) # (BF.punBData # d)
 
 -- | Effectively does nothing.
 --
@@ -91,7 +91,7 @@ instance PValidateData S.PData where
 
 -- | @since 2.0.0
 instance PValidateData (C.PBList S.PData) where
-  pwithValidated d res = plet (BF.punListData # d) $ const res
+  pwithValidated d res = plam' (const res) # (BF.punListData # d)
 
 -- | @since 2.0.0
 instance PValidateData (C.PBPair S.PData S.PData) where
