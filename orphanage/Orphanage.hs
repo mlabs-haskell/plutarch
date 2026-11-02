@@ -4,7 +4,6 @@
 
 module Orphanage () where
 
-import Control.Applicative (asum)
 import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
@@ -41,6 +40,7 @@ import Test.QuickCheck
     sized,
     vectorOf,
   )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink, toShrink)
 import Test.QuickCheck.Instances ()
 
 instance Arbitrary V4.Rational where
@@ -82,18 +82,10 @@ instance Arbitrary V4.AccountBalanceInterval where
   shrink = \case
     V4.AccountBalanceLowerBound b -> V4.AccountBalanceLowerBound <$> shrink b
     V4.AccountBalanceUpperBound b -> V4.AccountBalanceUpperBound <$> shrink b
-    V4.AccountBalanceBothBounds lb ub -> asum [shrinkLo, shrinkHi]
-      where
-        shrinkLo :: [V4.AccountBalanceInterval]
-        shrinkLo = do
-          lb' <- shrink lb
-          guard (lb' < ub)
-          pure . V4.AccountBalanceBothBounds lb' $ ub
-        shrinkHi :: [V4.AccountBalanceInterval]
-        shrinkHi = do
-          ub' <- shrink ub
-          guard (lb < ub')
-          pure . V4.AccountBalanceBothBounds lb $ ub'
+    V4.AccountBalanceBothBounds lb ub -> do
+      (lb', ub') <- runShrink ((,) <$> neShrink lb <*> neShrink ub)
+      guard (lb' < ub')
+      pure . V4.AccountBalanceBothBounds lb' $ ub'
     V4.AccountBalanceExact b -> V4.AccountBalanceExact <$> shrink b
 
 instance (Ord k, Arbitrary k) => Arbitrary1 (V4.Map k) where
@@ -202,16 +194,11 @@ instance Arbitrary V4.ProtocolVersion where
     NonNegative major <- arbitrary
     NonNegative minor <- arbitrary
     pure . V4.ProtocolVersion major $ minor
-  shrink (V4.ProtocolVersion major minor) = asum [shrinkMaj, shrinkMin]
-    where
-      shrinkMaj :: [V4.ProtocolVersion]
-      shrinkMaj = do
-        NonNegative major' <- shrink (NonNegative major)
-        pure . V4.ProtocolVersion major' $ minor
-      shrinkMin :: [V4.ProtocolVersion]
-      shrinkMin = do
-        NonNegative minor' <- shrink (NonNegative minor)
-        pure . V4.ProtocolVersion major $ minor'
+  shrink =
+    toShrink
+      ( \(V4.ProtocolVersion major minor) ->
+          V4.ProtocolVersion <$> neShrink major <*> neShrink minor
+      )
 
 instance Arbitrary PlutusTx.BuiltinByteString where
   arbitrary = PlutusTx.toBuiltin @ByteString <$> arbitrary
@@ -251,13 +238,11 @@ instance Arbitrary PlutusTx.BuiltinData where
       (fmap Builtins.mkB . shrink)
     where
       shrinkConstr :: Integer -> [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
-      shrinkConstr ix dats = asum [shrinkTag ix dats, shrinkContents ix dats]
-      shrinkTag :: Integer -> [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
-      shrinkTag ix dats = do
-        NonNegative ix' <- shrink (NonNegative ix)
-        pure . Builtins.mkConstr ix' $ dats
-      shrinkContents :: Integer -> [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
-      shrinkContents ix dats = Builtins.mkConstr ix <$> shrink dats
+      shrinkConstr ix dats = do
+        (ix', dats') <-
+          runShrink
+            ((,) <$> neShrinkOver @(NonNegative Integer) ix <*> neShrink dats)
+        pure . Builtins.mkConstr ix' $ dats'
       shrinkMap :: [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)] -> [PlutusTx.BuiltinData]
       shrinkMap kvs = Builtins.mkMap <$> shrink kvs
       shrinkList :: [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
@@ -287,56 +272,24 @@ instance Arbitrary V4.GovernanceAction where
         pure V4.InfoAction
       ]
   shrink = \case
-    V4.ParameterChange mgid cp msh -> asum [shrinkGid, shrinkSh]
-      where
-        shrinkGid :: [V4.GovernanceAction]
-        shrinkGid = do
-          mgid' <- shrink mgid
-          pure . V4.ParameterChange mgid' cp $ msh
-        shrinkSh :: [V4.GovernanceAction]
-        shrinkSh = V4.ParameterChange mgid cp <$> shrink msh
-    V4.HardForkInitiation mgid v -> asum [shrinkGid, shrinkV]
-      where
-        shrinkGid :: [V4.GovernanceAction]
-        shrinkGid = do
-          mgid' <- shrink mgid
-          pure . V4.HardForkInitiation mgid' $ v
-        shrinkV :: [V4.GovernanceAction]
-        shrinkV = V4.HardForkInitiation mgid <$> shrink v
-    V4.TreasuryWithdrawals wdrls msh -> asum [shrinkWdrls, shrinkSh]
-      where
-        shrinkWdrls :: [V4.GovernanceAction]
-        shrinkWdrls = do
-          wdrls' <- shrink wdrls
-          pure . V4.TreasuryWithdrawals wdrls' $ msh
-        shrinkSh :: [V4.GovernanceAction]
-        shrinkSh = V4.TreasuryWithdrawals wdrls <$> shrink msh
+    V4.ParameterChange mgid cp msh ->
+      runShrink (V4.ParameterChange <$> neShrink mgid <*> neShrink cp <*> neShrink msh)
+    V4.HardForkInitiation mgid v ->
+      runShrink (V4.HardForkInitiation <$> neShrink mgid <*> neShrink v)
+    V4.TreasuryWithdrawals wdrls msh ->
+      runShrink (V4.TreasuryWithdrawals <$> neShrink wdrls <*> neShrink msh)
     V4.NoConfidence msh -> V4.NoConfidence <$> shrink msh
     -- No quorum shrinking
-    V4.UpdateCommittee mgid creds mems quorum -> asum [shrinkGid, shrinkCreds, shrinkMems]
-      where
-        shrinkGid :: [V4.GovernanceAction]
-        shrinkGid = V4.UpdateCommittee <$> shrink mgid <*> pure creds <*> pure mems <*> pure quorum
-        shrinkCreds :: [V4.GovernanceAction]
-        shrinkCreds = V4.UpdateCommittee mgid <$> shrink creds <*> pure mems <*> pure quorum
-        shrinkMems :: [V4.GovernanceAction]
-        shrinkMems = V4.UpdateCommittee mgid creds <$> shrink mems <*> pure quorum
-    V4.NewConstitution mgid c -> asum [shrinkGid, shrinkC]
-      where
-        shrinkGid :: [V4.GovernanceAction]
-        shrinkGid = V4.NewConstitution <$> shrink mgid <*> pure c
-        shrinkC :: [V4.GovernanceAction]
-        shrinkC = V4.NewConstitution mgid <$> shrink c
+    V4.UpdateCommittee mgid creds mems quorum ->
+      runShrink (V4.UpdateCommittee <$> neShrink mgid <*> neShrink creds <*> neShrink mems <*> pure quorum)
+    V4.NewConstitution mgid c ->
+      runShrink (V4.NewConstitution <$> neShrink mgid <*> neShrink c)
     _ -> []
 
 instance Arbitrary V4.ProposalProcedure where
   arbitrary = V4.ProposalProcedure <$> arbitrary <*> arbitrary <*> arbitrary
-  shrink (V4.ProposalProcedure dep raddr ga) = asum [shrinkDep, shrinkGa]
-    where
-      shrinkDep :: [V4.ProposalProcedure]
-      shrinkDep = V4.ProposalProcedure <$> shrink dep <*> pure raddr <*> pure ga
-      shrinkGa :: [V4.ProposalProcedure]
-      shrinkGa = V4.ProposalProcedure dep raddr <$> shrink ga
+  shrink (V4.ProposalProcedure dep raddr ga) =
+    runShrink (V4.ProposalProcedure <$> neShrink dep <*> neShrink raddr <*> neShrink ga)
 
 -- A `CurrencySymbol` is either a BLAKE2b-244 hash or empty (representing the
 -- Ada symbol). In a fully-fair generator, this makes it vanishingly unlikely
@@ -392,32 +345,12 @@ instance Arbitrary V4.TxOut where
       <*> arbitrary
       <*> arbitrary
   shrink (V4.TxOut addr val outD refScript) =
-    asum
-      [ shrAddr,
-        shrVal,
-        shrOutD,
-        shrRefScript
-      ]
-    where
-      shrAddr :: [V4.TxOut]
-      shrAddr = V4.TxOut <$> shrink addr <*> pure val <*> pure outD <*> pure refScript
-      shrVal :: [V4.TxOut]
-      shrVal = do
-        UTxOValue val' <- shrink (UTxOValue val)
-        pure . V4.TxOut addr val' outD $ refScript
-      shrOutD :: [V4.TxOut]
-      shrOutD = V4.TxOut addr val <$> shrink outD <*> pure refScript
-      shrRefScript :: [V4.TxOut]
-      shrRefScript = V4.TxOut addr val outD <$> shrink refScript
+    runShrink (V4.TxOut <$> neShrink addr <*> neShrinkOver @UTxOValue val <*> neShrink outD <*> neShrink refScript)
 
 instance Arbitrary V4.TxInInfo where
   arbitrary = V4.TxInInfo <$> arbitrary <*> arbitrary
-  shrink (V4.TxInInfo outRef resolved) = asum [shrinkOutRef, shrinkResolved]
-    where
-      shrinkOutRef :: [V4.TxInInfo]
-      shrinkOutRef = V4.TxInInfo <$> shrink outRef <*> pure resolved
-      shrinkResolved :: [V4.TxInInfo]
-      shrinkResolved = V4.TxInInfo outRef <$> shrink resolved
+  shrink (V4.TxInInfo outRef resolved) =
+    runShrink (V4.TxInInfo <$> neShrink outRef <*> neShrink resolved)
 
 instance Arbitrary V4.MintValue where
   arbitrary = do
@@ -496,19 +429,11 @@ instance Arbitrary V4.ScriptPurpose where
     V4.Minting sh cs -> V4.Minting sh <$> shrink cs
     V4.Spending sh tor -> V4.Spending sh <$> shrink tor
     V4.Withdrawing _ _ -> []
-    V4.Certifying sh i cert -> asum [shrinkI, shrinkCert]
-      where
-        shrinkI :: [V4.ScriptPurpose]
-        shrinkI = V4.Certifying sh <$> shrink i <*> pure cert
-        shrinkCert :: [V4.ScriptPurpose]
-        shrinkCert = V4.Certifying sh i <$> shrink cert
+    V4.Certifying sh i cert ->
+      runShrink (V4.Certifying <$> neShrink sh <*> neShrink i <*> neShrink cert)
     V4.Voting sh v -> V4.Voting sh <$> shrink v
-    V4.Proposing sh i pp -> asum [shrinkI, shrinkPP]
-      where
-        shrinkI :: [V4.ScriptPurpose]
-        shrinkI = V4.Proposing sh <$> shrink i <*> pure pp
-        shrinkPP :: [V4.ScriptPurpose]
-        shrinkPP = V4.Proposing sh i <$> shrink pp
+    V4.Proposing sh i pp ->
+      runShrink (V4.Proposing <$> neShrink sh <*> neShrink i <*> neShrink pp)
     V4.Guarding sh i -> V4.Guarding sh <$> shrink i
 
 instance Arbitrary V4.TxInfo where
@@ -553,28 +478,29 @@ instance Arbitrary V4.TxInfo where
         pps
         currT
       $ tDonation
-  shrink (V4.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) = do
-    ins' <- getNonEmpty <$> shrink (NonEmpty ins)
-    outs' <- getNonEmpty <$> shrink (NonEmpty outs)
-    V4.TxInfo iid
-      <$> shrink subTxIx
-      <*> pure ins'
-      <*> shrink refIns
-      <*> pure outs'
-      <*> shrink mint
-      <*> shrink certs
-      <*> shrink wdrls
-      <*> shrink directs
-      <*> shrink abints
-      <*> pure valid
-      <*> shrink guards
-      <*> shrink reqGuards
-      <*> shrink reds
-      <*> shrink dats
-      <*> shrink votes
-      <*> shrink pps
-      <*> shrink currT
-      <*> shrink tDonation
+  shrink (V4.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) =
+    runShrink
+      ( V4.TxInfo
+          <$> neShrink iid
+          <*> neShrink subTxIx
+          <*> neShrinkOver @(NonEmptyList V4.TxInInfo) ins
+          <*> neShrink refIns
+          <*> neShrinkOver @(NonEmptyList V4.TxOut) outs
+          <*> neShrink mint
+          <*> neShrink certs
+          <*> neShrink wdrls
+          <*> neShrink directs
+          <*> neShrink abints
+          <*> pure valid
+          <*> neShrink guards
+          <*> neShrink reqGuards
+          <*> neShrink reds
+          <*> neShrink dats
+          <*> neShrink votes
+          <*> neShrink pps
+          <*> neShrink currT
+          <*> neShrink tDonation
+      )
 
 instance Arbitrary V4.TopTxInfoSimplified where
   arbitrary = do
@@ -616,28 +542,28 @@ instance Arbitrary V4.TopTxInfoSimplified where
         pps
         currT
       $ tDonations
-  shrink (V4.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards reqGuards reds datas votes pps currT tDonations) = do
-    ins' <- getNonEmpty <$> shrink (NonEmpty ins)
-    outs' <- getNonEmpty <$> shrink (NonEmpty outs)
-    V4.TopTxInfoSimplified
-      <$> shrink ids
-      <*> pure ins'
-      <*> shrink refIns
-      <*> pure outs'
-      <*> shrink mints
-      <*> shrink burns
-      <*> shrink certs
-      <*> shrink wdrls
-      <*> shrink dds
-      <*> pure valid
-      <*> shrink guards
-      <*> shrink reqGuards
-      <*> shrink reds
-      <*> shrink datas
-      <*> shrink votes
-      <*> shrink pps
-      <*> shrink currT
-      <*> shrink tDonations
+  shrink (V4.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards reqGuards reds datas votes pps currT tDonations) =
+    runShrink
+      ( V4.TopTxInfoSimplified
+          <$> neShrink ids
+          <*> neShrinkOver @(NonEmptyList V4.TxInInfo) ins
+          <*> neShrink refIns
+          <*> neShrinkOver @(NonEmptyList V4.TxOut) outs
+          <*> neShrink mints
+          <*> neShrink burns
+          <*> neShrink certs
+          <*> neShrink wdrls
+          <*> neShrink dds
+          <*> pure valid
+          <*> neShrink guards
+          <*> neShrink reqGuards
+          <*> neShrink reds
+          <*> neShrink datas
+          <*> neShrink votes
+          <*> neShrink pps
+          <*> neShrink currT
+          <*> neShrink tDonations
+      )
 
 instance Arbitrary V4.TopTxInfo where
   arbitrary = do
@@ -647,7 +573,13 @@ instance Arbitrary V4.TopTxInfo where
     simple <- arbitrary
     pure . V4.TopTxInfo trans dats starts $ simple
   shrink (V4.TopTxInfo trans dats starts simple) =
-    V4.TopTxInfo <$> shrink trans <*> shrink dats <*> shrink starts <*> shrink simple
+    runShrink
+      ( V4.TopTxInfo
+          <$> neShrink trans
+          <*> neShrink dats
+          <*> neShrink starts
+          <*> neShrink simple
+      )
 
 instance Arbitrary V4.ScriptInfo where
   arbitrary =
@@ -662,37 +594,17 @@ instance Arbitrary V4.ScriptInfo where
       ]
   shrink = \case
     V4.MintingScript cs -> V4.MintingScript <$> shrink cs
-    V4.SpendingScript outRef mDat -> asum [shrinkOutRef, shrinkDat]
-      where
-        shrinkOutRef :: [V4.ScriptInfo]
-        shrinkOutRef = V4.SpendingScript <$> shrink outRef <*> pure mDat
-        shrinkDat :: [V4.ScriptInfo]
-        shrinkDat = V4.SpendingScript outRef <$> shrink mDat
+    V4.SpendingScript outRef mDat -> runShrink (V4.SpendingScript <$> neShrink outRef <*> neShrink mDat)
     V4.WithdrawingScript aid -> V4.WithdrawingScript <$> shrink aid
-    V4.CertifyingScript i txCert -> asum [shrinkI, shrinkTxCert]
-      where
-        shrinkI :: [V4.ScriptInfo]
-        shrinkI = V4.CertifyingScript <$> shrink i <*> pure txCert
-        shrinkTxCert :: [V4.ScriptInfo]
-        shrinkTxCert = V4.CertifyingScript i <$> shrink txCert
+    V4.CertifyingScript i txCert -> runShrink (V4.CertifyingScript <$> neShrink i <*> neShrink txCert)
     V4.VotingScript v -> V4.VotingScript <$> shrink v
-    V4.ProposingScript i pp -> asum [shrinkI, shrinkPP]
-      where
-        shrinkI :: [V4.ScriptInfo]
-        shrinkI = V4.ProposingScript <$> shrink i <*> pure pp
-        shrinkPP :: [V4.ScriptInfo]
-        shrinkPP = V4.ProposingScript i <$> shrink pp
-    V4.GuardingScript i mTxInfo -> asum [shrinkI, shrinkTxInfo]
-      where
-        shrinkI :: [V4.ScriptInfo]
-        shrinkI = V4.GuardingScript <$> shrink i <*> pure mTxInfo
-        shrinkTxInfo :: [V4.ScriptInfo]
-        shrinkTxInfo = V4.GuardingScript i <$> shrink mTxInfo
+    V4.ProposingScript i pp -> runShrink (V4.ProposingScript <$> neShrink i <*> neShrink pp)
+    V4.GuardingScript i mTxInfo -> runShrink (V4.GuardingScript <$> neShrink i <*> neShrink mTxInfo)
 
 instance Arbitrary V4.ScriptContext where
   arbitrary = V4.ScriptContext <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
   shrink (V4.ScriptContext info red si sh) =
-    V4.ScriptContext <$> shrink info <*> shrink red <*> shrink si <*> pure sh
+    runShrink (V4.ScriptContext <$> neShrink info <*> neShrink red <*> neShrink si <*> pure sh)
 
 -- Helpers
 

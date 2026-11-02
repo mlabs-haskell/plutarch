@@ -140,6 +140,7 @@ library orphanage
     , plutus-ledger-api
     , plutus-tx
     , QuickCheck
+    , quickcheck-helpers
     , quickcheck-instances
 
   hs-source-dirs:  orphanage
