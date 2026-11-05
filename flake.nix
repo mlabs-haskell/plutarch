@@ -32,7 +32,10 @@
                   baseName = baseNameOf path;
                   relPath = pkgs.lib.removePrefix (toString ./. + "/") (toString path);
                 in
-                pkgs.lib.any (p: relPath == p || pkgs.lib.hasPrefix (p + "/") relPath) [ "src" "app" "test" "golden" "optics-plated" "bench" ]
+                # Keep the source directories needed by the Cabal components.
+                  # Missing entries remove sources before Cabal runs; for example,
+                  # excluding orphanage makes its declared Orphanage module unavailable.
+                pkgs.lib.any (p: relPath == p || pkgs.lib.hasPrefix (p + "/") relPath) [ "src" "app" "test" "golden" "optics-plated" "orphanage" "bench" ]
                 || builtins.elem baseName [ "plutarch.cabal" "cabal.project" "CHANGELOG.md" "README.md" "LICENSE" ];
             };
             compiler-nix-name = "ghc984";
