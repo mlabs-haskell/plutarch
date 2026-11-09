@@ -68,6 +68,7 @@ library
     Plutarch.Helpers.Numeric
     Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
+    Plutarch.LedgerApi.Credential
     Plutarch.Prelude
     Plutarch.Prelude.List
     Plutarch.Prelude.Maybe
@@ -117,6 +118,7 @@ library
     , optics-plated
     , plutus-core          ==1.71.0.0
     , plutus-ledger-api
+    , plutus-tx
     , prettyprinter
     , smash
     , tagged
