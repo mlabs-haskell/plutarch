@@ -75,6 +75,7 @@ library
     Plutarch.Helpers.Numeric
     Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
+    Plutarch.LedgerApi.Address
     Plutarch.LedgerApi.Credential
     Plutarch.Prelude
     Plutarch.Prelude.List

@@ -31,7 +31,8 @@ main =
   defaultMain . adjustOption moreTests . testGroup "Ledger" $
     [ testLedger @PScriptHash,
       testLedger @PPubKeyHash,
-      testLedger @PCredential
+      testLedger @PCredential,
+      testLedger @PAccountId
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests

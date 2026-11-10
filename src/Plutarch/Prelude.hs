@@ -193,6 +193,7 @@ module Plutarch.Prelude
     Credential.PPubKeyHash (..),
     Credential.PScriptHash (..),
     Credential.PCredential (..),
+    Address.PAccountId (..),
 
     -- * Derivations
     Strategy.Strategy (..),
@@ -202,6 +203,7 @@ module Plutarch.Prelude
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
+import Plutarch.LedgerApi.Address qualified as Address
 import Plutarch.LedgerApi.Credential qualified as Credential
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
