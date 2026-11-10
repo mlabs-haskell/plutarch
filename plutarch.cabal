@@ -49,6 +49,13 @@ common lang
 
   default-language:   Haskell2010
 
+common test-lang
+  import:        lang
+  ghc-options:   -O2 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+    , plutarch
+    , tasty
+
 library
   import:          lang
   exposed-modules:
@@ -140,7 +147,6 @@ library orphanage
   build-depends:
     , bytestring
     , containers
-    , plutarch
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
@@ -156,10 +162,9 @@ library optics-plated
   build-depends:   optics-core
   hs-source-dirs:  optics-plated
 
-test-suite tests
-  import:         lang
+test-suite compilation
+  import:         test-lang
   type:           exitcode-stdio-1.0
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
   other-modules:
     Additive
@@ -181,18 +186,26 @@ test-suite tests
     TH.SOP
     Trace
 
-  hs-source-dirs: test
+  hs-source-dirs: test/compilation
   build-depends:
     , nonempty-vector
-    , plutarch
     , prettyprinter
-    , tasty
     , text
+
+test-suite ledger
+  import:         test-lang
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  hs-source-dirs: test/ledger
+  build-depends:
+    , orphanage
+    , QuickCheck
+    , tasty-quickcheck
 
 benchmark benches
   import:         lang
   type:           exitcode-stdio-1.0
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:    -O2
   main-is:        Main.hs
   other-modules:
     Maybe

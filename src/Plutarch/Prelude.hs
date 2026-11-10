@@ -39,6 +39,8 @@ module Plutarch.Prelude
     Validate.pvalidateData,
 
     -- * Lifting
+    Lift.PlutusRepresentable (..),
+    Lift.PLiftable (..),
     Lift.pconstant,
 
     -- * Target language
@@ -187,6 +189,11 @@ module Plutarch.Prelude
     (Multiplicative.#*),
     Multiplicative.pproduct,
 
+    -- * Ledger types
+    Credential.PPubKeyHash (..),
+    Credential.PScriptHash (..),
+    Credential.PCredential (..),
+
     -- * Derivations
     Strategy.Strategy (..),
     Strategy.WhichInstances (..),
@@ -195,6 +202,7 @@ module Plutarch.Prelude
 where
 
 import Plutarch.Backend.Term qualified as BackendTerm
+import Plutarch.LedgerApi.Credential qualified as Credential
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
 import Plutarch.Primitive.Additive qualified as Additive

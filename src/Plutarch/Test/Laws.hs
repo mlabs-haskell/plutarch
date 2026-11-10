@@ -11,8 +11,7 @@ import Data.Kind (Type)
 import Plutarch.Primitive.Liftable
   ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
     PlutusRepresentable
-      ( AsPlutus,
-        haskToRepr,
+      ( haskToRepr,
         reprToHask
       ),
   )
@@ -52,9 +51,9 @@ testPLiftableLaws ::
   forall (a :: Type).
   ( PLiftable a,
     Typeable a,
-    Show (AsPlutus (AsHaskell a)),
-    Arbitrary (AsPlutus (AsHaskell a)),
-    Eq (AsPlutus (AsHaskell a))
+    Show (AsHaskell a),
+    Arbitrary (AsHaskell a),
+    Eq (AsHaskell a)
   ) =>
   TestTree
 testPLiftableLaws =
@@ -64,7 +63,9 @@ testPLiftableLaws =
     ]
   where
     prop1 :: Property
-    prop1 = forAllShrink (arbitrary @(AsPlutus (AsHaskell a))) shrink $ \x ->
-      case plutToRepr @a . reprToPlut $ x of
+    prop1 = forAllShrink (arbitrary @(AsHaskell a)) shrink $ \x ->
+      case plutToRepr @a . reprToPlut . haskToRepr $ x of
         Left _ -> property False
-        Right res -> res === x
+        Right res -> case reprToHask res of
+          Left _ -> property False
+          Right res' -> res' === x
