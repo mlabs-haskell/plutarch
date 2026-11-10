@@ -91,6 +91,7 @@ library
     Plutarch.Primitive.Trace
     Plutarch.Primitive.Validate
     Plutarch.Test.Golden
+    Plutarch.Test.Laws
     Plutarch.Test.Size
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
@@ -120,10 +121,12 @@ library
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
+    , QuickCheck
     , smash
     , tagged
     , tasty
     , tasty-golden
+    , tasty-quickcheck
     , template-haskell
     , text
     , these
