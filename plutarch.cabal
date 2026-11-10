@@ -199,6 +199,7 @@ test-suite ledger
   hs-source-dirs: test/ledger
   build-depends:
     , orphanage
+    , plutus-tx
     , QuickCheck
     , tasty-quickcheck
 
