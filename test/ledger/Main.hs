@@ -33,7 +33,8 @@ main =
       testLedger @PPubKeyHash,
       testLedger @PCredential,
       testLedger @PAccountId,
-      testLedger @PPosixTime
+      testLedger @PPosixTime,
+      testLedger @(PMaybeData PPosixTime)
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests

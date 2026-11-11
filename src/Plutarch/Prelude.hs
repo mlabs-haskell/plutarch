@@ -195,6 +195,7 @@ module Plutarch.Prelude
     Credential.PCredential (..),
     Address.PAccountId (..),
     Time.PPosixTime (..),
+    MaybeData.PMaybeData (..),
 
     -- * Derivations
     Strategy.Strategy (..),
@@ -206,6 +207,7 @@ where
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.LedgerApi.Address qualified as Address
 import Plutarch.LedgerApi.Credential qualified as Credential
+import Plutarch.LedgerApi.MaybeData qualified as MaybeData
 import Plutarch.LedgerApi.Time qualified as Time
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
