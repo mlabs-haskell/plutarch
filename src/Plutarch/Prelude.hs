@@ -196,6 +196,7 @@ module Plutarch.Prelude
     Address.PAccountId (..),
     Time.PPosixTime (..),
     MaybeData.PMaybeData (..),
+    Time.PPosixTimeRange (..),
 
     -- * Derivations
     Strategy.Strategy (..),
