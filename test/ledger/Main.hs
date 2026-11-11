@@ -32,7 +32,8 @@ main =
     [ testLedger @PScriptHash,
       testLedger @PPubKeyHash,
       testLedger @PCredential,
-      testLedger @PAccountId
+      testLedger @PAccountId,
+      testLedger @PPosixTime
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
