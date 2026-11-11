@@ -18,12 +18,13 @@ import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH
   ( BndrVis,
     Body (NormalB),
-    Dec,
+    Dec (ValD),
     Exp
       ( AppE,
         AppTypeE,
         CaseE,
         ConE,
+        LetE,
         LitE,
         VarE
       ),
@@ -61,10 +62,7 @@ import Plutarch.Helpers.TH
   )
 import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
-import Plutarch.Primitive.Composite
-  ( -- PBList (PBCons, PBNil),
-    PBPair (PBPair),
-  )
+import Plutarch.Primitive.Composite (PBPair (PBPair))
 import Plutarch.Primitive.Con (PCon (pcon'))
 import Plutarch.Primitive.Debug (PDebug (pdebug))
 import Plutarch.Primitive.Eq (PEq (peq))
@@ -222,10 +220,31 @@ derivePMatch tyVars tyName cs (nameLast, fieldsLast) =
         start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
         handlers <- foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest
         [e|$punsafeCaseE $(pure (VarE tagName)) $(pure handlers)|]
+      1 ->
+        if arityLast == 0 && Vector.maximum aritiesRest == 0
+          -- In this situation, we know the last tail will be completely unused.
+          -- Thus, instead of using `headTailList`, we just take the head and
+          -- use a reduced operation to produce the cases.
+          then do
+            lastHName <- newName "h"
+            headE <- [e|pheadList # $(pure . VarE $ lastTail)|]
+            LetE [ValD (VarP lastHName) (NormalB headE) []] <$> do
+              let names = reverse (lastHName : preloadNamesBackwards)
+              handlerLast <- mkHandler' contName names nameLast'
+              handlersRest <- traverse (mkHandler' contName names) namesRest
+              start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
+              handlers <- foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest
+              [e|$punsafeCaseE $(pure (VarE tagName)) $(pure handlers)|]
+          else mkUncons (VarE lastTail) $ \headName tailName ->
+            withPreload contName tagName (arityLast, nameLast') (aritiesRest, namesRest) (headName : preloadNamesBackwards) tailName 0
       n -> mkUncons (VarE lastTail) $ \headName tailName ->
         -- We accumulate all preloaded names so that we can apply them to the
         -- appropriate data constructor 'all at once' at the end.
         withPreload contName tagName (arityLast, nameLast') (aritiesRest, namesRest) (headName : preloadNamesBackwards) tailName (n - 1)
+    mkHandler' :: Name -> [Name] -> Name -> Q Exp
+    mkHandler' contName preloadedNames conName = do
+      conAppE <- foldrM (\headName acc -> AppE acc <$> [e|$punsafeCoerceE $(pure (VarE headName))|]) (ConE conName) preloadedNames
+      pure . AppE (VarE contName) $ conAppE
     mkHandler :: Name -> Name -> [Name] -> (Name, Int) -> Q Exp
     mkHandler lastTail contName preloadedNamesBackwards (conName, arity) = case arity of
       -- All of our arguments have been preloaded already.
