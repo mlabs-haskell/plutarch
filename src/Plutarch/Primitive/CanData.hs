@@ -3,12 +3,14 @@
 -- | @since 2.0.0
 module Plutarch.Primitive.CanData
   ( PCanData (..),
+    pencoded,
   )
 where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
+import Optics.Iso (Iso', iso)
 import Plutarch.Backend.Term (SomeTerm, Term, toSomeTerm)
 import Plutarch.Primitive.BuiltinFun
   ( pbData,
@@ -162,3 +164,10 @@ instance PCanData (PBPair PData PData) where
           # (psndPair # x)
           # pnilData
       )
+
+-- | @since 2.0.0
+pencoded ::
+  forall (a :: Type).
+  (PCanData a) =>
+  Iso' (Term a) (Term (PAsData a))
+pencoded = iso ptoData pfromData

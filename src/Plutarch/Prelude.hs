@@ -187,6 +187,12 @@ module Plutarch.Prelude
     (Multiplicative.#*),
     Multiplicative.pproduct,
 
+    -- ** Optics
+    CanData.pencoded,
+    Match.pmatching,
+    Con.inTerm,
+    Con.pover,
+
     -- * Derivations
     Strategy.Strategy (..),
     Strategy.WhichInstances (..),

@@ -1,12 +1,14 @@
 module Plutarch.Primitive.Match
   ( PMatch (..),
     pmatch,
+    pmatching,
   )
 where
 
 import Data.Kind (Type)
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
+import Optics.Getter (Getter, to)
 import Plutarch.Backend.Term (SomeTerm, Term, toSomeTerm)
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil), PBPair (PBPair))
 import Plutarch.Primitive.Representation
@@ -57,3 +59,11 @@ pmatch ::
   (PMatch a, PlutarchType b) =>
   Term a -> (a -> Term b) -> Term b
 pmatch x = pmatch' (pfundamental x)
+
+-- | @since 2.0.0
+pmatching ::
+  forall (a :: Type) (b :: Type).
+  (PMatch a, PlutarchType b) =>
+  (a -> Term b) ->
+  Getter (Term a) (Term b)
+pmatching f = to (`pmatch` f)
