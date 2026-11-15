@@ -95,6 +95,7 @@ library
     Plutarch.TH.DataPlutus
     Plutarch.TH.DataPlutusCompact
     Plutarch.TH.Enum
+    Plutarch.TH.Ledger
     Plutarch.TH.MS
     Plutarch.TH.Newtype
     Plutarch.TH.SOP
@@ -117,6 +118,7 @@ library
     , optics-plated
     , plutus-core          ==1.71.0.0
     , plutus-ledger-api
+    , plutus-tx
     , prettyprinter
     , smash
     , tagged
