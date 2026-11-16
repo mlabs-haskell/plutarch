@@ -21,7 +21,7 @@ import Plutarch.Primitive.DerivedFun
   )
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Match (pmatch)
-import Plutarch.Primitive.Representation (PlutarchType, (#))
+import Plutarch.Primitive.Representation (PlutarchType, (#), (#$))
 import Plutarch.Primitive.Singular (PAsData, PData)
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (perror, plam', punsafeCase, punsafeCoerce)
@@ -88,6 +88,12 @@ instance PValidateData S.PByteString where
 -- @since 2.0.0
 instance PValidateData S.PData where
   pwithValidated = const id
+
+-- | Calls a conversion builtin, and continues if successful.
+--
+-- @since 2.0.0
+instance PValidateData S.PBValue where
+  pwithValidated d r = plam' (const r) #$ BF.punValueData # d
 
 -- | @since 2.0.0
 instance PValidateData (C.PBList S.PData) where

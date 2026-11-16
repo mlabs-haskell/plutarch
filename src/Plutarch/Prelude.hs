@@ -194,9 +194,16 @@ module Plutarch.Prelude
     Credential.PScriptHash (..),
     Credential.PCredential (..),
     Address.PAccountId (..),
+    Address.PAddress (..),
     Time.PPosixTime (..),
     MaybeData.PMaybeData (..),
     Time.PPosixTimeRange (..),
+    Tx.PTxId (..),
+    Tx.PTxOutRef (..),
+    Tx.PDatum (..),
+    Tx.PDatumHash (..),
+    Tx.POutputDatum (..),
+    Tx.PTxOut (..),
 
     -- * Derivations
     Strategy.Strategy (..),
@@ -210,6 +217,7 @@ import Plutarch.LedgerApi.Address qualified as Address
 import Plutarch.LedgerApi.Credential qualified as Credential
 import Plutarch.LedgerApi.MaybeData qualified as MaybeData
 import Plutarch.LedgerApi.Time qualified as Time
+import Plutarch.LedgerApi.Tx qualified as Tx
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
 import Plutarch.Primitive.Additive qualified as Additive
