@@ -204,6 +204,10 @@ module Plutarch.Prelude
     Tx.PDatumHash (..),
     Tx.POutputDatum (..),
     Tx.PTxOut (..),
+    Contexts.PGovernanceActionId (..),
+    Contexts.PProtocolVersion (..),
+    Contexts.PConstitution (..),
+    Contexts.PColdCommitteeCredential (..),
 
     -- * Derivations
     Strategy.Strategy (..),
@@ -214,6 +218,7 @@ where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.LedgerApi.Address qualified as Address
+import Plutarch.LedgerApi.Contexts qualified as Contexts
 import Plutarch.LedgerApi.Credential qualified as Credential
 import Plutarch.LedgerApi.MaybeData qualified as MaybeData
 import Plutarch.LedgerApi.Time qualified as Time

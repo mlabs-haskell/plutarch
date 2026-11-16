@@ -76,6 +76,7 @@ library
     Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
     Plutarch.LedgerApi.Address
+    Plutarch.LedgerApi.Contexts
     Plutarch.LedgerApi.Credential
     Plutarch.LedgerApi.MaybeData
     Plutarch.LedgerApi.Time

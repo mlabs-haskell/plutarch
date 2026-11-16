@@ -42,7 +42,11 @@ main =
       testLedger @PDatum,
       testLedger @PDatumHash,
       testLedger @POutputDatum,
-      testLedger @PTxOut
+      testLedger @PTxOut,
+      testLedger @PGovernanceActionId,
+      testLedger @PProtocolVersion,
+      testLedger @PConstitution,
+      testLedger @PColdCommitteeCredential
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
