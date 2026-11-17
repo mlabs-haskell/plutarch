@@ -122,7 +122,7 @@ instance PValidateData PPubKeyHash where
 -- | @since 2.0.0
 data PCredential
   = PPubKeyCredential (Term (PAsData PPubKeyHash))
-  | PStakingCredential (Term (PAsData PScriptHash))
+  | PScriptCredential (Term (PAsData PScriptHash))
 
 deriveFor ''PCredential DataPlutusCompact AllInstances
 
