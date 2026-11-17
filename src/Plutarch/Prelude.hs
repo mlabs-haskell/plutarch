@@ -39,6 +39,8 @@ module Plutarch.Prelude
     Validate.pvalidateData,
 
     -- * Lifting
+    Lift.PlutusRepresentable (..),
+    Lift.PLiftable (..),
     Lift.pconstant,
 
     -- * Target language
