@@ -90,6 +90,7 @@ library
     Plutarch.Primitive.Trace
     Plutarch.Primitive.Validate
     Plutarch.Test.Golden
+    Plutarch.Test.Poly
     Plutarch.Test.Size
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
@@ -118,6 +119,7 @@ library
     , plutus-core          ==1.71.0.0
     , plutus-ledger-api
     , prettyprinter
+    , QuickCheck
     , smash
     , tagged
     , tasty
