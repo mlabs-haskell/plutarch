@@ -34,6 +34,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
 import Data.Word (Word64)
+import GHC.Stack (HasCallStack)
 import Optics.Plated (Plated, children)
 import PlutusCore.Data qualified as PD
 import PlutusCore.Default (DefaultUni, Esc, Some (Some), ValueOf (ValueOf))
@@ -83,7 +84,9 @@ import UntypedPlutusCore.Core.Type
 -- because everything else is fully disambiguated by default.
 -- NOTE: If they ever add a new polymorphic default universe type
 --       someone will have to do something more clever here.
-prettyValueOf :: forall (a :: Type) ann. DefaultUni (Esc a) -> a -> Doc ann
+prettyValueOf ::
+  forall (a :: Type) (ann :: Type).
+  (HasCallStack) => DefaultUni (Esc a) -> a -> Doc ann
 prettyValueOf uni x = case prettyUni uni of
   (uniDoc, prettyX) -> prettyX x <+> "::" <+> uniDoc
   where

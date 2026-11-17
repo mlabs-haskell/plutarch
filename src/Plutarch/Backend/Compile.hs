@@ -38,6 +38,7 @@ import Data.Text (Text)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
+import GHC.Stack (HasCallStack)
 import Plutarch.Backend.ANF
   ( ANF (ANF),
     ANFBind
@@ -99,7 +100,7 @@ import UntypedPlutusCore qualified as UPLC
 -- used more than once.
 --
 -- @since 2.0.0
-toUPLCTerm :: Bool -> ANF Analysis -> UPLCTerm
+toUPLCTerm :: (HasCallStack) => Bool -> ANF Analysis -> UPLCTerm
 toUPLCTerm runExternalOpts (ANF _ binds) =
   let -- We use the hashes of any variable as its `Unique`. To ensure we don't
       -- accidentally ever alias them, we collect all the ones we use. As we
@@ -178,13 +179,13 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
       pure (mkName "bind" fresh, bind)
     isAffine :: Bool
     isAffine = NEVector.all ((\(Analysis shouldBind _) -> shouldBind == Shouldn'tBind) . getANFBindAnn) binds
-    preEval :: UPLCTerm -> UPLCTerm
+    preEval :: (HasCallStack) => UPLCTerm -> UPLCTerm
     preEval t = case evalUPLC maxBudget t of
       (res, _, _) -> case res of
         Left err -> error $ "Pre-evaluation errored. If you see this, report a bug: " <> show err
         Right (Left c) -> uplcConstant c
         Right (Right t') -> t'
-    freeVarErr :: forall (a :: Type). UPLC.FreeVariableError -> a
+    freeVarErr :: forall (a :: Type). (HasCallStack) => UPLC.FreeVariableError -> a
     freeVarErr err =
       error $
         "Free variable found when optimizing: "
@@ -194,6 +195,7 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
 -- Helpers
 
 fixPrecompiled ::
+  (HasCallStack) =>
   NonEmptyVector (ANFBind Analysis) ->
   Set Int ->
   (NonEmptyVector (ANFBind Analysis), Set Int)
@@ -206,7 +208,7 @@ fixPrecompiled binds usedNames =
     isPrecompiled = \case
       ANFLeaf (LCompiled _ _) -> True
       _ -> False
-    checkAndRewrite :: Int -> State (Set Int) (Int, ANFBind Analysis)
+    checkAndRewrite :: (HasCallStack) => Int -> State (Set Int) (Int, ANFBind Analysis)
     checkAndRewrite ix = case binds NEVector.! ix of
       ANFLeaf (LCompiled ann code) -> do
         currentUsed <- get

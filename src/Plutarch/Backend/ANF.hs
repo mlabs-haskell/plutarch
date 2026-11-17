@@ -64,6 +64,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import GHC.Exts qualified as GHC
+import GHC.Stack (HasCallStack)
 import Plutarch.Backend.AST
   ( AST
       ( ASTApply,
@@ -479,7 +480,7 @@ analyzeDeps (ANF hashes binds) = ANF hashes . getAllDeps $ binds
 -- | Performs all the analysis needed for code generation to consume the ANF.
 --
 -- @since 2.0.0
-fullPipeline :: ANF Dependencies -> ANF Analysis
+fullPipeline :: (HasCallStack) => ANF Dependencies -> ANF Analysis
 fullPipeline (ANF hashes binds) =
   let onlyDeps = NEVector.map getANFBindAnn binds
       -- Check which other binds want every given bind as a direct dependency
@@ -628,7 +629,7 @@ analyze candidates rankedBindings bindIx bind = case Map.lookup (Id bindIx) rank
         then ShouldBind
         else Shouldn'tBind
 
-optimizeBindSite :: NonEmptyVector Dependencies -> Id -> Id -> Id
+optimizeBindSite :: (HasCallStack) => NonEmptyVector Dependencies -> Id -> Id -> Id
 optimizeBindSite allDeps target currSite@(Id siteIx) = case allDeps NEVector.! siteIx of
   -- Should be impossible - such a bind is either a leaf or 'full of variables',
   -- both of which are ineligible for any `let`-binding.
@@ -769,6 +770,7 @@ determineDemandSites = NEVector.foldl1' (Map.unionWith NESet.union) . NEVector.i
       Deps dirDeps _ -> Map.fromSet (const (NESet.singleton . Id $ currIdIx)) . NESet.toSet $ dirDeps
 
 findBindSites ::
+  (HasCallStack) =>
   Map Hash Id ->
   Id ->
   Map Id (Set Hash) ->
@@ -840,7 +842,7 @@ collectVarDeps binds (Id i) = case binds NEVector.! i of
 
 bvWithMultiplicity ::
   forall (a :: Type) (m :: Type -> Type).
-  (MonadState (a, IntMap (ANFBind ())) m) =>
+  (MonadState (a, IntMap (ANFBind ())) m, HasCallStack) =>
   Ref -> Hash -> m BoundVar
 bvWithMultiplicity r h = case r of
   AVar h' ->
