@@ -31,6 +31,7 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Vector.Strict (Vector)
 import Data.Word (Word8)
+import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Plutarch.Backend.Evaluate (EvalError, peval)
 import Plutarch.Backend.Term (Term)
@@ -377,7 +378,7 @@ pconstant = reprToPlut . haskToRepr
 -- @since 2.0.0
 plift ::
   forall (a :: Type).
-  (PLiftable a) =>
+  (PLiftable a, HasCallStack) =>
   Term a ->
   AsHaskell a
 plift t = case plutToRepr t of
