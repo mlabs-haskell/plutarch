@@ -36,7 +36,11 @@ import Plutarch.Primitive.Representation
     punsafeSecondary,
     (#),
   )
-import Plutarch.Primitive.Singular (PAsData, PByteString)
+import Plutarch.Primitive.Singular
+  ( PAsData,
+    PByteString,
+    PNatural,
+  )
 import Plutarch.Primitive.Term (perror)
 import Plutarch.Primitive.Validate
   ( PValidateData (pwithValidated),
@@ -51,6 +55,18 @@ import PlutusLedgerApi.V4 qualified as PLA
 import PlutusTx.IsData.Class qualified as PTxData
 import PlutusTx.Prelude qualified as PTx
 
+-- Note (Koz, 18/11/2026): For some utterly incomprehensible reason, putting
+-- these definitions at the _bottom_ of the source file makes GHC think they
+-- don't exist in the instances that use them. What is this, C?
+--
+-- I suspect TH might be be cause of this.
+
+hashLen :: Int
+hashLen = 28
+
+phashLen :: Term PNatural
+phashLen = pconstant 28
+
 -- | @since 2.0.0
 newtype PScriptHash = PScriptHash (Term PByteString)
 
@@ -60,9 +76,9 @@ deriveFor ''PScriptHash Newtype AllInstances
 instance PlutusRepresentable PLA.ScriptHash where
   type AsPlutus PLA.ScriptHash = ByteString
   haskToRepr = PTx.fromBuiltin @PTx.BuiltinByteString . coerce
-  reprToHask bs = case BS.length bs of
-    28 -> Right . PLA.ScriptHash . PTx.toBuiltin $ bs
-    n -> Left . UserSpecified $ "Invalid length for ScriptHash: " <> show n
+  reprToHask bs
+    | BS.length bs == hashLen = Right . PLA.ScriptHash . PTx.toBuiltin $ bs
+    | otherwise = Left . UserSpecified $ "Invalid length for ScriptHash."
 
 -- | @since 2.0.0
 instance PLiftable PScriptHash where
@@ -81,7 +97,7 @@ instance PValidateData PScriptHash where
   pwithValidated d res =
     let bs = pfromData (pvalidateData d)
      in pif
-          ((plengthOfByteString # bs) #== pconstant 28)
+          ((plengthOfByteString # bs) #== phashLen)
           res
           perror
 
@@ -94,9 +110,9 @@ deriveFor ''PPubKeyHash Newtype AllInstances
 instance PlutusRepresentable PLA.PubKeyHash where
   type AsPlutus PLA.PubKeyHash = ByteString
   haskToRepr = PTx.fromBuiltin @PTx.BuiltinByteString . coerce
-  reprToHask bs = case BS.length bs of
-    28 -> Right . PLA.PubKeyHash . PTx.toBuiltin $ bs
-    n -> Left . UserSpecified $ "Invalid length for PubKeyHash: " <> show n
+  reprToHask bs
+    | BS.length bs == hashLen = Right . PLA.PubKeyHash . PTx.toBuiltin $ bs
+    | otherwise = Left . UserSpecified $ "Invalid length for PubKeyHash."
 
 -- | @since 2.0.0
 instance PLiftable PPubKeyHash where
@@ -115,7 +131,7 @@ instance PValidateData PPubKeyHash where
   pwithValidated d res =
     let bs = pfromData (pvalidateData d)
      in pif
-          ((plengthOfByteString # bs) #== pconstant 28)
+          ((plengthOfByteString # bs) #== phashLen)
           res
           perror
 
