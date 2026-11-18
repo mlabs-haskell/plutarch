@@ -7,11 +7,11 @@
         [
           <case
             <False :: Bool>@ofkSqfsbj7l 
-            [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
-          >@qQ04tJc9RWiN, 
+            [<0 :: Integer>@mqE7eqJLvgvN, <1 :: Integer>@vyRIuwDii3A]
+          >@vKTGDgg4otp, 
           <[] :: [Data]>@rcJtquzh7RfN
         ]
-      >@nEkzqkvcf7C, 
+      >@cAb5DJrwpe, 
       <Apply
         <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
         [
@@ -20,11 +20,11 @@
             [
               <case
                 <False :: Bool>@ofkSqfsbj7l 
-                [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
-              >@qQ04tJc9RWiN, 
+                [<0 :: Integer>@mqE7eqJLvgvN, <1 :: Integer>@vyRIuwDii3A]
+              >@vKTGDgg4otp, 
               <[] :: [Data]>@rcJtquzh7RfN
             ]
-          >@nEkzqkvcf7C, 
+          >@cAb5DJrwpe, 
           <Apply
             <force <MkCons>@qvDyAVrQ9eg>@xpO8bXGXAAbN
             [
@@ -33,18 +33,18 @@
                 [
                   <case
                     <False :: Bool>@ofkSqfsbj7l 
-                    [<1 :: Integer>@vyRIuwDii3A, <0 :: Integer>@mqE7eqJLvgvN]
-                  >@qQ04tJc9RWiN, 
+                    [<0 :: Integer>@mqE7eqJLvgvN, <1 :: Integer>@vyRIuwDii3A]
+                  >@vKTGDgg4otp, 
                   <[] :: [Data]>@rcJtquzh7RfN
                 ]
-              >@nEkzqkvcf7C, 
+              >@cAb5DJrwpe, 
               <[] :: [Data]>@rcJtquzh7RfN
             ]
-          >@aHKajk285kh
+          >@ocJbq28Lx6nN
         ]
-      >@koZdZlX8OxC
+      >@c3tmRoMPcjbN
     ]
-  >@mTDzj76b1vn 
+  >@myqKwMv6XXeN 
   [
     <\a b -> 
       <case
@@ -188,4 +188,4 @@
       >@lKjlqM5Uq0y
     >@eXriMLc0G8AN
   ]
->@n3FZlSlZ2MCN
+>@u8CDAEjKSswN

@@ -1,0 +1,22 @@
+\ ->
+  let bind_ek = \jk kk ->
+                  case jk [case kk [(True :: Bool), (False :: Bool)], kk]
+  let bind_fk = ([] :: [Data])
+  let bind_gk = \hk unused_ik -> case hk [(False :: Bool), (True :: Bool)]
+  in case 
+       (
+         bind_ek
+         # (case 
+             (UnConstrData # (ConstrData # (1 :: Integer) # bind_fk))
+             [bind_gk]
+           )
+         # (True :: Bool)
+       )
+       [ (False :: Bool)
+       ,  bind_ek
+          # (case 
+              (UnConstrData # (ConstrData # (0 :: Integer) # bind_fk))
+              [bind_gk]
+            )
+          # (False :: Bool) 
+       ]

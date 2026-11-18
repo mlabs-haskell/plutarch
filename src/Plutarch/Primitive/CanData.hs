@@ -75,7 +75,7 @@ class (PlutarchType a) => PCanData (a :: Type) where
 instance PCanData PBool where
   pfromData t = pmatch (punConstrData # pfundamental t) $ \(PBPair tag _) ->
     punsafeCase tag . NEVector.cons (toSomeTerm pfalse) . NEVector.singleton . toSomeTerm $ ptrue
-  ptoData t = punsafeSecondary $ pconstrData # pif t (pconstant 0) (pconstant 1) # pnilData
+  ptoData t = punsafeSecondary $ pconstrData # pif t (pconstant 1) (pconstant 0) # pnilData
 
 -- | @since 2.0.0
 instance PCanData PInteger where
