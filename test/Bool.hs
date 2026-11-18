@@ -15,7 +15,8 @@ goldens =
       noLargerThan "a v (b v (c v d)) vs (a v b) v (c v d)" case2 case3,
       releaseGolden EvaluateUPLC "a ^ (b ^ (c ^ d))" "Bool Case 4" case4,
       releaseGolden EvaluateUPLC "(a ^ b) ^ (c ^ d)" "Bool Case 5" case5,
-      noLargerThan "a ^ (b ^ (c ^ d)) vs (a ^ b) ^ (c ^ d)" case4 case5
+      noLargerThan "a ^ (b ^ (c ^ d)) vs (a ^ b) ^ (c ^ d)" case4 case5,
+      releaseGolden EvaluateUPLC "pfromData . ptoData = id for PBool" "Bool Case 6" case6
     ]
 
 -- Cases
@@ -39,3 +40,9 @@ case4 = plam4 $ \x1 x2 x3 x4 -> pand x1 (pand x2 (pand x3 x4))
 -- Case 5: \a b c d -> pand (pand a b) (pand c d)
 case5 :: Term (PBool :~> PBool :~> PBool :~> PBool :~> PBool)
 case5 = plam4 $ \x1 x2 x3 x4 -> pand (pand x1 x2) (pand x3 x4)
+
+case6 :: Term PBool
+case6 =
+  pand
+    ((pfromData . ptoData $ ptrue) #== ptrue)
+    ((pfromData . ptoData $ pfalse) #== pfalse)

@@ -141,7 +141,7 @@ case
        )
        # (
            ConstrData
-           # (case (False :: Bool) [(1 :: Integer), (0 :: Integer)])
+           # (case (False :: Bool) [(0 :: Integer), (1 :: Integer)])
            # bind_w
          ) 
   ]

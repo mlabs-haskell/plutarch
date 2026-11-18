@@ -3,14 +3,14 @@ ANF Hashes:
  #1 := xpO8bXGXAAbN
  #2 := zd9ooDLRiOB
  #3 := ofkSqfsbj7l
- #4 := vyRIuwDii3A
- #5 := mqE7eqJLvgvN
- #6 := qQ04tJc9RWiN
+ #4 := mqE7eqJLvgvN
+ #5 := vyRIuwDii3A
+ #6 := vKTGDgg4otp
  #7 := rcJtquzh7RfN
- #8 := nEkzqkvcf7C
- #9 := aHKajk285kh
- #10 := koZdZlX8OxC
- #11 := mTDzj76b1vn
+ #8 := cAb5DJrwpe
+ #9 := ocJbq28Lx6nN
+ #10 := c3tmRoMPcjbN
+ #11 := myqKwMv6XXeN
  #12 := p7qYeALXKVC
  #13 := i5ELeXTJ92oN
  #14 := t3U4h8CsxbeN
@@ -47,15 +47,15 @@ ANF Hashes:
  #45 := c9p9pJApW3oN
  #46 := lKjlqM5Uq0y
  #47 := eXriMLc0G8AN
- #48 := n3FZlSlZ2MCN
+ #48 := u8CDAEjKSswN
 
 ANF Binds:
  #0 := MkCons
  #1 := Force #0
  #2 := ConstrData
  #3 := False :: Bool
- #4 := 1 :: Integer
- #5 := 0 :: Integer
+ #4 := 0 :: Integer
+ #5 := 1 :: Integer
  #6 := Case #3 [#4, #5]
  #7 := [] :: [Data]
  #8 := Apply #2 [#6, #7]

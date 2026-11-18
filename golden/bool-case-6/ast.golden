@@ -1,0 +1,89 @@
+<case
+  <Apply
+    <\a b -> 
+      <case
+        a 
+        [
+          <case
+            b 
+            [<True :: Bool>@nAyEnYBEW9k, <False :: Bool>@ofkSqfsbj7l]
+          >@k18AdwknPZz, 
+          b
+        ]
+      >@mAVDZnZusmo
+    >@sJco9pOT6Gq
+    [
+      <case
+        <Apply
+          <UnConstrData>@pOsZYZKxq5BN
+          [
+            <Apply
+              <ConstrData>@zd9ooDLRiOB
+              [
+                <case
+                  <True :: Bool>@nAyEnYBEW9k 
+                  [<0 :: Integer>@mqE7eqJLvgvN, <1 :: Integer>@vyRIuwDii3A]
+                >@beBKxFjIYKb, 
+                <[] :: [Data]>@rcJtquzh7RfN
+              ]
+            >@ygbwDequlurN
+          ]
+        >@rxJ4M5MvKJpN 
+        [
+          <\c _ -> 
+            <case
+              c 
+              [<False :: Bool>@ofkSqfsbj7l, <True :: Bool>@nAyEnYBEW9k]
+            >@svx2ww7db1o
+          >@l5D61rbaZlt
+        ]
+      >@iamlk43EbXoN, 
+      <True :: Bool>@nAyEnYBEW9k
+    ]
+  >@kXldmpuYvYq 
+  [
+    <False :: Bool>@ofkSqfsbj7l, 
+    <Apply
+      <\e f -> 
+        <case
+          e 
+          [
+            <case
+              f 
+              [<True :: Bool>@nAyEnYBEW9k, <False :: Bool>@ofkSqfsbj7l]
+            >@iyMhZajOMkoN, 
+            f
+          ]
+        >@wx9zv6s09RN
+      >@sJco9pOT6Gq
+      [
+        <case
+          <Apply
+            <UnConstrData>@pOsZYZKxq5BN
+            [
+              <Apply
+                <ConstrData>@zd9ooDLRiOB
+                [
+                  <case
+                    <False :: Bool>@ofkSqfsbj7l 
+                    [<0 :: Integer>@mqE7eqJLvgvN, <1 :: Integer>@vyRIuwDii3A]
+                  >@vKTGDgg4otp, 
+                  <[] :: [Data]>@rcJtquzh7RfN
+                ]
+              >@cAb5DJrwpe
+            ]
+          >@qUuVFlh01pnN 
+          [
+            <\g _ -> 
+              <case
+                g 
+                [<False :: Bool>@ofkSqfsbj7l, <True :: Bool>@nAyEnYBEW9k]
+              >@lHhxvFjtlCDN
+            >@l5D61rbaZlt
+          ]
+        >@k5et9qVEMhBN, 
+        <False :: Bool>@ofkSqfsbj7l
+      ]
+    >@wIBwDo21olq
+  ]
+>@wrhSMjqPyTb
