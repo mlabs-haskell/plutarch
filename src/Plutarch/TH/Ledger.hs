@@ -69,7 +69,7 @@ derivePlutusRepresentable tyNamePlinth tvbsPlinth =
       let fromDataCtx = AppT (ConT ''PTxData.FromData) fullName
       pure . foldl' AppT (TupleT 3) $ [tvbCtxes, toDataCtx, fromDataCtx]
     errStr :: Q Exp
-    errStr = [e|"Could not decode " <> show tyNamePlinth <> "from Data."|]
+    errStr = [e|"Could not decode " <> show tyNamePlinth <> " from Data."|]
 
 derivePLiftable ::
   Name ->
