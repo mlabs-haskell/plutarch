@@ -194,6 +194,7 @@ test-suite optics
   hs-source-dirs: test/optics
   build-depends:
     , optics-core
+    , optics-th
     , plutarch
     , QuickCheck
     , tasty

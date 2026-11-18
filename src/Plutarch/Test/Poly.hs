@@ -4,6 +4,7 @@
 
 module Plutarch.Test.Poly
   ( PA (..),
+    PB (..),
   )
 where
 
@@ -29,7 +30,7 @@ import Plutarch.TH.Strategy
     WhichInstances (AllInstances),
     deriveFor,
   )
-import Test.QuickCheck.Poly (A (A, unA))
+import Test.QuickCheck.Poly (A (A, unA), B (B, unB))
 
 -- | Analog to 'A' from @Test.QuickCheck.Poly@. Can be used to test polymorphic
 -- functions or data types at the Plutarch level.
@@ -51,5 +52,28 @@ instance PCanData PA
 -- | @since 2.0.0
 instance PLiftable PA where
   type AsHaskell PA = A
+  plutToRepr t = plutToRepr (pfundamental t)
+  reprToPlut = punsafeSecondary . reprToPlut
+
+-- | Analog to 'A' from @Test.QuickCheck.Poly@. Can be used to test polymorphic
+-- functions or data types at the Plutarch level.
+--
+-- @since 2.0.0
+newtype PB = PB (Term PInteger)
+
+deriveFor ''PB Newtype AllInstances
+
+-- | @since 2.0.0
+instance PlutusRepresentable B where
+  type AsPlutus B = Integer
+  haskToRepr = unB
+  reprToHask = Right . B
+
+-- | @since 2.0.0
+instance PCanData PB
+
+-- | @since 2.0.0
+instance PLiftable PB where
+  type AsHaskell PB = B
   plutToRepr t = plutToRepr (pfundamental t)
   reprToPlut = punsafeSecondary . reprToPlut
