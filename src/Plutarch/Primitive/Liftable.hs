@@ -13,8 +13,10 @@ module Plutarch.Primitive.Liftable
     pconstant,
     plift,
 
-    -- * Derivation helper
+    -- * Derivation helpers
     PLiftableDirect (..),
+    PLiftableData (..),
+    PLiftableDataList (..),
 
     -- * Positive numbers in Haskell
     Positive (..),
@@ -35,11 +37,13 @@ import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Plutarch.Backend.Evaluate (EvalError, peval)
 import Plutarch.Backend.Term (Term)
+import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.Composite qualified as C
 import Plutarch.Primitive.Representation
   ( PlutarchType (PRepresentation),
     pfundamental,
     punsafeSecondary,
+    (#),
   )
 import Plutarch.Primitive.Singular qualified as S
 import Plutarch.Primitive.Term (punsafeConstant)
@@ -430,3 +434,65 @@ instance
           PLC.EvaluationSuccess PLC.Refl -> pure x
           PLC.EvaluationFailure -> Left WrongConstantType
   reprToPlut = punsafeConstant . PLC.someValue @(AsPlutus h)
+
+-- | A helper @newtype@ for deriving 'PLiftable' instances for Plutarch types
+-- that have a Haskell-level equivalent, both of which use a @Data@ encoding by
+-- way of @Constr@. More precisely, using 'PLiftableData' in a @via@ derivation
+-- specifies the following:
+--
+-- * @a@'s Haskell equivalent is @h@;
+-- * @a@ (and by extension, @h@) has a @Data@ encoding; and
+-- * @a@ (and by extension, @h@) is encoded using @Constr@.
+--
+-- This is mostly here to help derive instances for ledger type equivalents.
+--
+-- @since 2.0.0
+newtype PLiftableData (a :: Type) (h :: Type) = PLiftableData a
+
+-- | @since 2.0.0
+instance (PlutarchType a) => PlutarchType (PLiftableData a h) where
+  type PRepresentation (PLiftableData a h) = PRepresentation a
+
+-- | @since 2.0.0
+instance
+  ( PlutarchType a,
+    AsPlutus h ~ PLCData.Data,
+    PlutusRepresentable h,
+    PRepresentation a ~ S.PData
+  ) =>
+  PLiftable (PLiftableData a h)
+  where
+  type AsHaskell (PLiftableData a h) = h
+  plutToRepr t = plutToRepr (pfundamental t)
+  reprToPlut = punsafeSecondary . reprToPlut
+
+-- | A helper @newtype@ for deriving 'PLiftable' instances for PLutarch types
+-- that have a Haskell-level equivalent, both of which use a @Data@ encoding by
+-- way of @List@ (namely, are \'pure products\'). More precisely, using
+-- 'PLiftableDataList' in a @via@ derivation specifies the following:
+--
+-- * @a@'s Haskell equivalent is @h@;
+-- * @a@ (and by extension, @h@) has a @Data@ encoding; and
+-- * @a@ (and by extension, @h@) is encoded using @List@.
+--
+-- This is mostly here to help derive instances for ledger type equivalents.
+--
+-- @since 2.0.0
+newtype PLiftableDataList (a :: Type) (h :: Type) = PLiftableDataList a
+
+-- | @since 2.0.0
+instance (PlutarchType a) => PlutarchType (PLiftableDataList a h) where
+  type PRepresentation (PLiftableDataList a h) = PRepresentation a
+
+-- | @since 2.0.0
+instance
+  ( PlutarchType a,
+    PlutusRepresentable h,
+    AsPlutus h ~ PLCData.Data,
+    PRepresentation a ~ C.PBList S.PData
+  ) =>
+  PLiftable (PLiftableDataList a h)
+  where
+  type AsHaskell (PLiftableDataList a h) = h
+  plutToRepr t = plutToRepr . pfundamental $ (BF.plistData # pfundamental t)
+  reprToPlut d = punsafeSecondary (BF.punListData # pconstant @S.PData d)

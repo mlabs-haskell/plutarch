@@ -95,7 +95,6 @@ library
     Plutarch.TH.DataPlutus
     Plutarch.TH.DataPlutusCompact
     Plutarch.TH.Enum
-    Plutarch.TH.Ledger
     Plutarch.TH.MS
     Plutarch.TH.Newtype
     Plutarch.TH.SOP
