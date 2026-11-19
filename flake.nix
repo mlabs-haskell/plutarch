@@ -73,7 +73,12 @@
                 iohk-nix.overlays.crypto
                 iohk-nix.overlays.haskell-nix-crypto
               ];
-              inherit (haskell-nix) config;
+              config = haskell-nix.config // {
+                # The Plutus dependency declares license: NONE.
+                allowUnfreePackages = [
+                  "prettyprinter-configurable-lib-prettyprinter-configurable"
+                ];
+              };
             };
           inherit (flake) packages checks devShells;
         };
