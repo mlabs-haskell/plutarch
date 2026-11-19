@@ -209,6 +209,12 @@ module Plutarch.Prelude
     Contexts.PConstitution (..),
     Contexts.PColdCommitteeCredential (..),
 
+    -- * Optics
+    CanData.pencoded,
+    Match.pmatching,
+    Con.inTerm,
+    Con.pover,
+
     -- * Derivations
     Strategy.Strategy (..),
     Strategy.WhichInstances (..),

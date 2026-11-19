@@ -104,6 +104,7 @@ library
     Plutarch.Primitive.Validate
     Plutarch.Test.Golden
     Plutarch.Test.Laws
+    Plutarch.Test.Poly
     Plutarch.Test.Size
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
@@ -205,6 +206,17 @@ test-suite ledger
   build-depends:
     , orphanage
     , plutus-tx
+    , QuickCheck
+    , tasty-quickcheck
+
+test-suite optics
+  import:         test-lang
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  hs-source-dirs: test/optics
+  build-depends:
+    , optics-core
+    , optics-th
     , QuickCheck
     , tasty-quickcheck
 
