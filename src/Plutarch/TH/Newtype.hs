@@ -25,6 +25,7 @@ import Plutarch.Helpers.TH
     fullTypeName,
     mkContextOfExtended,
     plam'E,
+    punsafeSecondaryE,
   )
 import Plutarch.Primitive.CanData (PCanData (pfromData, ptoData))
 import Plutarch.Primitive.Con (PCon (pcon'))
@@ -87,7 +88,7 @@ derivePMatch ::
 derivePMatch tyVars tyName conName (_, fieldTy) =
   [d|
     instance ($ctx) => PMatch $name where
-      pmatch' t f = f ($constr . punsafeSecondary $ t)
+      pmatch' t f = f ($constr . $punsafeSecondaryE $ t)
     |]
   where
     ctx :: Q Type

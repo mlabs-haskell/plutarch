@@ -15,6 +15,7 @@ module Plutarch.Helpers.TH
     pequalsIntegerE,
     plam'E,
     punsafeCoerceE,
+    punsafeSecondaryE,
     punConstrDataE,
     punListDataE,
     pnilDataE,
@@ -72,6 +73,7 @@ import Plutarch.Primitive.BuiltinFun
   )
 import Plutarch.Primitive.Composite (PBList (PBCons, PBNil))
 import Plutarch.Primitive.DerivedFun (pheadTailList)
+import Plutarch.Primitive.Representation (punsafeSecondary)
 import Plutarch.Primitive.Singular (PAsData, PData, (:~>))
 import Plutarch.Primitive.Term
   ( plam',
@@ -209,6 +211,10 @@ punIDataE = pure $ VarE 'punIData
 -- | @since 2.0.0
 pheadTailListE :: Q Exp
 pheadTailListE = pure $ VarE 'pheadTailList
+
+-- | @since 2.0.0
+punsafeSecondaryE :: Q Exp
+punsafeSecondaryE = pure $ VarE 'punsafeSecondary
 
 -- | Given a \'handler\' taking the named argument, constructs a new @plam'@
 -- with a fresh argument.

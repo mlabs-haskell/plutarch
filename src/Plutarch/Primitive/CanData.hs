@@ -27,6 +27,8 @@ import Plutarch.Primitive.BuiltinFun
     punConstrData,
     punIData,
     punListData,
+    punValueData,
+    pvalueData,
   )
 import Plutarch.Primitive.Composite (PBList, PBPair (PBPair))
 import Plutarch.Primitive.DerivedFun (pfalse, pif, ptrue)
@@ -41,6 +43,7 @@ import Plutarch.Primitive.Representation
   )
 import Plutarch.Primitive.Singular
   ( PAsData,
+    PBValue,
     PBool,
     PByte,
     PByteString,
@@ -102,6 +105,11 @@ instance PCanData PByteString where
 instance PCanData PData where
   pfromData = punsafeCoerce
   ptoData = punsafeCoerce
+
+-- | @since 2.0.0
+instance PCanData PBValue where
+  pfromData t = punValueData # pfundamental t
+  ptoData t = pvalueData # t
 
 -- | @since 2.0.0
 instance (PCanData a) => PCanData (PBList (PAsData a)) where
