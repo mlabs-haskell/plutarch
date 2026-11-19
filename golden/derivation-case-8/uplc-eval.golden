@@ -1,11 +1,1 @@
-("PSOPCons {
-, 3
-, PSOPCons {
-, 2
-, PSOPCons {
-, 1
-, PSOPNil {
-}
-}
-}
-}" :: String)
+("PSOPCons {\n, 3\n, PSOPCons {\n, 2\n, PSOPCons {\n, 1\n, PSOPNil {\n}\n}\n}\n}" :: String)

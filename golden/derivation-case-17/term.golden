@@ -1,11 +1,8 @@
-case 
-  (
-    UnConstrData
-    # (
-        ConstrData
+case
+  ( UnConstrData
+    # ( ConstrData
         # 2 :: Integer
-        # (
-            !MkCons
+        # ( !MkCons
             # (IData # 2 :: Integer)
             # (!MkCons # (BData # "foo" :: Bytestring) # [] :: [Data])
           )
@@ -15,63 +12,57 @@ case
       case b
         [ \c d ->
             case a
-              [  (\_ ->
-                   case d
-                     [ \_ _ -> ERROR
-                     ,  ConstrData
-                        # 2 :: Integer
-                        # (
-                            !MkCons
-                            # (IData # 2 :: Integer)
-                            # (
-                                !MkCons
-                                # (BData # "foo" :: Bytestring)
-                                # [] :: [Data]
-                              )
-                          ) 
-                     ]
-                 )
-                 # (UnIData # c) 
-              ,  (\_ ->
-                   case d
-                     [ \_ _ -> ERROR
-                     ,  ConstrData
-                        # 2 :: Integer
-                        # (
-                            !MkCons
-                            # (IData # 2 :: Integer)
-                            # (
-                                !MkCons
-                                # (BData # "foo" :: Bytestring)
-                                # [] :: [Data]
-                              )
-                          ) 
-                     ]
-                 )
-                 # (UnBData # c) 
-              ,  (\_ ->
-                   case d
-                     [ \e f ->
-                          (\_ ->
-                            case f
-                              [ \_ _ -> ERROR
-                              ,  ConstrData
-                                 # 2 :: Integer
-                                 # (
-                                     !MkCons
-                                     # (IData # 2 :: Integer)
-                                     # (
-                                         !MkCons
-                                         # (BData # "foo" :: Bytestring)
-                                         # [] :: [Data]
-                                       )
-                                   ) 
-                              ]
-                          )
-                          # (UnBData # e) 
-                     ]
-                 )
-                 # (UnIData # c) 
+              [ (\_ ->
+                  case d
+                    [ \_ _ -> ERROR
+                    , ConstrData
+                      # 2 :: Integer
+                      # ( !MkCons
+                          # (IData # 2 :: Integer)
+                          # ( !MkCons
+                              # (BData # "foo" :: Bytestring)
+                              # [] :: [Data]
+                            )
+                        )
+                    ]
+                )
+                # (UnIData # c)
+              , (\_ ->
+                  case d
+                    [ \_ _ -> ERROR
+                    , ConstrData
+                      # 2 :: Integer
+                      # ( !MkCons
+                          # (IData # 2 :: Integer)
+                          # ( !MkCons
+                              # (BData # "foo" :: Bytestring)
+                              # [] :: [Data]
+                            )
+                        )
+                    ]
+                )
+                # (UnBData # c)
+              , (\_ ->
+                  case d
+                    [ \e f ->
+                        (\_ ->
+                          case f
+                            [ \_ _ -> ERROR
+                            , ConstrData
+                              # 2 :: Integer
+                              # ( !MkCons
+                                  # (IData # 2 :: Integer)
+                                  # ( !MkCons
+                                      # (BData # "foo" :: Bytestring)
+                                      # [] :: [Data]
+                                    )
+                                )
+                            ]
+                        )
+                        # (UnBData # e)
+                    ]
+                )
+                # (UnIData # c)
               ]
         ]
   ]

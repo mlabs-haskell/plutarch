@@ -1,29 +1,23 @@
-case 
-  (
-    UnConstrData
-    # (
-        ConstrData
+case
+  ( UnConstrData
+    # ( ConstrData
         # (2 :: Integer)
         # (
-            (\bind_k ->
-               bind_k
+            let bind_k = !MkCons
+            in bind_k
                # (IData # (1 :: Integer))
-               # (bind_k # (IData # (2 :: Integer)) # ([] :: [Data])) 
-            )
-            # !MkCons
+               # (bind_k # (IData # (2 :: Integer)) # ([] :: [Data]))
           )
       )
   )
   [ \a b ->
       case b
         [ \c d ->
-             (\bind_v ->
-               case a
+            let bind_v = UnIData # c
+            in case a
                  [ bind_v
                  , bind_v
                  , case d [\e unused_f -> AddInteger # bind_v # (UnIData # e)]
                  ]
-             )
-             # (UnIData # c) 
         ]
   ]

@@ -1,31 +1,28 @@
-case 
-  (
-    (\a b -> case a [case b [True :: Bool, False :: Bool], b])
-    # (case 
-        (
-          UnConstrData
-          # (
-              ConstrData
-              # (case True :: Bool [0 :: Integer, 1 :: Integer])
-              # [] :: [Data]
-            )
-        )
-        [\c _ -> case c [False :: Bool, True :: Bool]]
+case
+  ( (\a b -> case a [case b [True :: Bool, False :: Bool], b])
+    # (
+        case
+          ( UnConstrData
+            # ( ConstrData
+                # (case True :: Bool [0 :: Integer, 1 :: Integer])
+                # [] :: [Data]
+              )
+          )
+          [\c _ -> case c [False :: Bool, True :: Bool]]
       )
     # True :: Bool
   )
   [ False :: Bool
-  ,  (\d e -> case d [case e [True :: Bool, False :: Bool], e])
-     # (case 
-         (
-           UnConstrData
-           # (
-               ConstrData
-               # (case False :: Bool [0 :: Integer, 1 :: Integer])
-               # [] :: [Data]
-             )
-         )
-         [\f _ -> case f [False :: Bool, True :: Bool]]
-       )
-     # False :: Bool 
+  , (\d e -> case d [case e [True :: Bool, False :: Bool], e])
+    # (
+        case
+          ( UnConstrData
+            # ( ConstrData
+                # (case False :: Bool [0 :: Integer, 1 :: Integer])
+                # [] :: [Data]
+              )
+          )
+          [\f _ -> case f [False :: Bool, True :: Bool]]
+      )
+    # False :: Bool
   ]

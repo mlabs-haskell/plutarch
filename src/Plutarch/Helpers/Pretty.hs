@@ -51,15 +51,15 @@ import Prettyprinter
     angles,
     brackets,
     concatWith,
-    dquotes,
-    encloseSep,
     flatAlt,
     group,
     hardline,
     hcat,
     hsep,
     indent,
+    line,
     list,
+    nest,
     parens,
     punctuate,
     tupled,
@@ -100,7 +100,7 @@ prettyValueOf uni x = case prettyUni uni of
     prettyUni = \case
       D.DefaultUniInteger -> ("Integer", pretty)
       D.DefaultUniByteString -> ("Bytestring", viaShow)
-      D.DefaultUniString -> ("String", dquotes . pretty)
+      D.DefaultUniString -> ("String", viaShow)
       D.DefaultUniUnit -> ("()", pretty)
       D.DefaultUniBool -> ("Bool", pretty)
       (D.DefaultUniProtoPair `D.DefaultUniApply` tX `D.DefaultUniApply` tY) ->
@@ -276,36 +276,31 @@ lambdaTemplate mode vars body = case mode of
           <> r
     oneLineNoParens = "\\" <> hsep vars <+> "->" <+> body
 
--- | Don't pass an empty list into this
+-- | Keep a short head beside the opener, independently of the continuation.
+openingBlock :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
+openingBlock first rest =
+  align $ "(" <> nest 2 (group (line <> first)) <> rest <> hardline <> ")"
+
 appLike :: forall (ann :: Type). Doc ann -> PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 appLike op mode funList = case mode of
-  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
-  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  PrintAtomic -> align . group $ flatAlt (openingBlock fun brokenTail) (parens body)
+  PrintDefault -> align (group body)
   where
-    fun :: Doc ann
-    args :: Vector.Vector (Doc ann)
     (fun, args) = NEVector.uncons funList
 
-    myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> " "
+    argumentsWith :: (Doc ann -> Doc ann) -> Doc ann
+    argumentsWith layoutArg = foldMap (layoutArg . (op <+>)) args
 
-    myIndent :: Doc ann -> Doc ann
-    myIndent = case mode of PrintAtomic -> indent 2; _ -> id
+    brokenTail :: Doc ann
+    brokenTail = argumentsWith (\arg -> hardline <> indent 2 arg)
 
-    mkMultiline :: Doc ann -> Doc ann -> Doc ann
-    mkMultiline l r =
-      group $
-        l
-          <> myLine
-          <> myIndent (align . encloseSep "" "" (op <> " ") $ NEVector.toList funList)
-          <> myLine
-          <> r
-    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ Vector.toList args)
+    body :: Doc ann
+    body = fun <> argumentsWith (line <>)
 
-appTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
+appTemplate :: forall (ann :: Type). PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 appTemplate = appLike "#"
 
-composeTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
+composeTemplate :: forall (ann :: Type). PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 composeTemplate = appLike "."
 
 -- Var -> Binding -> Body -> Result
@@ -324,36 +319,32 @@ letBindings mode bindings body = case mode of
     doc = align $ "let" <+> align rows <> hardline <> "in" <+> align body
 
 caseTemplate :: forall (ann :: Type). PrintMode -> Bool -> Doc ann -> [Doc ann] -> Doc ann
-caseTemplate mode scrutIsSmall scrut handlers = case mode of
-  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
-  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+caseTemplate mode scrutIsSmall scrut handlers =
+  align . group $ flatAlt broken compact
   where
-    myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+    header :: Doc ann
+    header = "case" <+> scrut
 
-    mkMultiline :: Doc ann -> Doc ann -> Doc ann
-    mkMultiline l r =
-      if scrutIsSmall
-        then
-          align . group $
-            l
-              <> "case"
-              <+> scrut
-              <> hardline
-              <> indent 2 (customList handlers)
-              <> myLine
-              <> r
-        else
-          align . group $
-            l
-              <> "case"
-              <+> hardline
-              <> indent 2 (align . vcat $ [scrut, customList handlers])
-              <> myLine
-              <> r
+    arms :: Doc ann
+    arms = customList handlers
 
-    oneLineNoParens :: Doc ann
-    oneLineNoParens = "case" <+> scrut <+> oneLineList handlers
+    compact :: Doc ann
+    compact = case mode of
+      PrintDefault -> oneLine
+      PrintAtomic -> parens oneLine
+
+    oneLine :: Doc ann
+    oneLine = header <+> oneLineList handlers
+
+    broken :: Doc ann
+    broken = case (mode, scrutIsSmall) of
+      (PrintDefault, True) -> header <> hardline <> indent 2 arms
+      (PrintAtomic, True) -> openingBlock header (hardline <> indent 4 arms)
+      (PrintDefault, False) -> largeCase
+      (PrintAtomic, False) -> blockParens largeCase
+
+    largeCase :: Doc ann
+    largeCase = "case" <> hardline <> indent 2 (scrut <> hardline <> arms)
 
 ctorTemplate :: forall (ann :: Type). PrintMode -> Word64 -> [Doc ann] -> Doc ann
 ctorTemplate mode cix args = case mode of

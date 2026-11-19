@@ -1,20 +1,18 @@
- (\forced_bi forced_ci ->
-    (\bind_wh ->
-       (\xh yh ->
-          yh
-          # xh
-          # (\compArg_zh ->
-               (\cse_ai -> AddInteger # cse_ai # cse_ai)
-               # (
-                   AddInteger
-                   # (forced_ci # bind_wh # compArg_zh)
-                   # (1 :: Integer)
-                 ) 
-            ) 
-       )
-       # (forced_bi # bind_wh) 
-    )
-    # ([1, 2, 3] :: Array Integer) 
- )
- # !LengthOfArray
- # !IndexArray 
+(
+  let forced_bi = !LengthOfArray
+  in \forced_ci ->
+       let bind_wh = ([1, 2, 3] :: Array Integer)
+       in (\xh yh ->
+            yh
+            # xh
+            # (\compArg_zh ->
+                (\cse_ai -> AddInteger # cse_ai # cse_ai)
+                # ( AddInteger
+                    # (forced_ci # bind_wh # compArg_zh)
+                    # (1 :: Integer)
+                  )
+              )
+          )
+          # (forced_bi # bind_wh)
+)
+# !IndexArray

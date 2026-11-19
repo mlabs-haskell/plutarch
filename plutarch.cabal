@@ -182,6 +182,7 @@ test-suite tests
     , plutarch
     , prettyprinter
     , tasty
+    , tasty-hunit
     , text
 
 benchmark benches

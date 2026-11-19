@@ -1,5 +1,1 @@
-("PTriple {
-, false
-, false
-, false
-}" :: String)
+("PTriple {\n, false\n, false\n, false\n}" :: String)

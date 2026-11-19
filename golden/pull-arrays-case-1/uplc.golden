@@ -1,20 +1,18 @@
- (\forced_jj forced_kj ->
-    (\bind_ej ->
-       (\fj gj ->
-          gj
-          # fj
-          # (\compArg_hj ->
-               (\ij -> MultiplyInteger # ij # ij)
-               # (
-                   AddInteger
-                   # (forced_kj # bind_ej # compArg_hj)
-                   # (1 :: Integer)
-                 ) 
-            ) 
-       )
-       # (forced_jj # bind_ej) 
-    )
-    # ([1, 2, 3] :: Array Integer) 
- )
- # !LengthOfArray
- # !IndexArray 
+(
+  let forced_jj = !LengthOfArray
+  in \forced_kj ->
+       let bind_ej = ([1, 2, 3] :: Array Integer)
+       in (\fj gj ->
+            gj
+            # fj
+            # (\compArg_hj ->
+                (\ij -> MultiplyInteger # ij # ij)
+                # ( AddInteger
+                    # (forced_kj # bind_ej # compArg_hj)
+                    # (1 :: Integer)
+                  )
+              )
+          )
+          # (forced_jj # bind_ej)
+)
+# !IndexArray

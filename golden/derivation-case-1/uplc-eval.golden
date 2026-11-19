@@ -1,6 +1,6 @@
 \a b ->
   let bind_c = \unused_o -> (False :: Bool)
-  let bind_d = \unused_m unused_n -> (False :: Bool)
+      bind_d = \unused_m unused_n -> (False :: Bool)
   in case a
        [ \e -> case b [\f -> EqualsInteger # e # f, bind_c, bind_d]
        , \g -> case b [bind_c, \h -> EqualsInteger # g # h, bind_d]
@@ -9,7 +9,7 @@
              [ bind_c
              , bind_c
              , \k l ->
-                 case 
+                 case
                    (EqualsInteger # j # l)
                    [(False :: Bool), EqualsInteger # i # k]
              ]
