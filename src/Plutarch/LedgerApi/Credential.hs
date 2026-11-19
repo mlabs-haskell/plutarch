@@ -26,16 +26,14 @@ import Plutarch.Primitive.DerivedFun (pif)
 import Plutarch.Primitive.Eq ((#==))
 import Plutarch.Primitive.Liftable
   ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
+    PLiftableData (PLiftableData),
     PlutusRepresentable (AsPlutus, haskToRepr, reprToHask),
+    PlutusRepresentableData (PlutusRepresentableData),
     ReprError (UserSpecified),
     pconstant,
   )
 import Plutarch.Primitive.Match (pmatch)
-import Plutarch.Primitive.Representation
-  ( pfundamental,
-    punsafeSecondary,
-    (#),
-  )
+import Plutarch.Primitive.Representation (pfundamental, (#))
 import Plutarch.Primitive.Singular
   ( PAsData,
     PByteString,
@@ -52,7 +50,6 @@ import Plutarch.TH.Strategy
     deriveFor,
   )
 import PlutusLedgerApi.V4 qualified as PLA
-import PlutusTx.IsData.Class qualified as PTxData
 import PlutusTx.Prelude qualified as PTx
 
 -- Note (Koz, 18/11/2026): For some utterly incomprehensible reason, putting
@@ -143,15 +140,13 @@ data PCredential
 deriveFor ''PCredential DataPlutusCompact AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.Credential where
-  type AsPlutus PLA.Credential = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode Credential from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.Credential)
+  instance
+    PlutusRepresentable PLA.Credential
 
 -- | @since 2.0.0
-instance PLiftable PCredential where
-  type AsHaskell PCredential = PLA.Credential
-  plutToRepr t = plutToRepr (pfundamental t)
-  reprToPlut = punsafeSecondary . pconstant
+deriving via
+  (PLiftableData PCredential PLA.Credential)
+  instance
+    PLiftable PCredential

@@ -18,17 +18,14 @@ import Plutarch.Primitive.Additive
     PAdditiveMonoid,
     PAdditiveSemigroup,
   )
-import Plutarch.Primitive.BuiltinFun
-  ( pappendString,
-    plistData,
-    punListData,
-  )
+import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData, pfromData)
 import Plutarch.Primitive.Debug (pshow)
 import Plutarch.Primitive.Liftable
   ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
+    PLiftableDataList (PLiftableDataList),
     PlutusRepresentable (AsPlutus, haskToRepr, reprToHask),
-    ReprError (UserSpecified),
+    PlutusRepresentableData (PlutusRepresentableData),
     pconstant,
   )
 import Plutarch.Primitive.Match (pmatch)
@@ -37,7 +34,7 @@ import Plutarch.Primitive.Representation
     punsafeSecondary,
     (#),
   )
-import Plutarch.Primitive.Singular (PAsData, PData, PInteger)
+import Plutarch.Primitive.Singular (PAsData, PInteger)
 import Plutarch.Primitive.Term (perror)
 import Plutarch.Primitive.Validate
   ( PValidateData (pwithValidated),
@@ -48,7 +45,6 @@ import Plutarch.TH.Strategy
     deriveFor,
   )
 import PlutusLedgerApi.V4 qualified as PLA
-import PlutusTx.IsData.Class qualified as PTxData
 
 -- | @since 2.0.0
 newtype PPosixTime = PPosixTime (Term PInteger)
@@ -100,15 +96,13 @@ data PPosixTimeRange = PPosixTimeRange
 deriveFor ''PPosixTimeRange DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.POSIXTimeRange where
-  type AsPlutus PLA.POSIXTimeRange = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode POSIXTimeRange from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.POSIXTimeRange)
+  instance
+    PlutusRepresentable PLA.POSIXTimeRange
 
 -- | @since 2.0.0
-instance PLiftable PPosixTimeRange where
-  type AsHaskell PPosixTimeRange = PLA.POSIXTimeRange
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PPosixTimeRange PLA.POSIXTimeRange)
+  instance
+    PLiftable PPosixTimeRange

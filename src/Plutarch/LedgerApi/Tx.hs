@@ -22,12 +22,7 @@ import Plutarch.Backend.Term (Term)
 import Plutarch.LedgerApi.Address (PAddress)
 import Plutarch.LedgerApi.Credential (PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
-import Plutarch.Primitive.BuiltinFun
-  ( pappendString,
-    plengthOfByteString,
-    plistData,
-    punListData,
-  )
+import Plutarch.Primitive.BuiltinFun (pappendString, plengthOfByteString)
 import Plutarch.Primitive.CanData (PCanData, pfromData)
 import Plutarch.Primitive.Con (pcon)
 import Plutarch.Primitive.Debug (pshow)
@@ -35,16 +30,15 @@ import Plutarch.Primitive.DerivedFun (pif)
 import Plutarch.Primitive.Eq ((#==))
 import Plutarch.Primitive.Liftable
   ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
+    PLiftableData (PLiftableData),
+    PLiftableDataList (PLiftableDataList),
     PlutusRepresentable (AsPlutus, haskToRepr, reprToHask),
+    PlutusRepresentableData (PlutusRepresentableData),
     ReprError (UserSpecified),
     pconstant,
   )
 import Plutarch.Primitive.Match (pmatch)
-import Plutarch.Primitive.Representation
-  ( pfundamental,
-    punsafeSecondary,
-    (#),
-  )
+import Plutarch.Primitive.Representation (pfundamental, (#))
 import Plutarch.Primitive.Singular
   ( PAsData,
     PBValue,
@@ -63,7 +57,6 @@ import Plutarch.TH.Strategy
     deriveFor,
   )
 import PlutusLedgerApi.V4 qualified as PLA
-import PlutusTx.IsData.Class qualified as PTxData
 import PlutusTx.Prelude qualified as PTx
 
 -- | @since 2.0.0
@@ -109,18 +102,16 @@ data PTxOutRef = PTxOutRef
 deriveFor ''PTxOutRef DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.TxOutRef where
-  type AsPlutus PLA.TxOutRef = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode TxOutRef from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.TxOutRef)
+  instance
+    PlutusRepresentable PLA.TxOutRef
 
 -- | @since 2.0.0
-instance PLiftable PTxOutRef where
-  type AsHaskell PTxOutRef = PLA.TxOutRef
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PTxOutRef PLA.TxOutRef)
+  instance
+    PLiftable PTxOutRef
 
 -- | @since 2.0.0
 newtype PDatum = PDatum (Term PData)
@@ -192,18 +183,16 @@ data POutputDatum
 deriveFor ''POutputDatum DataPlutus AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.OutputDatum where
-  type AsPlutus PLA.OutputDatum = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode OutputDatum from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.OutputDatum)
+  instance
+    PlutusRepresentable PLA.OutputDatum
 
 -- | @since 2.0.0
-instance PLiftable POutputDatum where
-  type AsHaskell POutputDatum = PLA.OutputDatum
-  plutToRepr t = plutToRepr (pfundamental t)
-  reprToPlut = punsafeSecondary . pconstant
+deriving via
+  (PLiftableData POutputDatum PLA.OutputDatum)
+  instance
+    PLiftable POutputDatum
 
 -- | @since 2.0.0
 data PTxOut = PTxOut
@@ -216,15 +205,13 @@ data PTxOut = PTxOut
 deriveFor ''PTxOut DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.TxOut where
-  type AsPlutus PLA.TxOut = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode TxOut from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.TxOut)
+  instance
+    PlutusRepresentable PLA.TxOut
 
 -- | @since 2.0.0
-instance PLiftable PTxOut where
-  type AsHaskell PTxOut = PLA.TxOut
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PTxOut PLA.TxOut)
+  instance
+    PLiftable PTxOut

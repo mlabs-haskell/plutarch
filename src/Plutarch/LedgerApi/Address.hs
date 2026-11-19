@@ -13,22 +13,24 @@ where
 import Plutarch.Backend.Term (Term)
 import Plutarch.LedgerApi.Credential (PCredential)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
-import Plutarch.Primitive.BuiltinFun (pappendString, plistData, punListData)
+import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData (pfromData))
 import Plutarch.Primitive.Debug (pshow)
 import Plutarch.Primitive.Liftable
-  ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
+  ( PLiftable,
+    PLiftableData (PLiftableData),
+    PLiftableDataList (PLiftableDataList),
     PlutusRepresentable (AsPlutus, haskToRepr, reprToHask),
+    PlutusRepresentableData (PlutusRepresentableData),
     ReprError (UserSpecified),
     pconstant,
   )
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Representation
   ( pfundamental,
-    punsafeSecondary,
     (#),
   )
-import Plutarch.Primitive.Singular (PAsData, PData)
+import Plutarch.Primitive.Singular (PAsData)
 import Plutarch.Primitive.Term (perror)
 import Plutarch.Primitive.Validate
   ( PValidateData (pwithValidated),
@@ -55,10 +57,10 @@ instance PlutusRepresentable PLA.AccountId where
     Just x -> pure x
 
 -- | @since 2.0.0
-instance PLiftable PAccountId where
-  type AsHaskell PAccountId = PLA.AccountId
-  plutToRepr t = plutToRepr (pfundamental t)
-  reprToPlut = punsafeSecondary . pconstant
+deriving via
+  PLiftableData PAccountId PLA.AccountId
+  instance
+    PLiftable PAccountId
 
 -- | @since 2.0.0
 instance PCanData PAccountId
@@ -76,15 +78,13 @@ data PAddress = PAddress
 deriveFor ''PAddress DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.Address where
-  type AsPlutus PLA.Address = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode Address from Data"
-    Just x -> pure x
+deriving via
+  PlutusRepresentableData PLA.Address
+  instance
+    PlutusRepresentable PLA.Address
 
 -- | @since 2.0.0
-instance PLiftable PAddress where
-  type AsHaskell PAddress = PLA.Address
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PAddress PLA.Address)
+  instance
+    PLiftable PAddress

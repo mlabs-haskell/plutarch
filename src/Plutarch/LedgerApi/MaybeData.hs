@@ -15,17 +15,14 @@ import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData, pfromData)
 import Plutarch.Primitive.Debug (pshow)
 import Plutarch.Primitive.Liftable
-  ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
-    PlutusRepresentable (AsPlutus, haskToRepr, reprToHask),
-    ReprError (UserSpecified),
+  ( PLiftable (AsHaskell),
+    PLiftableData (PLiftableData),
+    PlutusRepresentable,
+    PlutusRepresentableData (PlutusRepresentableData),
     pconstant,
   )
 import Plutarch.Primitive.Match (pmatch)
-import Plutarch.Primitive.Representation
-  ( pfundamental,
-    punsafeSecondary,
-    (#),
-  )
+import Plutarch.Primitive.Representation (pfundamental, (#))
 import Plutarch.Primitive.Singular (PAsData)
 import Plutarch.Primitive.Term (perror)
 import Plutarch.TH.Strategy
@@ -33,9 +30,8 @@ import Plutarch.TH.Strategy
     WhichInstances (AllInstances),
     deriveFor,
   )
-import PlutusLedgerApi.V4 qualified as PLA
-import PlutusTx.IsData.Class qualified as PTxData
 import PlutusTx.Prelude qualified as PTx
+import Type.Reflection (Typeable)
 
 -- | @since 2.0.0
 data PMaybeData (a :: Type)
@@ -45,18 +41,19 @@ data PMaybeData (a :: Type)
 deriveFor ''PMaybeData DataPlutus AllInstances
 
 -- | @since 2.0.0
-instance (PTx.ToData a, PTx.FromData a) => PlutusRepresentable (PTx.Maybe a) where
-  type AsPlutus (PTx.Maybe a) = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode Maybe from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData (PTx.Maybe a))
+  instance
+    (PTx.ToData a, PTx.FromData a, Typeable a) => PlutusRepresentable (PTx.Maybe a)
 
 -- | @since 2.0.0
-instance
-  (PLiftable a, PCanData a, PTx.ToData (AsHaskell a), PTx.FromData (AsHaskell a)) =>
-  PLiftable (PMaybeData a)
-  where
-  type AsHaskell (PMaybeData a) = PTx.Maybe (AsHaskell a)
-  plutToRepr t = plutToRepr (pfundamental t)
-  reprToPlut = punsafeSecondary . pconstant
+deriving via
+  (PLiftableData (PMaybeData a) (PTx.Maybe (AsHaskell a)))
+  instance
+    ( PLiftable a,
+      PCanData a,
+      PTx.ToData (AsHaskell a),
+      PTx.FromData (AsHaskell a),
+      Typeable (AsHaskell a)
+    ) =>
+    PLiftable (PMaybeData a)

@@ -17,31 +17,21 @@ import Plutarch.Backend.Term (Term)
 import Plutarch.LedgerApi.Credential (PCredential, PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
 import Plutarch.LedgerApi.Tx (PTxId)
-import Plutarch.Primitive.BuiltinFun
-  ( pappendString,
-    plistData,
-    punListData,
-  )
+import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData (pfromData))
 import Plutarch.Primitive.Con (pcon)
 import Plutarch.Primitive.Debug (pshow)
 import Plutarch.Primitive.Liftable
   ( PLiftable (AsHaskell, plutToRepr, reprToPlut),
+    PLiftableDataList (PLiftableDataList),
     PlutusRepresentable (AsPlutus, haskToRepr, reprToHask),
+    PlutusRepresentableData (PlutusRepresentableData),
     ReprError (UserSpecified),
     pconstant,
   )
 import Plutarch.Primitive.Match (pmatch)
-import Plutarch.Primitive.Representation
-  ( pfundamental,
-    punsafeSecondary,
-    (#),
-  )
-import Plutarch.Primitive.Singular
-  ( PAsData,
-    PData,
-    PInteger,
-  )
+import Plutarch.Primitive.Representation (pfundamental, (#))
+import Plutarch.Primitive.Singular (PAsData, PInteger)
 import Plutarch.Primitive.Term (perror)
 import Plutarch.Primitive.Validate (PValidateData (pwithValidated))
 import Plutarch.TH.Strategy
@@ -61,18 +51,16 @@ data PGovernanceActionId = PGovernanceActionId
 deriveFor ''PGovernanceActionId DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.GovernanceActionId where
-  type AsPlutus PLA.GovernanceActionId = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode GovernanceActionId from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.GovernanceActionId)
+  instance
+    PlutusRepresentable PLA.GovernanceActionId
 
 -- | @since 2.0.0
-instance PLiftable PGovernanceActionId where
-  type AsHaskell PGovernanceActionId = PLA.GovernanceActionId
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PGovernanceActionId PLA.GovernanceActionId)
+  instance
+    PLiftable PGovernanceActionId
 
 -- | @since 2.0.0
 data PProtocolVersion = PProtocolVersion
@@ -83,18 +71,16 @@ data PProtocolVersion = PProtocolVersion
 deriveFor ''PProtocolVersion DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.ProtocolVersion where
-  type AsPlutus PLA.ProtocolVersion = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode ProtocolVersion from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.ProtocolVersion)
+  instance
+    PlutusRepresentable PLA.ProtocolVersion
 
 -- | @since 2.0.0
-instance PLiftable PProtocolVersion where
-  type AsHaskell PProtocolVersion = PLA.ProtocolVersion
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PProtocolVersion PLA.ProtocolVersion)
+  instance
+    PLiftable PProtocolVersion
 
 -- | @since 2.0.0
 newtype PConstitution = PConstitution (Term (PAsData (PMaybeData PScriptHash)))
@@ -102,18 +88,16 @@ newtype PConstitution = PConstitution (Term (PAsData (PMaybeData PScriptHash)))
 deriveFor ''PConstitution DataList AllInstances
 
 -- | @since 2.0.0
-instance PlutusRepresentable PLA.Constitution where
-  type AsPlutus PLA.Constitution = PLA.Data
-  haskToRepr = PTxData.toData
-  reprToHask d = case PTxData.fromData d of
-    Nothing -> Left . UserSpecified $ "Could not decode Constitution from Data"
-    Just x -> pure x
+deriving via
+  (PlutusRepresentableData PLA.Constitution)
+  instance
+    PlutusRepresentable PLA.Constitution
 
 -- | @since 2.0.0
-instance PLiftable PConstitution where
-  type AsHaskell PConstitution = PLA.Constitution
-  plutToRepr t = plutToRepr . pfundamental $ (plistData # pfundamental t)
-  reprToPlut d = punsafeSecondary (punListData # pconstant @PData d)
+deriving via
+  (PLiftableDataList PConstitution PLA.Constitution)
+  instance
+    PLiftable PConstitution
 
 -- | @since 2.0.0
 newtype PColdCommitteeCredential = PColdCommitteeCredential (Term PCredential)
