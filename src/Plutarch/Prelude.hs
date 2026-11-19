@@ -39,6 +39,8 @@ module Plutarch.Prelude
     Validate.pvalidateData,
 
     -- * Lifting
+    Lift.PlutusRepresentable (..),
+    Lift.PLiftable (..),
     Lift.pconstant,
 
     -- * Target language
@@ -186,6 +188,12 @@ module Plutarch.Prelude
     Multiplicative.PMultiplicativeMonoid (..),
     (Multiplicative.#*),
     Multiplicative.pproduct,
+
+    -- ** Optics
+    CanData.pencoded,
+    Match.pmatching,
+    Con.inTerm,
+    Con.pover,
 
     -- * Derivations
     Strategy.Strategy (..),

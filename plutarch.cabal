@@ -90,6 +90,7 @@ library
     Plutarch.Primitive.Trace
     Plutarch.Primitive.Validate
     Plutarch.Test.Golden
+    Plutarch.Test.Poly
     Plutarch.Test.Size
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
@@ -119,6 +120,7 @@ library
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
+    , QuickCheck
     , smash
     , tagged
     , tasty
@@ -184,6 +186,20 @@ test-suite tests
     , prettyprinter
     , tasty
     , text
+
+test-suite optics
+  import:         lang
+  type:           exitcode-stdio-1.0
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  main-is:        Main.hs
+  hs-source-dirs: test/optics
+  build-depends:
+    , optics-core
+    , optics-th
+    , plutarch
+    , QuickCheck
+    , tasty
+    , tasty-quickcheck
 
 benchmark benches
   import:         lang

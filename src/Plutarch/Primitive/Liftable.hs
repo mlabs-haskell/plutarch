@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -14,6 +15,7 @@ module Plutarch.Primitive.Liftable
     plift,
 
     -- * Derivation helpers
+    PlutusRepresentableData (..),
     PLiftableDirect (..),
     PLiftableData (..),
     PLiftableDataList (..),
@@ -54,6 +56,8 @@ import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS.G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS.Pairing
 import PlutusCore.Data as PLCData
 import PlutusCore.Value as PLCValue
+import PlutusTx.IsData.Class qualified as PTxData
+import Type.Reflection (Typeable, typeRep)
 
 -- | Errors that can arise when converting from an onchain representation type
 -- to its \'narrower\' equivalent.
@@ -391,6 +395,24 @@ plift t = case plutToRepr t of
     Left err -> error $ "representation error: " <> show err
     Right res' -> res'
 
+-- | A helper @newtype@ for deriving 'PlutusRepresentable' for types that have a
+-- @Data@ encoding defined via Plutus type classes.
+--
+-- @since 2.0.0
+newtype PlutusRepresentableData (a :: Type) = PlutusRepresentableData a
+
+-- | @since 2.0.0
+instance
+  (PTxData.ToData a, Typeable a, PTxData.FromData a) =>
+  PlutusRepresentable (PlutusRepresentableData a)
+  where
+  type AsPlutus (PlutusRepresentableData a) = PLCData.Data
+  haskToRepr (PlutusRepresentableData x) = PTxData.toData x
+  reprToHask d =
+    PlutusRepresentableData <$> case PTxData.fromData d of
+      Nothing -> Left . UserSpecified $ "Could not decode " <> typeName @a <> " from Data."
+      Just x -> pure x
+
 -- | A helper @newtype@ for deriving 'PLiftable' for Plutarch types which are
 -- directly representable using something in the Plutus default universe. More
 -- precisely, using 'PLiftableDirect' in a @via@ derivation specifies the
@@ -496,3 +518,8 @@ instance
   type AsHaskell (PLiftableDataList a h) = h
   plutToRepr t = plutToRepr . pfundamental $ (BF.plistData # pfundamental t)
   reprToPlut d = punsafeSecondary (BF.punListData # pconstant @S.PData d)
+
+-- Helpers
+
+typeName :: forall (a :: Type). (Typeable a) => String
+typeName = show (typeRep @a)
