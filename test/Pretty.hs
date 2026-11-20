@@ -5,6 +5,7 @@ module Pretty (goldens) where
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Text qualified as Text
 import Data.Vector.NonEmpty qualified as NEVector
+import Plutarch.Backend.UPLC qualified as UPLC
 import Plutarch.Helpers.Pretty qualified as P
 import Plutarch.Prelude
 import Plutarch.Test.Golden (Evaluation (EvaluateUPLC), releaseGolden)
@@ -20,7 +21,7 @@ import Prettyprinter
   )
 import Prettyprinter.Render.String (renderString)
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase, (@?=))
+import Test.Tasty.HUnit (assertBool, testCase, (@?=))
 
 goldens :: TestTree
 goldens =
@@ -32,7 +33,13 @@ goldens =
         "\\f x -> let lol = toPrettyString (f # x) in pconstant (T.pack . show $ lol)"
         "Pretty Case 2"
         case2,
-      layoutTests
+      layoutTests,
+      testCase "packed application and match differ only in display intent" $ do
+        let terms = NEVector.singleton UPLC.uplcError
+            packed = UPLC.uplcPackedApply UPLC.uplcError terms
+            match = UPLC.uplcCase (UPLC.uplcConstr 0 (NEVector.toVector terms)) terms
+        assertBool "display tags must participate in equality" (packed /= match)
+        UPLC.eraseUPLC packed @?= UPLC.eraseUPLC match
     ]
 
 layoutTests :: TestTree

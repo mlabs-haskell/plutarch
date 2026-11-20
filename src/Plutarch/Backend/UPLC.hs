@@ -37,7 +37,7 @@ import Control.Monad.State.Strict
 import Data.Bifunctor (bimap)
 import Data.Coerce (coerce)
 import Data.Default (def)
-import Data.Hashable (Hashable (hashWithSalt), hash)
+import Data.Hashable (Hashable, hash)
 import Data.Kind (Type)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
@@ -64,8 +64,15 @@ newtype UPLCTerm = UPLCTerm (UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun
     ( -- | @since 2.0.0
       Show
     )
+  deriving
+    ( -- | @since 2.0.0
+      Eq,
+      -- | @since 2.0.0
+      Hashable
+    )
+    via (UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun UPLCForm)
 
--- | Erase display metadata for serialization and structural comparisons.
+-- | Erase display metadata for serialization or comparison without display tags.
 eraseUPLC :: UPLCTerm -> UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun ()
 eraseUPLC (UPLCTerm t) = void t
 
@@ -83,14 +90,6 @@ markLeadingLets = \case
   UPLC.Apply _ (UPLC.LamAbs ann name body) rhs ->
     UPLC.Apply AsLeadingLet (UPLC.LamAbs ann name (markLeadingLets body)) rhs
   other -> other
-
--- | @since 2.0.0
-instance Eq UPLCTerm where
-  x == y = eraseUPLC x == eraseUPLC y
-
--- | @since 2.0.0
-instance Hashable UPLCTerm where
-  hashWithSalt salt = hashWithSalt salt . eraseUPLC
 
 -- | @since 2.0.0
 instance Pretty UPLCTerm where

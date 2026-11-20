@@ -28,6 +28,7 @@ where
 
 import Data.ByteString ()
 import Data.Functor.Const (Const (Const, getConst))
+import Data.Hashable (Hashable (hashWithSalt))
 import Data.Kind (Type)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid (Any (Any, getAny))
@@ -371,7 +372,10 @@ ctorTemplate mode cix args = case mode of
 -- | The display intent recorded by the UPLC builder at a node.
 -- 'Plain' also represents imported or evaluated code with no known intent.
 data UPLCForm = Plain | AsLet | AsLeadingLet | AsMatch | AsApplication | AsParallelLet
-  deriving stock (Eq, Show)
+  deriving stock (Enum, Eq, Show)
+
+instance Hashable UPLCForm where
+  hashWithSalt salt = hashWithSalt salt . fromEnum
 
 -- | Render UPLC using the display forms recorded by its builders.
 prettyUPLC :: forall (ann :: Type). Term Name DefaultUni DefaultFun UPLCForm -> Doc ann
