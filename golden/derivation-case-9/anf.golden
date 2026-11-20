@@ -155,7 +155,7 @@ ANF Binds:
  #13 := Apply #1 [#2, #12]
  #14 := Apply #0 [#13]
  #15 := AppendString
- #16 := "PThisData { " :: String
+ #16 := "PThisData {\n" :: String
  #17 := ", " :: String
  #18 := LessThanEqualsInteger
  #19 := UnIData
@@ -203,13 +203,13 @@ ANF Binds:
  #61 := Case #57 [#60, #33]
  #62 := Apply #15 [#54, #61]
  #63 := Case #22 [#53, #62]
- #64 := " " :: String
+ #64 := "\n" :: String
  #65 := Apply #15 [#63, #64]
  #66 := Apply #15 [#17, #65]
  #67 := "}" :: String
  #68 := Apply #15 [#66, #67]
  #69 := Apply #15 [#16, #68]
- #70 := "PThatData { " :: String
+ #70 := "PThatData {\n" :: String
  #71 := LengthOfByteString
  #72 := UnBData
  #73 := Apply #72 [c]
@@ -270,7 +270,7 @@ ANF Binds:
  #113 := Apply #15 [#17, #112]
  #114 := Apply #15 [#113, #67]
  #115 := Apply #15 [#70, #114]
- #116 := "PTheseData { " :: String
+ #116 := "PTheseData {\n" :: String
  #117 := HeadList
  #118 := Force #117
  #119 := Apply #118 [d]

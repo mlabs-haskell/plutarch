@@ -13,6 +13,7 @@ module Plutarch.Helpers.Pretty
     customList,
     customSet,
     prettyUPLC,
+    UPLCForm (..),
     oneLineList,
     blockParens,
     lambdaTemplate,
@@ -26,7 +27,12 @@ module Plutarch.Helpers.Pretty
 where
 
 import Data.ByteString ()
+import Data.Functor.Const (Const (Const, getConst))
+import Data.Hashable (Hashable (hashWithSalt))
 import Data.Kind (Type)
+import Data.List.NonEmpty (NonEmpty ((:|)))
+import Data.Monoid (Any (Any, getAny))
+import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Vector qualified as Vector
@@ -45,24 +51,25 @@ import Prettyprinter
     align,
     angles,
     brackets,
-    dquotes,
-    encloseSep,
+    concatWith,
     flatAlt,
     group,
     hardline,
     hcat,
     hsep,
     indent,
+    line,
     list,
+    nest,
     parens,
     punctuate,
     tupled,
     vcat,
     viaShow,
-    vsep,
     (<+>),
   )
 import UntypedPlutusCore (DefaultFun, Name (Name), Unique (Unique))
+import UntypedPlutusCore qualified as UPLC
 import UntypedPlutusCore.Core.Type
   ( Term
       ( Apply,
@@ -94,7 +101,7 @@ prettyValueOf uni x = case prettyUni uni of
     prettyUni = \case
       D.DefaultUniInteger -> ("Integer", pretty)
       D.DefaultUniByteString -> ("Bytestring", viaShow)
-      D.DefaultUniString -> ("String", dquotes . pretty)
+      D.DefaultUniString -> ("String", viaShow)
       D.DefaultUniUnit -> ("()", pretty)
       D.DefaultUniBool -> ("Bool", pretty)
       (D.DefaultUniProtoPair `D.DefaultUniApply` tX `D.DefaultUniApply` tY) ->
@@ -270,93 +277,75 @@ lambdaTemplate mode vars body = case mode of
           <> r
     oneLineNoParens = "\\" <> hsep vars <+> "->" <+> body
 
--- | Don't pass an empty list into this
+-- | Keep a short head beside the opener, independently of the continuation.
+openingBlock :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
+openingBlock first rest =
+  align $ "(" <> nest 2 (group (line <> first)) <> rest <> hardline <> ")"
+
 appLike :: forall (ann :: Type). Doc ann -> PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 appLike op mode funList = case mode of
-  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
-  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  PrintAtomic -> align . group $ flatAlt (openingBlock fun brokenTail) (parens body)
+  PrintDefault -> align (group body)
   where
-    fun :: Doc ann
-    args :: Vector.Vector (Doc ann)
     (fun, args) = NEVector.uncons funList
 
-    myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> " "
+    argumentsWith :: (Doc ann -> Doc ann) -> Doc ann
+    argumentsWith layoutArg = foldMap (layoutArg . (op <+>)) args
 
-    myIndent :: Doc ann -> Doc ann
-    myIndent = case mode of PrintAtomic -> indent 2; _ -> id
+    brokenTail :: Doc ann
+    brokenTail = argumentsWith (\arg -> hardline <> indent 2 arg)
 
-    mkMultiline :: Doc ann -> Doc ann -> Doc ann
-    mkMultiline l r =
-      group $
-        l
-          <> myLine
-          <> myIndent (align . encloseSep "" "" (op <> " ") $ NEVector.toList funList)
-          <> myLine
-          <> r
-    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ Vector.toList args)
+    body :: Doc ann
+    body = fun <> argumentsWith (line <>)
 
-appTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
+appTemplate :: forall (ann :: Type). PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 appTemplate = appLike "#"
 
-composeTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
+composeTemplate :: forall (ann :: Type). PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 composeTemplate = appLike "."
 
 -- Var -> Binding -> Body -> Result
 letTemplate :: forall (ann :: Type). PrintMode -> Doc ann -> Doc ann -> Doc ann -> Doc ann
-letTemplate mode var bind body = case mode of
-  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
-  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
+letTemplate mode var rhs = letBindings mode [(var, rhs)]
+
+-- | Render a group of bindings with one binding per line.
+letBindings :: forall (ann :: Type). PrintMode -> [(Doc ann, Doc ann)] -> Doc ann -> Doc ann
+letBindings mode bindings body = case mode of
+  PrintDefault -> doc
+  PrintAtomic -> blockParens doc
   where
-    myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> ""
-    mkMultiline :: Doc ann -> Doc ann -> Doc ann
-    mkMultiline l r =
-      align . group $
-        l
-          <> "let"
-          <+> var
-          <+> "="
-          <+> align (group bind)
-          <> hardline
-          <> "in"
-          <+> align (group body)
-          <> myLine
-          <> r
-    oneLineNoParens :: Doc ann
-    oneLineNoParens = "let" <+> var <+> "=" <+> bind <+> "in" <+> body
+    binding :: (Doc ann, Doc ann) -> Doc ann
+    binding (var, rhs) = var <+> "=" <+> align rhs
+    rows = concatWith (\a b -> a <> hardline <> b) (map binding bindings)
+    doc = align $ "let" <+> align rows <> hardline <> "in" <+> align body
 
 caseTemplate :: forall (ann :: Type). PrintMode -> Bool -> Doc ann -> [Doc ann] -> Doc ann
-caseTemplate mode scrutIsSmall scrut handlers = case mode of
-  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
-  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+caseTemplate mode scrutIsSmall scrut handlers =
+  align . group $ flatAlt broken compact
   where
-    myLine :: Doc ann
-    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+    header :: Doc ann
+    header = "case" <+> scrut
 
-    mkMultiline :: Doc ann -> Doc ann -> Doc ann
-    mkMultiline l r =
-      if scrutIsSmall
-        then
-          align . group $
-            l
-              <> "case"
-              <+> scrut
-              <> hardline
-              <> indent 2 (customList handlers)
-              <> myLine
-              <> r
-        else
-          align . group $
-            l
-              <> "case"
-              <+> hardline
-              <> indent 2 (align . vcat $ [scrut, customList handlers])
-              <> myLine
-              <> r
+    arms :: Doc ann
+    arms = customList handlers
 
-    oneLineNoParens :: Doc ann
-    oneLineNoParens = "case" <+> scrut <+> oneLineList handlers
+    compact :: Doc ann
+    compact = case mode of
+      PrintDefault -> oneLine
+      PrintAtomic -> parens oneLine
+
+    oneLine :: Doc ann
+    oneLine = header <+> oneLineList handlers
+
+    broken :: Doc ann
+    broken = case (mode, scrutIsSmall) of
+      (PrintDefault, True) -> header <> hardline <> indent 2 arms
+      (PrintAtomic, True) -> openingBlock header (hardline <> indent 4 arms)
+      (PrintDefault, False) -> largeCase
+      (PrintAtomic, False) -> blockParens largeCase
+
+    largeCase :: Doc ann
+    largeCase = "case" <> hardline <> indent 2 (scrut <> hardline <> arms)
 
 ctorTemplate :: forall (ann :: Type). PrintMode -> Word64 -> [Doc ann] -> Doc ann
 ctorTemplate mode cix args = case mode of
@@ -380,63 +369,95 @@ ctorTemplate mode cix args = case mode of
     oneLineNoParens :: Doc ann
     oneLineNoParens = "constr" <+> pretty cix <+> oneLineList args
 
--- Yes there are probably a bunch of superfluous `align`s, not worth the trouble to sort out which are safe to remove tho
-prettyUPLC :: forall ann. Term Name DefaultUni DefaultFun () -> Doc ann
-prettyUPLC pt = case takeBindable ([], topLevelBody) of
-  ([], rest) -> case topLevelArgs of
-    [] -> prettyNoBind rest
-    _ -> lambdaTemplate PrintDefault topLevelArgs $ prettyNoBind rest
-  (letBinds, rest) ->
-    let pRest = "in" <+> prettyNoBind rest
-        body = align . vsep . reverse $ (pRest : letBinds)
-     in lambdaTemplate PrintDefault topLevelArgs body
+-- | The display intent recorded by the UPLC builder at a node.
+-- 'Plain' also represents imported or evaluated code with no known intent.
+data UPLCForm = Plain | AsLet | AsLeadingLet | AsMatch | AsApplication | AsParallelLet
+  deriving stock (Enum, Eq, Show)
+
+instance Hashable UPLCForm where
+  hashWithSalt salt = hashWithSalt salt . fromEnum
+
+-- | Render UPLC using the display forms recorded by its builders.
+prettyUPLC :: forall (ann :: Type). Term Name DefaultUni DefaultFun UPLCForm -> Doc ann
+prettyUPLC = go PrintDefault
   where
-    (topLevelArgs, topLevelBody) = takeLamArgs ([], pt)
-    -- if it's `arg` it came from Plutarch code and we just use the "compact pretty hash" as the visible name directly,
-    -- but if it's something else then it came from a blob of compiled UPLC OR has a semantically meaningful text part
-    -- so we need to make the text part visible
+    -- Generated `arg` names show only their compact unique; other names keep their text as well.
     prettyName :: Name -> Doc ann
     prettyName (Name txt (Unique u))
       | txt == "arg" = pretty . compactReadableVar . fromIntegral $ u
       | otherwise = pretty txt <> "_" <> pretty (compactReadableVar . fromIntegral $ u)
 
-    takeBindable :: ([Doc ann], Term Name DefaultUni DefaultFun ()) -> ([Doc ann], Term Name DefaultUni DefaultFun ())
-    takeBindable (acc, t) = case t of
-      Apply () (LamAbs () nm body) arg ->
-        let here = "let" <+> prettyName nm <+> "=" <+> align (prettyNoBind arg)
-         in takeBindable (here : acc, body)
-      other -> (acc, other)
-
-    takeLamArgs :: ([Doc ann], Term Name DefaultUni DefaultFun ()) -> ([Doc ann], Term Name DefaultUni DefaultFun ())
+    takeLamArgs :: ([Doc ann], Term Name DefaultUni DefaultFun UPLCForm) -> ([Doc ann], Term Name DefaultUni DefaultFun UPLCForm)
     takeLamArgs (varAcc, next) = case next of
-      LamAbs () nm body -> takeLamArgs (prettyName nm : varAcc, body)
+      LamAbs _ nm body -> takeLamArgs (prettyName nm : varAcc, body)
       _ -> (reverse varAcc, next)
 
-    go :: PrintMode -> Term Name DefaultUni DefaultFun () -> Doc ann
+    go :: PrintMode -> Term Name DefaultUni DefaultFun UPLCForm -> Doc ann
     go mode = \case
-      Var () nm -> prettyName nm
-      LamAbs () nm _body ->
+      Var _ nm -> prettyName nm
+      LamAbs _ nm _body ->
         let (vars, body) = takeLamArgs ([prettyName nm], _body)
          in lambdaTemplate mode vars (prettyNoBind body)
-      Apply () f arg ->
+      Apply AsLet (LamAbs _ nm body) arg ->
+        letTemplate mode (prettyName nm) (prettyNoBind arg) (prettyNoBind body)
+      Apply AsLeadingLet (LamAbs _ nm body) rhs ->
+        let (more, rest) = leadingBindings (Set.singleton nm) body
+            binding :: (Name, Term Name DefaultUni DefaultFun UPLCForm) -> (Doc ann, Doc ann)
+            binding (name, value) = (prettyName name, prettyNoBind value)
+         in letBindings mode (map binding ((nm, rhs) : more)) (prettyNoBind rest)
+      Case AsApplication (Constr _ 0 args@(_ : _)) handlers
+        | [f] <- Vector.toList handlers ->
+            appTemplate mode (NEVector.fromNonEmpty (prettyAtomic f :| fmap prettyAtomic args))
+      Case AsParallelLet (Constr _ 0 args@(_ : _)) handlers
+        | [handler] <- Vector.toList handlers,
+          Just (names, body) <- takeBinders (length args) handler ->
+            letBindings mode (zip (map prettyName names) (map prettyNoBind args)) (prettyNoBind body)
+      Apply _ f arg ->
         let funList = prettyAtomic <$> (analyzeApp f <> NEVector.singleton arg)
          in align $ appTemplate mode funList
-      Force () inner -> "!" <> prettyAtomic inner
-      Delay () inner -> angles $ prettyNoBind inner
+      Force _ inner -> "!" <> prettyAtomic inner
+      Delay _ inner -> angles $ prettyNoBind inner
       Constant _ (Some (ValueOf uni x)) -> parens (prettyValueOf uni x)
       Builtin _ b -> viaShow b
       Error {} -> "ERROR"
-      Constr () cix args -> ctorTemplate mode cix (prettyNoBind <$> args)
-      Case () scrut handlers ->
+      Constr _ cix args -> ctorTemplate mode cix (prettyNoBind <$> args)
+      Case _ scrut handlers ->
         caseTemplate mode (isAtom scrut) (prettyAtomic scrut) (prettyNoBind <$> Vector.toList handlers)
 
-    prettyAtomic :: Term Name DefaultUni DefaultFun () -> Doc ann
+    -- Collect consecutive leading bindings whose right-hand sides are independent.
+    leadingBindings ::
+      forall (uni :: Type -> Type) (fun :: Type).
+      Set.Set Name ->
+      Term Name uni fun UPLCForm ->
+      ([(Name, Term Name uni fun UPLCForm)], Term Name uni fun UPLCForm)
+    leadingBindings bound (Apply AsLeadingLet (LamAbs _ nm body) rhs)
+      | Set.notMember nm bound,
+        not (mentions bound rhs) =
+          let (more, rest) = leadingBindings (Set.insert nm bound) body
+           in ((nm, rhs) : more, rest)
+    leadingBindings _ rest = ([], rest)
+
+    mentions :: forall (uni :: Type -> Type) (fun :: Type) (a :: Type). Set.Set Name -> Term Name uni fun a -> Bool
+    mentions bound = \case
+      Var _ nm -> Set.member nm bound
+      LamAbs _ nm body -> mentions (Set.delete nm bound) body
+      t -> getAny . getConst $ UPLC.termSubterms (Const . Any . mentions bound) t
+
+    -- Take one binder per parallel binding, leaving any further lambdas in the body.
+    takeBinders :: Int -> Term Name DefaultUni DefaultFun UPLCForm -> Maybe ([Name], Term Name DefaultUni DefaultFun UPLCForm)
+    takeBinders 0 body = Just ([], body)
+    takeBinders n (LamAbs _ nm body) = do
+      (names, rest) <- takeBinders (n - 1) body
+      pure (nm : names, rest)
+    takeBinders _ _ = Nothing
+
+    prettyAtomic :: Term Name DefaultUni DefaultFun UPLCForm -> Doc ann
     prettyAtomic = go PrintAtomic
 
-    prettyNoBind :: Term Name DefaultUni DefaultFun () -> Doc ann
+    prettyNoBind :: Term Name DefaultUni DefaultFun UPLCForm -> Doc ann
     prettyNoBind = go PrintDefault
 
-    isAtom :: Term Name DefaultUni DefaultFun () -> Bool
+    isAtom :: Term Name DefaultUni DefaultFun UPLCForm -> Bool
     isAtom = \case
       Var {} -> True
       Constant {} -> True
@@ -446,7 +467,8 @@ prettyUPLC pt = case takeBindable ([], topLevelBody) of
       Builtin {} -> True
       _ -> False
 
-    analyzeApp :: Term Name DefaultUni DefaultFun () -> NonEmptyVector (Term Name DefaultUni DefaultFun ())
+    analyzeApp :: Term Name DefaultUni DefaultFun UPLCForm -> NonEmptyVector (Term Name DefaultUni DefaultFun UPLCForm)
     analyzeApp = \case
-      Apply () f arg -> analyzeApp f <> NEVector.singleton arg
+      t@(Apply form LamAbs {} _) | form == AsLet || form == AsLeadingLet -> NEVector.singleton t
+      Apply _ f arg -> analyzeApp f <> NEVector.singleton arg
       other -> NEVector.singleton other
