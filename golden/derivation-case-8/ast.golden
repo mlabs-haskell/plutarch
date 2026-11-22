@@ -7,13 +7,13 @@
         [
           <Apply
             <AppendString>@p7qYeALXKVC
-            [<"PSOPNil { " :: String>@wLu8iwfcYEu, <"}" :: String>@iXxLwYZTYyx]
+            [<"PSOPNil {\n" :: String>@wLu8iwfcYEu, <"}" :: String>@iXxLwYZTYyx]
           >@fklIcFxZeebN, 
           <\c d -> 
             <Apply
               <AppendString>@p7qYeALXKVC
               [
-                <"PSOPCons { " :: String>@sIF5xpdibDcN, 
+                <"PSOPCons {\n" :: String>@sIF5xpdibDcN, 
                 <Apply
                   <AppendString>@p7qYeALXKVC
                   [
@@ -361,7 +361,7 @@
                                 >@tZwHUkE0RKqN
                               ]
                             >@o6rtVg1DrqlN, 
-                            <" " :: String>@lM1GM6LVDMcN
+                            <"\n" :: String>@lM1GM6LVDMcN
                           ]
                         >@jJuQjw3Wt3dN
                       ]
@@ -377,7 +377,7 @@
                               <AppendString>@p7qYeALXKVC
                               [
                                 <Applya [d]>@nlTHvWhSkgAN, 
-                                <" " :: String>@lM1GM6LVDMcN
+                                <"\n" :: String>@lM1GM6LVDMcN
                               ]
                             >@oDy3pyMXfRw
                           ]

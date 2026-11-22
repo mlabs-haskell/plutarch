@@ -1,4 +1,1 @@
-("PTheseMS {
-, 2
-, false
-}" :: String)
+("PTheseMS {\n, 2\n, false\n}" :: String)

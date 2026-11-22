@@ -17,7 +17,7 @@
           [ \_ -> False :: Bool
           , \_ -> False :: Bool
           , \i j ->
-              case 
+              case
                 (EqualsInteger # h # j)
                 [False :: Bool, EqualsInteger # g # i]
           ]

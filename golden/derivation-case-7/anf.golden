@@ -106,7 +106,7 @@ ANF Binds:
  #0 := 2 :: Integer
  #1 := Constr 0 [#0]
  #2 := AppendString
- #3 := "PLeft { " :: String
+ #3 := "PLeft {\n" :: String
  #4 := ", " :: String
  #5 := LessThanEqualsInteger
  #6 := -1 :: Integer
@@ -152,14 +152,14 @@ ANF Binds:
  #46 := Case #42 [#45, #18]
  #47 := Apply #2 [#39, #46]
  #48 := Case #7 [#38, #47]
- #49 := " " :: String
+ #49 := "\n" :: String
  #50 := Apply #2 [#48, #49]
  #51 := Apply #2 [#4, #50]
  #52 := "}" :: String
  #53 := Apply #2 [#51, #52]
  #54 := Apply #2 [#3, #53]
  #55 := \a:5 -> #54
- #56 := "PRight { " :: String
+ #56 := "PRight {\n" :: String
  #57 := LengthOfByteString
  #58 := Apply #57 [l]
  #59 := Apply #8 [#58, #9]

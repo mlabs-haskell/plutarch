@@ -1,28 +1,16 @@
 \xu yu ->
   let bind_zu = \unused_lv -> (False :: Bool)
-  let bind_av = \unused_jv unused_kv -> (False :: Bool)
-  in case 
-       (constr 0
-         [ \bv ->
-             case 
-               (constr 0 [\cv -> EqualsInteger # bv # cv, bind_zu, bind_av])
-               [yu]
-         , \dv ->
-             case 
-               (constr 0 [bind_zu, \ev -> EqualsInteger # dv # ev, bind_av])
-               [yu]
-         , \fv gv ->
-             case 
-               (constr 0
-                 [ bind_zu
-                 , bind_zu
-                 , \hv iv ->
-                     case 
-                       (EqualsInteger # fv # hv)
-                       [(False :: Bool), EqualsInteger # gv # iv]
-                 ]
-               )
-               [yu]
-         ]
+      bind_av = \unused_jv unused_kv -> (False :: Bool)
+  in xu
+     # (\bv -> yu # (\cv -> EqualsInteger # bv # cv) # bind_zu # bind_av)
+     # (\dv -> yu # bind_zu # (\ev -> EqualsInteger # dv # ev) # bind_av)
+     # (\fv gv ->
+         yu
+         # bind_zu
+         # bind_zu
+         # (\hv iv ->
+             case
+               (EqualsInteger # fv # hv)
+               [(False :: Bool), EqualsInteger # gv # iv]
+           )
        )
-       [xu]

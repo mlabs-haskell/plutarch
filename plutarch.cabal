@@ -185,6 +185,7 @@ test-suite tests
     , plutarch
     , prettyprinter
     , tasty
+    , tasty-hunit
     , text
 
 test-suite optics

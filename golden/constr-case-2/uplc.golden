@@ -1,6 +1,5 @@
-case 
-  (
-    ConstrData
+case
+  ( ConstrData
     # (1 :: Integer)
     # (!MkCons # (IData # (2 :: Integer)) # ([] :: [Data]))
   )

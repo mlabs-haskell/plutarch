@@ -1,20 +1,18 @@
- (\forced_wh forced_xh ->
-    (\bind_rh ->
-       (\sh th ->
-          th
-          # sh
-          # (\compArg_uh ->
-               (\vh -> MultiplyInteger # vh # vh)
-               # (
-                   AddInteger
-                   # (forced_xh # bind_rh # compArg_uh)
-                   # (1 :: Integer)
-                 ) 
-            ) 
-       )
-       # (forced_wh # bind_rh) 
-    )
-    # ([1, 2, 3] :: Array Integer) 
- )
- # !LengthOfArray
- # !IndexArray 
+(
+  let forced_wh = !LengthOfArray
+  in \forced_xh ->
+       let bind_rh = ([1, 2, 3] :: Array Integer)
+       in (\sh th ->
+            th
+            # sh
+            # (\compArg_uh ->
+                (\vh -> MultiplyInteger # vh # vh)
+                # ( AddInteger
+                    # (forced_xh # bind_rh # compArg_uh)
+                    # (1 :: Integer)
+                  )
+              )
+          )
+          # (forced_wh # bind_rh)
+)
+# !IndexArray

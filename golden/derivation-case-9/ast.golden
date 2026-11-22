@@ -39,7 +39,7 @@
                 <Apply
                   <AppendString>@p7qYeALXKVC
                   [
-                    <"PThisData { " :: String>@l8weF2vHEVyN, 
+                    <"PThisData {\n" :: String>@l8weF2vHEVyN, 
                     <Apply
                       <AppendString>@p7qYeALXKVC
                       [
@@ -431,7 +431,7 @@
                                     >@jn6UG1yZ8uw
                                   ]
                                 >@y2Qeqc0SB7p, 
-                                <" " :: String>@lM1GM6LVDMcN
+                                <"\n" :: String>@lM1GM6LVDMcN
                               ]
                             >@wt62DSS9z3x
                           ]
@@ -444,7 +444,7 @@
                 <Apply
                   <AppendString>@p7qYeALXKVC
                   [
-                    <"PThatData { " :: String>@zbPKzRb0KHd, 
+                    <"PThatData {\n" :: String>@zbPKzRb0KHd, 
                     <Apply
                       <AppendString>@p7qYeALXKVC
                       [
@@ -901,7 +901,7 @@
                                     <"[]" :: String>@amtPr1eo5ctN
                                   ]
                                 >@brrblzYnv4lN, 
-                                <" " :: String>@lM1GM6LVDMcN
+                                <"\n" :: String>@lM1GM6LVDMcN
                               ]
                             >@pUEbZ5pS1oB
                           ]
@@ -914,7 +914,7 @@
                 <Apply
                   <AppendString>@p7qYeALXKVC
                   [
-                    <"PTheseData { " :: String>@jwAYfknDKkr, 
+                    <"PTheseData {\n" :: String>@jwAYfknDKkr, 
                     <Apply
                       <AppendString>@p7qYeALXKVC
                       [
@@ -1306,7 +1306,7 @@
                                     >@jn6UG1yZ8uw
                                   ]
                                 >@y2Qeqc0SB7p, 
-                                <" " :: String>@lM1GM6LVDMcN
+                                <"\n" :: String>@lM1GM6LVDMcN
                               ]
                             >@wt62DSS9z3x
                           ]
@@ -1805,7 +1805,7 @@
                                         <"[]" :: String>@amtPr1eo5ctN
                                       ]
                                     >@z4rfzkChZJs, 
-                                    <" " :: String>@lM1GM6LVDMcN
+                                    <"\n" :: String>@lM1GM6LVDMcN
                                   ]
                                 >@sWU1XlSEEBqN
                               ]

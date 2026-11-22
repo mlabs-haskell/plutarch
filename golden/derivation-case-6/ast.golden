@@ -54,7 +54,7 @@
             <Apply
               <AppendString>@p7qYeALXKVC
               [
-                <"PTriple { " :: String>@i5ELeXTJ92oN, 
+                <"PTriple {\n" :: String>@i5ELeXTJ92oN, 
                 <Apply
                   <AppendString>@p7qYeALXKVC
                   [
@@ -87,7 +87,7 @@
                                 <"true" :: String>@mCiXmXbySDe
                               ]
                             >@dIQntUUiZJCN, 
-                            <" " :: String>@lM1GM6LVDMcN
+                            <"\n" :: String>@lM1GM6LVDMcN
                           ]
                         >@bdWQ9fPtwcj
                       ]
@@ -124,7 +124,7 @@
                                     <"true" :: String>@mCiXmXbySDe
                                   ]
                                 >@tkpImUfAJJsN, 
-                                <" " :: String>@lM1GM6LVDMcN
+                                <"\n" :: String>@lM1GM6LVDMcN
                               ]
                             >@p0AWmbj5UWvN
                           ]
@@ -169,7 +169,7 @@
                                         <"true" :: String>@mCiXmXbySDe
                                       ]
                                     >@w4nvASAjakgN, 
-                                    <" " :: String>@lM1GM6LVDMcN
+                                    <"\n" :: String>@lM1GM6LVDMcN
                                   ]
                                 >@xF5nXxqrRzk
                               ]

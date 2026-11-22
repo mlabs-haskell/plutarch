@@ -1,26 +1,18 @@
-case 
-  (
-    UnListData
-    # (
-        ListData
-        # (
-            !MkCons
-            # (
-                ConstrData
+case
+  ( UnListData
+    # ( ListData
+        # ( !MkCons
+            # ( ConstrData
                 # (case False :: Bool [0 :: Integer, 1 :: Integer])
                 # [] :: [Data]
               )
-            # (
-                !MkCons
-                # (
-                    ConstrData
+            # ( !MkCons
+                # ( ConstrData
                     # (case False :: Bool [0 :: Integer, 1 :: Integer])
                     # [] :: [Data]
                   )
-                # (
-                    !MkCons
-                    # (
-                        ConstrData
+                # ( !MkCons
+                    # ( ConstrData
                         # (case False :: Bool [0 :: Integer, 1 :: Integer])
                         # [] :: [Data]
                       )
@@ -31,7 +23,7 @@ case
       )
   )
   [ \a b ->
-      case 
+      case
         (UnConstrData # a)
         [ \c d ->
             case d
@@ -39,7 +31,7 @@ case
               , case c
                   [ case b
                       [ \e f ->
-                          case 
+                          case
                             (UnConstrData # e)
                             [ \g h ->
                                 case h
@@ -47,7 +39,7 @@ case
                                   , case g
                                       [ case f
                                           [ \i j ->
-                                              case 
+                                              case
                                                 (UnConstrData # i)
                                                 [ \k l ->
                                                     case l
@@ -55,85 +47,87 @@ case
                                                       , case k
                                                           [ case j
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           , case j
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           ]
                                                       ]
@@ -141,7 +135,7 @@ case
                                           ]
                                       , case f
                                           [ \m n ->
-                                              case 
+                                              case
                                                 (UnConstrData # m)
                                                 [ \o p ->
                                                     case p
@@ -149,85 +143,87 @@ case
                                                       , case o
                                                           [ case n
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           , case n
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           ]
                                                       ]
@@ -239,7 +235,7 @@ case
                       ]
                   , case b
                       [ \q r ->
-                          case 
+                          case
                             (UnConstrData # q)
                             [ \s t ->
                                 case t
@@ -247,7 +243,7 @@ case
                                   , case s
                                       [ case r
                                           [ \u v ->
-                                              case 
+                                              case
                                                 (UnConstrData # u)
                                                 [ \w x ->
                                                     case x
@@ -255,85 +251,87 @@ case
                                                       , case w
                                                           [ case v
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           , case v
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           ]
                                                       ]
@@ -341,7 +339,7 @@ case
                                           ]
                                       , case r
                                           [ \y z ->
-                                              case 
+                                              case
                                                 (UnConstrData # y)
                                                 [ \ab bb ->
                                                     case bb
@@ -349,85 +347,87 @@ case
                                                       , case ab
                                                           [ case z
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           , case z
                                                               [ \_ _ -> ERROR
-                                                              ,  ListData
-                                                                 # (
-                                                                     !MkCons
-                                                                     # (
-                                                                         ConstrData
-                                                                         # (case False :: Bool
-                                                                             [ 0 :: Integer
-                                                                             , 1 :: Integer
-                                                                             ]
-                                                                           )
-                                                                         # [  ] :: [Data]
-                                                                       )
-                                                                     # (
-                                                                         !MkCons
-                                                                         # (
-                                                                             ConstrData
-                                                                             # (case False :: Bool
-                                                                                 [ 0 :: Integer
-                                                                                 , 1 :: Integer
-                                                                                 ]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                         # (
-                                                                             !MkCons
-                                                                             # (
-                                                                                 ConstrData
-                                                                                 # (case False :: Bool
-                                                                                     [ 0 :: Integer
-                                                                                     , 1 :: Integer
-                                                                                     ]
-                                                                                   )
-                                                                                 # [  ] :: [Data]
-                                                                               )
-                                                                             # [  ] :: [Data]
-                                                                           )
-                                                                       )
-                                                                   ) 
+                                                              , ListData
+                                                                # ( !MkCons
+                                                                    # (
+                                                                        ConstrData
+                                                                        # (
+                                                                            case False :: Bool
+                                                                              [ 0 :: Integer
+                                                                              , 1 :: Integer
+                                                                              ]
+                                                                          )
+                                                                        # [  ] :: [Data]
+                                                                      )
+                                                                    # ( !MkCons
+                                                                        # (
+                                                                            ConstrData
+                                                                            # (
+                                                                                case False :: Bool
+                                                                                  [ 0 :: Integer
+                                                                                  , 1 :: Integer
+                                                                                  ]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                        # (
+                                                                            !MkCons
+                                                                            # (
+                                                                                ConstrData
+                                                                                # (
+                                                                                    case False :: Bool
+                                                                                      [ 0 :: Integer
+                                                                                      , 1 :: Integer
+                                                                                      ]
+                                                                                  )
+                                                                                # [  ] :: [Data]
+                                                                              )
+                                                                            # [  ] :: [Data]
+                                                                          )
+                                                                      )
+                                                                  )
                                                               ]
                                                           ]
                                                       ]

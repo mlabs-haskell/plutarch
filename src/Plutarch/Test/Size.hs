@@ -19,7 +19,7 @@ import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
 import Plutarch.Backend.Term (Term, releaseTermEnv)
-import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
+import Plutarch.Backend.UPLC (UPLCTerm, eraseUPLC)
 import Plutarch.Helpers.Compile (compileTerm)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.Common (serialiseUPLC)
@@ -84,15 +84,15 @@ instance IsTest CmpTermSize where
     where
       go :: Either String String
       go = do
-        (UPLCTerm uplcT, UPLCTerm uplcBound) <- case cmpSize of
+        (uplcT, uplcBound) <- case cmpSize of
           CmpTermSize t bound -> do
             t' <- first (\e -> "Term of interest failed to compile: " <> show e) . compileTerm releaseTermEnv $ t
             bound' <- first (\e -> "Bounding Term failed to compile" <> show e) . compileTerm releaseTermEnv $ bound
             pure (pipeline t', pipeline bound')
           CmpUPLCSize t bound -> pure (t, bound)
         -- Throw away names, as we can only serialise DeBruijn scripts
-        uplcT' <- first (const "Unexpected error in Term of interest: please report this!") . toDB $ uplcT
-        uplcBound' <- first (const "Unexpected error in bounding Term: please report this!") . toDB $ uplcBound
+        uplcT' <- first (const "Unexpected error in Term of interest: please report this!") . toDB . eraseUPLC $ uplcT
+        uplcBound' <- first (const "Unexpected error in bounding Term: please report this!") . toDB . eraseUPLC $ uplcBound
         let tSize = uplcSize uplcT'
         let boundSize = uplcSize uplcBound'
         let scored = score tSize boundSize

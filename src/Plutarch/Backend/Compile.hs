@@ -88,6 +88,7 @@ import Plutarch.Backend.UPLC
     uplcLet,
     uplcLetP,
     uplcMCombinator,
+    uplcPackedApply,
     uplcVar,
   )
 import Plutarch.Helpers.Backend (getFresh)
@@ -448,10 +449,7 @@ compileBind bindIx = \case
           then pure . uplcApply fCode $ xsCode
           -- More efficient to 'pack' `xs` into a `constr`, then `case` on it
           -- immediately with `f` as the sole handler
-          else do
-            let constrCall = uplcConstr 0 . NEVector.toVector $ xsCode
-            let soleHandler = NEVector.singleton fCode
-            pure . uplcCase constrCall $ soleHandler
+          else pure . uplcPackedApply fCode $ xsCode
   ANFLam _ bvs body -> do
     bodyCode <- checkCache body
     asBvNames <- NEVector.mapM bvToName bvs

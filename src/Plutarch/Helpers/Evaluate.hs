@@ -5,7 +5,7 @@ module Plutarch.Helpers.Evaluate
 where
 
 import Data.Text (Text)
-import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
+import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm), fromRawUPLC)
 import PlutusCore qualified as PLC
 import PlutusCore.Evaluation.Machine.ExBudget
   ( ExBudget (ExBudget),
@@ -38,7 +38,7 @@ evalUPLC budget (UPLCTerm t) =
         Cek.CekReport res (Cek.RestrictingSt (ExRestrictingBudget cost)) logs -> case res of
           Cek.CekFailure err -> (Left err, cost, logs)
           Cek.CekSuccessConstant c -> (Right . Left $ c, cost, logs)
-          Cek.CekSuccessNonConstant t' -> (Right . Right . UPLCTerm $ t', cost, logs)
+          Cek.CekSuccessNonConstant t' -> (Right . Right . fromRawUPLC $ t', cost, logs)
 
 -- | @since 2.0.0
 maxBudget :: ExBudget

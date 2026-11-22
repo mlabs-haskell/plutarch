@@ -1,15 +1,15 @@
- (\forced_th forced_uh ->
-    (\bind_oh ->
-       (\ph qh ->
-          qh
-          # ph
-          # (\compArg_rh ->
-              (\sh -> AddInteger # sh # sh) # (forced_uh # bind_oh # compArg_rh)
-            ) 
-       )
-       # (forced_th # bind_oh) 
-    )
-    # ([1, 2, 3] :: Array Integer) 
- )
- # !LengthOfArray
- # !IndexArray 
+(
+  let forced_th = !LengthOfArray
+  in \forced_uh ->
+       let bind_oh = ([1, 2, 3] :: Array Integer)
+       in (\ph qh ->
+            qh
+            # ph
+            # (\compArg_rh ->
+                (\sh -> AddInteger # sh # sh)
+                # (forced_uh # bind_oh # compArg_rh)
+              )
+          )
+          # (forced_th # bind_oh)
+)
+# !IndexArray
