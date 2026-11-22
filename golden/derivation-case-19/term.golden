@@ -1,53 +1,45 @@
- (
-   fix (\a_self b c ->
-         case 
-           (UnConstrData # b)
-           [ \d e ->
-               case e
-                 [ \f g ->
-                     case d
-                       [ (\_ -> case g [\_ _ -> ERROR, c]) # (UnIData # f)
-                       ,  (\_ ->
-                            case g
-                              [\h i -> a_self # h # (case i [\_ _ -> ERROR, c])]
-                          )
-                          # (UnIData # f) 
-                       ]
-                 ]
-           ]
-       )
- )
- # (
-     ConstrData
-     # 1 :: Integer
-     # (
-         !MkCons
-         # (IData # 1 :: Integer)
-         # (
-             !MkCons
-             # (
-                 ConstrData
-                 # 0 :: Integer
-                 # (!MkCons # (IData # 2 :: Integer) # [] :: [Data])
-               )
-             # [] :: [Data]
-           )
-       )
-   )
- # (
-     ConstrData
-     # 1 :: Integer
-     # (
-         !MkCons
-         # (IData # 1 :: Integer)
-         # (
-             !MkCons
-             # (
-                 ConstrData
-                 # 0 :: Integer
-                 # (!MkCons # (IData # 2 :: Integer) # [] :: [Data])
-               )
-             # [] :: [Data]
-           )
-       )
-   ) 
+(
+  fix (\a_self b c ->
+        case
+          (UnConstrData # b)
+          [ \d e ->
+              case e
+                [ \f g ->
+                    case d
+                      [ (\_ -> case g [\_ _ -> ERROR, c]) # (UnIData # f)
+                      , (\_ ->
+                          case g
+                            [\h i -> a_self # h # (case i [\_ _ -> ERROR, c])]
+                        )
+                        # (UnIData # f)
+                      ]
+                ]
+          ]
+      )
+)
+# ( ConstrData
+    # 1 :: Integer
+    # ( !MkCons
+        # (IData # 1 :: Integer)
+        # ( !MkCons
+            # ( ConstrData
+                # 0 :: Integer
+                # (!MkCons # (IData # 2 :: Integer) # [] :: [Data])
+              )
+            # [] :: [Data]
+          )
+      )
+  )
+# ( ConstrData
+    # 1 :: Integer
+    # ( !MkCons
+        # (IData # 1 :: Integer)
+        # ( !MkCons
+            # ( ConstrData
+                # 0 :: Integer
+                # (!MkCons # (IData # 2 :: Integer) # [] :: [Data])
+              )
+            # [] :: [Data]
+          )
+      )
+  )

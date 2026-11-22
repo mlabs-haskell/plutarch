@@ -1,1 +1,3 @@
-\ad -> let bd = AddInteger # ad # (2 :: Integer) in MultiplyInteger # bd # bd
+\ad ->
+  let bd = AddInteger # ad # (2 :: Integer)
+  in MultiplyInteger # bd # bd

@@ -9,7 +9,7 @@
       <Apply
         <AppendString>@p7qYeALXKVC
         [
-          <"PThisMS { " :: String>@njw98vtETzDN, 
+          <"PThisMS {\n" :: String>@njw98vtETzDN, 
           <Apply
             <AppendString>@p7qYeALXKVC
             [
@@ -312,7 +312,7 @@
                           >@ljvGGMfBFKjN
                         ]
                       >@ihKOt76gzDg, 
-                      <" " :: String>@lM1GM6LVDMcN
+                      <"\n" :: String>@lM1GM6LVDMcN
                     ]
                   >@c3fGQqQQUmN
                 ]
@@ -327,7 +327,7 @@
       <Apply
         <AppendString>@p7qYeALXKVC
         [
-          <"PThatMS { " :: String>@o36r0QuIKJwN, 
+          <"PThatMS {\n" :: String>@o36r0QuIKJwN, 
           <Apply
             <AppendString>@p7qYeALXKVC
             [
@@ -345,7 +345,7 @@
                           <"true" :: String>@mCiXmXbySDe
                         ]
                       >@nzFXLMfsV4DN, 
-                      <" " :: String>@lM1GM6LVDMcN
+                      <"\n" :: String>@lM1GM6LVDMcN
                     ]
                   >@itLscSFlKtgN
                 ]
@@ -360,7 +360,7 @@
       <Apply
         <AppendString>@p7qYeALXKVC
         [
-          <"PTheseMS { " :: String>@fg7dTxe8BEA, 
+          <"PTheseMS {\n" :: String>@fg7dTxe8BEA, 
           <Apply
             <AppendString>@p7qYeALXKVC
             [
@@ -663,7 +663,7 @@
                           >@zjzPpjy9snzN
                         ]
                       >@hAFE5MT5uSD, 
-                      <" " :: String>@lM1GM6LVDMcN
+                      <"\n" :: String>@lM1GM6LVDMcN
                     ]
                   >@evZBMXWeVygN
                 ]
@@ -685,7 +685,7 @@
                               <"true" :: String>@mCiXmXbySDe
                             ]
                           >@kQiX6I0GDqE, 
-                          <" " :: String>@lM1GM6LVDMcN
+                          <"\n" :: String>@lM1GM6LVDMcN
                         ]
                       >@vcMH6odD62v
                     ]

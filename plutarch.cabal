@@ -196,6 +196,7 @@ test-suite compilation
   build-depends:
     , nonempty-vector
     , prettyprinter
+    , tasty-hunit
     , text
 
 test-suite ledger

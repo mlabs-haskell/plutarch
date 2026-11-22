@@ -5,7 +5,7 @@
       <Apply
         <AppendString>@p7qYeALXKVC
         [
-          <"PLeft { " :: String>@kR6RL6fSnKb, 
+          <"PLeft {\n" :: String>@kR6RL6fSnKb, 
           <Apply
             <AppendString>@p7qYeALXKVC
             [
@@ -308,7 +308,7 @@
                           >@gS1M8SmEPJcN
                         ]
                       >@mD0C9qLA6YsN, 
-                      <" " :: String>@lM1GM6LVDMcN
+                      <"\n" :: String>@lM1GM6LVDMcN
                     ]
                   >@qXOjtQ5C51g
                 ]
@@ -323,7 +323,7 @@
       <Apply
         <AppendString>@p7qYeALXKVC
         [
-          <"PRight { " :: String>@rYPatSIG1xxN, 
+          <"PRight {\n" :: String>@rYPatSIG1xxN, 
           <Apply
             <AppendString>@p7qYeALXKVC
             [
@@ -744,7 +744,7 @@
                           <"[]" :: String>@amtPr1eo5ctN
                         ]
                       >@iM7FjHRtFcnN, 
-                      <" " :: String>@lM1GM6LVDMcN
+                      <"\n" :: String>@lM1GM6LVDMcN
                     ]
                   >@fBiwlj2gWY
                 ]
