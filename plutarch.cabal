@@ -71,6 +71,7 @@ library
     Plutarch.Prelude
     Plutarch.Prelude.List
     Plutarch.Prelude.Maybe
+    Plutarch.Prelude.Ratio
     Plutarch.Primitive.Additive
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
