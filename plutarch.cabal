@@ -130,7 +130,7 @@ library
     , nonempty-vector
     , optics-core
     , optics-plated
-    , plutus-core          ==1.71.0.0
+    , plutus-core          ==1.72.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
