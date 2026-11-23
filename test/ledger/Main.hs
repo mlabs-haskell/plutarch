@@ -47,7 +47,8 @@ main =
       testLedger @PProtocolVersion,
       testLedger @PConstitution,
       testLedger @PColdCommitteeCredential,
-      testLedger @PRationalData
+      testLedger @PRationalData,
+      testLedger @(PMapData PInteger PInteger)
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests

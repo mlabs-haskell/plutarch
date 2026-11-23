@@ -209,6 +209,7 @@ module Plutarch.Prelude
     Contexts.PConstitution (..),
     Contexts.PColdCommitteeCredential (..),
     RatioData.PRationalData (..),
+    AssocMap.PMapData (..),
 
     -- * Optics
     CanData.pencoded,
@@ -225,6 +226,7 @@ where
 
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.LedgerApi.Address qualified as Address
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Contexts qualified as Contexts
 import Plutarch.LedgerApi.Credential qualified as Credential
 import Plutarch.LedgerApi.MaybeData qualified as MaybeData
