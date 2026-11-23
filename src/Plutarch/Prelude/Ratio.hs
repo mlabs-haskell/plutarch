@@ -89,7 +89,7 @@ instance PMultiplicativeSemigroup PRational where
     pmatch y $ \(PRational yn yd) ->
       prational (xn #* yn) (xd #* yd)
   ppowPositive = plam' $ \p -> plam' $ \r -> pmatch r $ \(PRational n d) ->
-    prational (ppowPositive # p # n) (ppowPositive # p # d)
+    punsafeRational (ppowPositive # p # n) (ppowPositive # p # d)
 
 -- | @since 2.0.0
 instance PMultiplicativeMonoid PRational where

@@ -203,6 +203,17 @@ test-suite optics
     , tasty
     , tasty-quickcheck
 
+test-suite numeric
+  import:         lang
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  hs-source-dirs: test/numeric
+  build-depends:
+    , plutarch
+    , QuickCheck
+    , tasty
+    , tasty-quickcheck
+
 benchmark benches
   import:         lang
   type:           exitcode-stdio-1.0

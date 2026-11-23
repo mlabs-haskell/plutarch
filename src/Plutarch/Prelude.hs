@@ -94,6 +94,15 @@ module Plutarch.Prelude
     S.PBLS12_381_G2_Element,
     S.PBLS12_381_MlResult,
 
+    -- ** Rational
+
+    -- *** Type
+    Ratio.PRational (PRational),
+
+    -- *** Operations
+    Ratio.prational,
+    Ratio.precip,
+
     -- ** ByteString
 
     -- *** Type marker
@@ -205,6 +214,7 @@ where
 import Plutarch.Backend.Term qualified as BackendTerm
 import Plutarch.Prelude.List qualified as List
 import Plutarch.Prelude.Maybe qualified as Maybe
+import Plutarch.Prelude.Ratio qualified as Ratio
 import Plutarch.Primitive.Additive qualified as Additive
 import Plutarch.Primitive.BuiltinFun qualified as BF
 import Plutarch.Primitive.CanData qualified as CanData
