@@ -210,6 +210,7 @@ module Plutarch.Prelude
     Contexts.PColdCommitteeCredential (..),
     RatioData.PRationalData (..),
     AssocMap.PMapData (..),
+    Contexts.PCommittee (..),
 
     -- * Optics
     CanData.pencoded,

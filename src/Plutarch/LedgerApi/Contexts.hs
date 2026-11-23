@@ -10,12 +10,15 @@ module Plutarch.LedgerApi.Contexts
     PProtocolVersion (..),
     PConstitution (..),
     PColdCommitteeCredential (..),
+    PCommittee (..),
   )
 where
 
 import Plutarch.Backend.Term (Term)
+import Plutarch.LedgerApi.AssocMap (PMapData)
 import Plutarch.LedgerApi.Credential (PCredential, PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
+import Plutarch.LedgerApi.Ratio (PRationalData)
 import Plutarch.LedgerApi.Tx (PTxId)
 import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData (pfromData))
@@ -124,3 +127,20 @@ instance PCanData PColdCommitteeCredential
 -- | @since 2.0.0
 instance PValidateData PColdCommitteeCredential where
   pwithValidated = pwithValidated @PCredential
+
+-- | @since 2.0.0
+data PCommittee = PCommittee (Term (PAsData (PMapData PColdCommitteeCredential PInteger))) (Term (PAsData PRationalData))
+
+deriveFor ''PCommittee DataList AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.Committee)
+  instance
+    PlutusRepresentable PLA.Committee
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableDataList PCommittee PLA.Committee)
+  instance
+    PLiftable PCommittee
