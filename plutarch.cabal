@@ -79,6 +79,7 @@ library
     Plutarch.LedgerApi.Contexts
     Plutarch.LedgerApi.Credential
     Plutarch.LedgerApi.MaybeData
+    Plutarch.LedgerApi.Ratio
     Plutarch.LedgerApi.Time
     Plutarch.LedgerApi.Tx
     Plutarch.Prelude

@@ -46,7 +46,8 @@ main =
       testLedger @PGovernanceActionId,
       testLedger @PProtocolVersion,
       testLedger @PConstitution,
-      testLedger @PColdCommitteeCredential
+      testLedger @PColdCommitteeCredential,
+      testLedger @PRationalData
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests

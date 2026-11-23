@@ -208,6 +208,7 @@ module Plutarch.Prelude
     Contexts.PProtocolVersion (..),
     Contexts.PConstitution (..),
     Contexts.PColdCommitteeCredential (..),
+    RatioData.PRationalData (..),
 
     -- * Optics
     CanData.pencoded,
@@ -227,6 +228,7 @@ import Plutarch.LedgerApi.Address qualified as Address
 import Plutarch.LedgerApi.Contexts qualified as Contexts
 import Plutarch.LedgerApi.Credential qualified as Credential
 import Plutarch.LedgerApi.MaybeData qualified as MaybeData
+import Plutarch.LedgerApi.Ratio qualified as RatioData
 import Plutarch.LedgerApi.Time qualified as Time
 import Plutarch.LedgerApi.Tx qualified as Tx
 import Plutarch.Prelude.List qualified as List
