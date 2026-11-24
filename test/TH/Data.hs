@@ -9,6 +9,8 @@ module TH.Data
     PSmash (..),
     PListData (..),
     PNEList (..),
+    PGaussianInt (..),
+    PECPoint (..),
   )
 where
 
@@ -49,3 +51,11 @@ data PNEList (a :: Type)
   | PCons (Term (PAsData a)) (Term (PAsData (PNEList a)))
 
 deriveFor ''PNEList DataPlutusCompact AllInstances
+
+data PGaussianInt = PGaussianInt (Term (PAsData PInteger)) (Term (PAsData PInteger))
+
+deriveFor ''PGaussianInt DataList AllInstances
+
+data PECPoint = PECInfinity | PECPoint (Term (PAsData PInteger)) (Term (PAsData PInteger))
+
+deriveFor ''PECPoint DataPlutus AllInstances

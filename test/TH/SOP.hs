@@ -7,6 +7,7 @@ module TH.SOP
     PEither (..),
     PSOPList (..),
     PSOPOp (..),
+    PGaussianInt (..),
   )
 where
 
@@ -36,3 +37,7 @@ newtype PSOPOp (a :: Type) (b :: Type)
   = PSopOp (Term (b :~> a))
 
 deriveFor ''PSOPOp SOP NoEqDebug
+
+data PGaussianInt = PGaussianInt (Term PInteger) (Term PInteger)
+
+deriveFor ''PGaussianInt SOP AllInstances
