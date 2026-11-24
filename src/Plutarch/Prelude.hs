@@ -231,6 +231,9 @@ module Plutarch.Prelude
     Contexts.PDRep (..),
     Contexts.PDelegatee (..),
     Contexts.PTxCert (..),
+    Value.PCurrencySymbol (..),
+    Contexts.PVoter (..),
+    Contexts.PScriptPurpose (..),
 
     -- * Optics
     CanData.pencoded,

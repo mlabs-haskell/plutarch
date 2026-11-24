@@ -21,6 +21,8 @@ module Plutarch.LedgerApi.Contexts
     PDRep (..),
     PDelegatee (..),
     PTxCert (..),
+    PVoter (..),
+    PScriptPurpose (..),
   )
 where
 
@@ -30,8 +32,8 @@ import Plutarch.LedgerApi.AssocMap (PMapData)
 import Plutarch.LedgerApi.Credential (PCredential, PPubKeyHash, PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
 import Plutarch.LedgerApi.Ratio (PRationalData)
-import Plutarch.LedgerApi.Tx (PTxId)
-import Plutarch.LedgerApi.Value (PLovelace)
+import Plutarch.LedgerApi.Tx (PTxId, PTxOutRef)
+import Plutarch.LedgerApi.Value (PCurrencySymbol, PLovelace)
 import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData (pfromData))
 import Plutarch.Primitive.Composite (PBList)
@@ -401,3 +403,47 @@ deriving via
   (PLiftableData PTxCert PLA.TxCert)
   instance
     PLiftable PTxCert
+
+-- | @since 2.0.0
+data PVoter
+  = PCommitteeVoter (Term (PAsData PHotCommitteeCredential))
+  | PDRepVoter (Term (PAsData PDRepCredential))
+  | PStakePoolVoter (Term (PAsData PPubKeyHash))
+
+deriveFor ''PVoter DataPlutusCompact AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.Voter)
+  instance
+    PlutusRepresentable PLA.Voter
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableData PVoter PLA.Voter)
+  instance
+    PLiftable PVoter
+
+-- | @since 2.0.0
+data PScriptPurpose
+  = PMinting (Term (PAsData PScriptHash)) (Term (PAsData PCurrencySymbol))
+  | PSpending (Term (PAsData PScriptHash)) (Term (PAsData PTxOutRef))
+  | PWithdrawing (Term (PAsData PScriptHash)) (Term (PAsData PCredential))
+  | PCertifying (Term (PAsData PScriptHash)) (Term (PAsData PInteger)) (Term (PAsData PTxCert))
+  | PVoting (Term (PAsData PScriptHash)) (Term (PAsData PVoter))
+  | PProposing (Term (PAsData PScriptHash)) (Term (PAsData PInteger)) (Term (PAsData PProposalProcedure))
+  | PGuarding (Term (PAsData PScriptHash)) (Term (PAsData PInteger))
+
+deriveFor ''PScriptPurpose DataPlutusCompact AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.ScriptPurpose)
+  instance
+    PlutusRepresentable PLA.ScriptPurpose
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableData PScriptPurpose PLA.ScriptPurpose)
+  instance
+    PLiftable PScriptPurpose

@@ -60,7 +60,10 @@ main =
       testLedger @PDRepCredential,
       testLedger @PDRep,
       testLedger @PDelegatee,
-      testLedger @PTxCert
+      testLedger @PTxCert,
+      testLedger @PCurrencySymbol,
+      testLedger @PVoter,
+      testLedger @PScriptPurpose
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
