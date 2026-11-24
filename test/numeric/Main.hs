@@ -210,7 +210,7 @@ testMultiplicativeMonoidLaws f =
     propIdentityLeft :: TestTree
     propIdentityLeft = testProperty "pone #* x = x" . forAllShrink arbitrary shrink $ \x ->
       let x' = f x
-       in plift (x' #== (x' #* pone))
+       in plift ((pone #* x') #== x')
     propPowZero :: TestTree
     propPowZero = testProperty "ppowNatural # pzero # x #== pone" . forAllShrink arbitrary shrink $ \x ->
       let x' = f x
