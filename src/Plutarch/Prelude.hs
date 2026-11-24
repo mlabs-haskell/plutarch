@@ -214,6 +214,7 @@ module Plutarch.Prelude
     Value.PLovelace (..),
     Contexts.PChangedParameters (..),
     Contexts.PGovernanceAction (..),
+    Contexts.PProposalProcedure (..),
 
     -- * Optics
     CanData.pencoded,

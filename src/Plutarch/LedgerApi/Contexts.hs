@@ -13,6 +13,7 @@ module Plutarch.LedgerApi.Contexts
     PCommittee (..),
     PChangedParameters (..),
     PGovernanceAction (..),
+    PProposalProcedure (..),
   )
 where
 
@@ -203,3 +204,24 @@ deriving via
   (PLiftableData PGovernanceAction PLA.GovernanceAction)
   instance
     PLiftable PGovernanceAction
+
+-- | @since 2.0.0
+data PProposalProcedure
+  = PProposalProcedure
+      (Term (PAsData PLovelace))
+      (Term (PAsData PCredential))
+      (Term (PAsData PGovernanceAction))
+
+deriveFor ''PProposalProcedure DataList AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.ProposalProcedure)
+  instance
+    PlutusRepresentable PLA.ProposalProcedure
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableDataList PProposalProcedure PLA.ProposalProcedure)
+  instance
+    PLiftable PProposalProcedure

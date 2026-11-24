@@ -52,7 +52,8 @@ main =
       testLedger @PCommittee,
       testLedger @PLovelace,
       testLedger @PChangedParameters,
-      testLedger @PGovernanceAction
+      testLedger @PGovernanceAction,
+      testLedger @PProposalProcedure
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
