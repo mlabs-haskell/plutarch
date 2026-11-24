@@ -14,6 +14,7 @@ module Plutarch.LedgerApi.Contexts
     PChangedParameters (..),
     PGovernanceAction (..),
     PProposalProcedure (..),
+    PAccountBalanceInterval (..),
   )
 where
 
@@ -44,7 +45,7 @@ import Plutarch.Primitive.Singular (PAsData, PData, PInteger)
 import Plutarch.Primitive.Term (perror)
 import Plutarch.Primitive.Validate (PValidateData (pwithValidated))
 import Plutarch.TH.Strategy
-  ( Strategy (DataList, DataPlutus, Newtype),
+  ( Strategy (DataList, DataPlutus, DataPlutusCompact, Newtype),
     WhichInstances (AllInstances),
     deriveFor,
   )
@@ -225,3 +226,24 @@ deriving via
   (PLiftableDataList PProposalProcedure PLA.ProposalProcedure)
   instance
     PLiftable PProposalProcedure
+
+-- | @since 2.0.0
+data PAccountBalanceInterval
+  = PAccountBalanceLowerBound (Term (PAsData PLovelace))
+  | PAccountBalanceUpperBound (Term (PAsData PLovelace))
+  | PAccountBalanceBothBounds (Term (PAsData PLovelace)) (Term (PAsData PLovelace))
+  | PAccountBalanceExact (Term (PAsData PLovelace))
+
+deriveFor ''PAccountBalanceInterval DataPlutusCompact AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.AccountBalanceInterval)
+  instance
+    PlutusRepresentable PLA.AccountBalanceInterval
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableData PAccountBalanceInterval PLA.AccountBalanceInterval)
+  instance
+    PLiftable PAccountBalanceInterval
