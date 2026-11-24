@@ -3,9 +3,12 @@
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE TemplateHaskell #-}
 
+-- | @since 2.0.0
 module Plutarch.Prelude.Ratio
   ( PRational (PRational),
     prational,
+    punsafeRational,
+    precip,
   )
 where
 
@@ -17,14 +20,10 @@ import Plutarch.Primitive.Additive
     (#+),
     (#-),
   )
-import Plutarch.Primitive.BuiltinFun
-  ( pappendString,
-    pdivideInteger,
-    pmodInteger,
-  )
+import Plutarch.Primitive.BuiltinFun (pappendString, pdivideInteger, pmodInteger)
 import Plutarch.Primitive.Con (pcon)
 import Plutarch.Primitive.Debug (pshow)
-import Plutarch.Primitive.DerivedFun (pand, pif)
+import Plutarch.Primitive.DerivedFun (pand, pif, pisPositive)
 import Plutarch.Primitive.Eq ((#==))
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Match (pmatch)
@@ -33,7 +32,13 @@ import Plutarch.Primitive.Multiplicative
     PMultiplicativeSemigroup (pmultiply, ppowPositive),
     (#*),
   )
-import Plutarch.Primitive.Representation (pfundamental, punsafeSecondary, (#), (#$))
+import Plutarch.Primitive.Ord (POrd (ple, plt))
+import Plutarch.Primitive.Representation
+  ( pfundamental,
+    punsafeSecondary,
+    (#),
+    (#$),
+  )
 import Plutarch.Primitive.Singular (PInteger, PPositive, (:~>))
 import Plutarch.Primitive.Term (perror, pfix, plam')
 import Plutarch.TH.Strategy
@@ -43,49 +48,56 @@ import Plutarch.TH.Strategy
   )
 
 -- | @since 2.0.0
-data PRational = PRationalUnsafe (Term PInteger) (Term PPositive)
+data PRational = PUnsafeRational (Term PInteger) (Term PPositive)
 
 deriveFor ''PRational MogensenScott AllInstances
+
+-- | @since 2.0.0
+instance POrd PRational where
+  plt = plam' $ \x -> plam' $ \y -> pmatch x $ \(PRational xn xd) ->
+    pmatch y $ \(PRational yn yd) -> plt # (pscalePositive # yd # xn) #$ pscalePositive # xd # yn
+  ple = plam' $ \x -> plam' $ \y -> pmatch x $ \(PRational xn xd) ->
+    pmatch y $ \(PRational yn yd) -> ple # (pscalePositive # yd # xn) #$ pscalePositive # xd # yn
 
 -- | @since 2.0.0
 instance PAdditiveSemigroup PRational where
   padd = plam' $ \x -> plam' $ \y -> pmatch x $ \(PRational xn xd) ->
     pmatch y $ \(PRational yn yd) ->
-      let newDen = xd #* yd
-          newNum = (pscalePositive # yd # xn) #+ (pscalePositive # xd # yn)
-       in prational newNum newDen
-  pscalePositive = plam' $ \p -> plam' $ \r -> pmatch r $ \(PRational xn xd) ->
-    prational (pscalePositive # p # xn) xd
+      let newN = (pscalePositive # yd # xn) #+ (pscalePositive # xd # yn)
+          newD = xd #* yd
+       in prational newN newD
+  pscalePositive = plam' $ \p -> plam' $ \r -> pmatch r $ \(PRational n d) ->
+    prational (pscalePositive # p # n) d
 
 -- | @since 2.0.0
 instance PAdditiveMonoid PRational where
-  pzero = pcon . PRationalUnsafe pzero $ pone
+  pzero = punsafeRational pzero pone
 
 -- | @since 2.0.0
 instance PAdditiveGroup PRational where
-  pnegate = plam' $ \r -> pmatch r $ \(PRational xn xd) ->
-    pcon . PRationalUnsafe (pnegate # xn) $ xd
+  pnegate = plam' $ \r -> pmatch r $ \(PRational n d) ->
+    punsafeRational (pnegate # n) d
   psubtract = plam' $ \x -> plam' $ \y -> pmatch x $ \(PRational xn xd) ->
     pmatch y $ \(PRational yn yd) ->
-      let newDen = xd #* yd
-          newNum = (pscalePositive # yd # xn) #- (pscalePositive # xd # yn)
-       in prational newNum newDen
+      let newN = (pscalePositive # yd # xn) #- (pscalePositive # xd # yn)
+          newD = xd #* yd
+       in prational newN newD
 
 -- | @since 2.0.0
 instance PMultiplicativeSemigroup PRational where
   pmultiply = plam' $ \x -> plam' $ \y -> pmatch x $ \(PRational xn xd) ->
     pmatch y $ \(PRational yn yd) ->
       prational (xn #* yn) (xd #* yd)
-  ppowPositive = plam' $ \p -> plam' $ \r -> pmatch r $ \(PRational xn xd) ->
-    pcon . PRationalUnsafe (ppowPositive # p # xn) $ ppowPositive # p # xd
+  ppowPositive = plam' $ \p -> plam' $ \r -> pmatch r $ \(PRational n d) ->
+    punsafeRational (ppowPositive # p # n) (ppowPositive # p # d)
 
 -- | @since 2.0.0
 instance PMultiplicativeMonoid PRational where
-  pone = pcon . PRationalUnsafe pone $ pone
+  pone = punsafeRational pone pone
 
 -- | @since 2.0.0
 pattern PRational :: Term PInteger -> Term PPositive -> PRational
-pattern PRational n d <- PRationalUnsafe n d
+pattern PRational n d <- PUnsafeRational n d
 
 {-# COMPLETE PRational #-}
 
@@ -94,21 +106,40 @@ pattern PRational n d <- PRationalUnsafe n d
 -- @since 2.0.0
 prational :: Term PInteger -> Term PPositive -> Term PRational
 prational n d =
-  -- Note (Koz, 17/11/2026): We know that `d` cannot be 0, and we can thus save
-  -- a comparison and loop step by essentially 'forcing' the first reduction of
-  -- the Euclidean algorithm to happen straightaway.
   let d' = pfundamental d
-      gcd' = getGcd # d' #$ pmodInteger # n # d'
-   in pcon
-        . PRationalUnsafe (pdivideInteger # n # gcd')
-        . punsafeSecondary
-        $ pdivideInteger # d' # gcd'
+      -- Note (Koz, 23/11/2026): Because we know `d'` cannot be 0,
+      -- we effectively force the first reduction step to happen
+      -- immediately.
+      reduction = pgcd # d' #$ pmodInteger # n # d'
+      newN = pdivideInteger # n # reduction
+      newD = punsafeSecondary $ pdivideInteger # d' # reduction
+   in punsafeRational newN newD
+
+-- | Does /not/ perform reduction - use with care.
+--
+-- @since 2.0.0
+punsafeRational :: Term PInteger -> Term PPositive -> Term PRational
+punsafeRational n = pcon . PUnsafeRational n
+
+-- | Will error if asked for the reciprocal of 'pzero'.
+--
+-- @since 2.0.0
+precip :: Term PRational -> Term PRational
+precip r = pmatch r $ \(PRational n d) ->
+  pif
+    (n #== pzero)
+    perror
+    ( pif
+        (pisPositive n)
+        (punsafeRational (pfundamental d) . punsafeSecondary $ n)
+        (punsafeRational (pnegate # pfundamental d) . punsafeSecondary $ pnegate # n)
+    )
 
 -- Helpers
 
-getGcd :: Term (PInteger :~> PInteger :~> PInteger)
-getGcd = pfix $ \self -> plam' $ \n -> plam' $ \d ->
+pgcd :: Term (PInteger :~> PInteger :~> PInteger)
+pgcd = pfix $ \self -> plam' $ \n -> plam' $ \d ->
   pif
-    (d #== pconstant 0)
+    (d #== pzero)
     n
     (self # d #$ pmodInteger # n # d)

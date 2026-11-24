@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE TemplateHaskellQuotes #-}
 
 -- | @since 2.0.0
@@ -102,11 +103,19 @@ deriveMS tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVector.unsnoc
 -- Helpers
 
 derivePlutarchType :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
-derivePlutarchType tyVars tyName =
-  [d|
-    instance ($ctx) => PlutarchType $name where
-      type PRepresentation $name = $generalizedName
-    |]
+derivePlutarchType tyVars tyName = case Vector.length tyVars of
+  -- Note (Koz, 23/11/2026): This avoids triggering the redundant constraint
+  -- warning when applied to a fully-concretified type.
+  0 ->
+    [d|
+      instance PlutarchType $name where
+        type PRepresentation $name = $generalizedName
+      |]
+  _ ->
+    [d|
+      instance ($ctx) => PlutarchType $name where
+        type PRepresentation $name = $generalizedName
+      |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
@@ -124,14 +133,23 @@ derivePMatch ::
   Vector (Name, Vector (Bool, Type)) ->
   (Name, Vector (Bool, Type)) ->
   Q [Dec]
-derivePMatch tyVars tyName cs c =
-  [d|
-    instance ($ctx) => PMatch $name where
-      pmatch' ::
-        forall (b :: GHC.Type).
-        Term (PRepresentation $name) -> ($name -> Term b) -> Term b
-      pmatch' x f = $(mkPMatchBody 'x 'f ''b)
-    |]
+derivePMatch tyVars tyName cs c = case Vector.length tyVars of
+  0 ->
+    [d|
+      instance PMatch $name where
+        pmatch' ::
+          forall (b :: GHC.Type).
+          Term (PRepresentation $name) -> ($name -> Term b) -> Term b
+        pmatch' x f = $(mkPMatchBody 'x 'f ''b)
+      |]
+  _ ->
+    [d|
+      instance ($ctx) => PMatch $name where
+        pmatch' ::
+          forall (b :: GHC.Type).
+          Term (PRepresentation $name) -> ($name -> Term b) -> Term b
+        pmatch' x f = $(mkPMatchBody 'x 'f ''b)
+      |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
@@ -166,11 +184,17 @@ derivePCon ::
   Name ->
   NonEmptyVector (Name, Vector (Bool, Type)) ->
   Q [Dec]
-derivePCon tyVars tyName constructors =
-  [d|
-    instance ($ctx) => PCon $name where
-      pcon' x = punsafeCoerce $(cases 'x)
-    |]
+derivePCon tyVars tyName constructors = case Vector.length tyVars of
+  0 ->
+    [d|
+      instance PCon $name where
+        pcon' x = punsafeCoerce $(cases 'x)
+      |]
+  _ ->
+    [d|
+      instance ($ctx) => PCon $name where
+        pcon' x = punsafeCoerce $(cases 'x)
+      |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
@@ -198,23 +222,35 @@ derivePEq ::
   NonEmptyVector (Name, Vector (Bool, Type)) ->
   Q [Dec]
 derivePEq tyVars tyName constructors =
-  if NEVector.any (\(_, fields) -> Vector.any fst fields) constructors
-    -- If we're isorecursive, we have to make sure we have a fixpoint with `self`
-    -- available for the recursive fields.
-    then
-      [d|
-        instance ($ctx) => PEq $name where
-          peq = pfix $ \self -> $plam'E $ \x -> $plam'E $ \y ->
-            $(peqImpl 'self 'x 'y)
-        |]
-    -- For uniformity, we use _one_ generator, and just pass `peq` as the `self`
-    -- in cases where the type is 'flat'.
-    else
-      [d|
-        instance ($ctx) => PEq $name where
-          peq = $plam'E $ \x -> $plam'E $ \y ->
-            $(peqImpl 'peq 'x 'y)
-        |]
+  let isMono = Vector.null tyVars
+      -- If we have an isorecursive type, we need an 'escape hatch' for pfix, or
+      -- the compilation will loop forever.
+      isIso = NEVector.any (\(_, fields) -> Vector.any fst fields) constructors
+   in if
+        | isMono && isIso ->
+            [d|
+              instance PEq $name where
+                peq = pfix $ \self -> $plam'E $ \x -> $plam'E $ \y ->
+                  $(peqImpl 'self 'x 'y)
+              |]
+        | isMono ->
+            [d|
+              instance PEq $name where
+                peq = $plam'E $ \x -> $plam'E $ \y ->
+                  $(peqImpl 'peq 'x 'y)
+              |]
+        | isIso ->
+            [d|
+              instance ($ctx) => PEq $name where
+                peq = pfix $ \self -> $plam'E $ \x -> $plam'E $ \y ->
+                  $(peqImpl 'self 'x 'y)
+              |]
+        | otherwise ->
+            [d|
+              instance ($ctx) => PEq $name where
+                peq = $plam'E $ \x -> $plam'E $ \y ->
+                  $(peqImpl 'peq 'x 'y)
+              |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
@@ -285,24 +321,45 @@ derivePDebug ::
   NonEmptyVector (Name, Vector (Bool, Type)) ->
   Q [Dec]
 derivePDebug tyVars tyName constructors =
-  if NEVector.any (\(_, fields) -> Vector.any fst fields) constructors
-    then -- We're isorecursive, so we need a fixpoint.
-      [d|
-        instance ($ctx) => PDebug $name where
-          pdebug t f =
-            f
-              ( pfix
-                  ( \self -> plam' $ \x -> pmatch x $ \y ->
-                      $(mkMatchesRec 'self 'y)
-                  )
-                  # t
-              )
-        |]
-    else -- Not isorecursive, so no need.
-      [d|
-        instance ($ctx) => PDebug $name where
-          pdebug t f = f (pmatch t $ \x -> $(mkMatches 'x))
-        |]
+  let isMono = Vector.null tyVars
+      -- If we have an isorecursive type, we need an 'escape hatch' for pfix, or
+      -- the compilation will loop forever.
+      isIso = NEVector.any (\(_, fields) -> Vector.any fst fields) constructors
+   in if
+        | isMono && isIso ->
+            [d|
+              instance PDebug $name where
+                pdebug t f =
+                  f
+                    ( pfix
+                        ( \self -> plam' $ \x -> pmatch x $ \y ->
+                            $(mkMatchesRec 'self 'y)
+                        )
+                        # t
+                    )
+              |]
+        | isMono ->
+            [d|
+              instance PDebug $name where
+                pdebug t f = f (pmatch t $ \x -> $(mkMatches 'x))
+              |]
+        | isIso ->
+            [d|
+              instance ($ctx) => PDebug $name where
+                pdebug t f =
+                  f
+                    ( pfix
+                        ( \self -> plam' $ \x -> pmatch x $ \y ->
+                            $(mkMatchesRec 'self 'y)
+                        )
+                        # t
+                    )
+              |]
+        | otherwise ->
+            [d|
+              instance ($ctx) => PDebug $name where
+                pdebug t f = f (pmatch t $ \x -> $(mkMatches 'x))
+              |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars

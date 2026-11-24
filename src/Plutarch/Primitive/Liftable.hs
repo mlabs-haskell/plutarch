@@ -57,6 +57,8 @@ import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS.Pairing
 import PlutusCore.Data as PLCData
 import PlutusCore.Value as PLCValue
 import PlutusTx.IsData.Class qualified as PTxData
+import Test.QuickCheck (Arbitrary)
+import Test.QuickCheck.Modifiers qualified as Modifiers
 import Type.Reflection (Typeable, typeRep)
 
 -- | Errors that can arise when converting from an onchain representation type
@@ -199,6 +201,11 @@ newtype Positive = UnsafePositive Natural
       Show
     )
     via Natural
+  deriving
+    ( -- | @since 2.0.0
+      Arbitrary
+    )
+    via (Modifiers.Positive Natural)
 
 -- | @since 2.0.0
 instance PlutusRepresentable Positive where

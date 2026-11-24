@@ -72,7 +72,7 @@ class (PMultiplicativeSemigroup a) => PMultiplicativeMonoid (a :: Type) where
   ppowNatural :: Term (PNatural :~> a :~> a)
   ppowNatural = plam' $ \e -> plam' $ \b ->
     pif
-      (e #== pconstant 1)
+      (e #== pconstant 0)
       pone
       (ppowPositive # punsafeTranslate e # b)
 
