@@ -217,6 +217,11 @@ module Plutarch.Prelude
     Contexts.PProposalProcedure (..),
     Contexts.PAccountBalanceInterval (..),
     Contexts.PAccountBalanceIntervals (..),
+    Contexts.PHotCommitteeCredential (..),
+    Contexts.PDRepCredential (..),
+    Contexts.PDRep (..),
+    Contexts.PDelegatee (..),
+    Contexts.PTxCert (..),
 
     -- * Optics
     CanData.pencoded,

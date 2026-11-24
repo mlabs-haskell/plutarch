@@ -16,13 +16,18 @@ module Plutarch.LedgerApi.Contexts
     PProposalProcedure (..),
     PAccountBalanceInterval (..),
     PAccountBalanceIntervals (..),
+    PHotCommitteeCredential (..),
+    PDRepCredential (..),
+    PDRep (..),
+    PDelegatee (..),
+    PTxCert (..),
   )
 where
 
 import Plutarch.Backend.Term (Term)
 import Plutarch.LedgerApi.Address (PAccountId)
 import Plutarch.LedgerApi.AssocMap (PMapData)
-import Plutarch.LedgerApi.Credential (PCredential, PScriptHash)
+import Plutarch.LedgerApi.Credential (PCredential, PPubKeyHash, PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
 import Plutarch.LedgerApi.Ratio (PRationalData)
 import Plutarch.LedgerApi.Tx (PTxId)
@@ -276,3 +281,123 @@ instance PCanData PAccountBalanceIntervals
 -- | @since 2.0.0
 instance PValidateData PAccountBalanceIntervals where
   pwithValidated = pwithValidated @(PMapData PAccountId PAccountBalanceInterval)
+
+-- | @since 2.0.0
+newtype PHotCommitteeCredential = PHotCommitteeCredential (Term PCredential)
+
+deriveFor ''PHotCommitteeCredential Newtype AllInstances
+
+-- | @since 2.0.0
+instance PlutusRepresentable PLA.HotCommitteeCredential where
+  type AsPlutus PLA.HotCommitteeCredential = AsPlutus PLA.Credential
+  haskToRepr = PTxData.toData
+  reprToHask d = case PTxData.fromData d of
+    Nothing -> Left . UserSpecified $ "Could not decode HotCommitteeCredential from Data"
+    Just x -> pure x
+
+-- | @since 2.0.0
+instance PLiftable PHotCommitteeCredential where
+  type AsHaskell PHotCommitteeCredential = AsHaskell PCredential
+  plutToRepr t = plutToRepr (pmatch t $ \(PHotCommitteeCredential t') -> t')
+  reprToPlut t = pcon . PHotCommitteeCredential $ reprToPlut t
+
+-- | @since 2.0.0
+instance PCanData PHotCommitteeCredential
+
+-- | @since 2.0.0
+instance PValidateData PHotCommitteeCredential where
+  pwithValidated = pwithValidated @PCredential
+
+-- | @since 2.0.0
+newtype PDRepCredential = PDRepCredential (Term PCredential)
+
+deriveFor ''PDRepCredential Newtype AllInstances
+
+-- | @since 2.0.0
+instance PlutusRepresentable PLA.DRepCredential where
+  type AsPlutus PLA.DRepCredential = AsPlutus PLA.Credential
+  haskToRepr = PTxData.toData
+  reprToHask d = case PTxData.fromData d of
+    Nothing -> Left . UserSpecified $ "Could not decode DRepCredential from Data"
+    Just x -> pure x
+
+-- | @since 2.0.0
+instance PLiftable PDRepCredential where
+  type AsHaskell PDRepCredential = AsHaskell PCredential
+  plutToRepr t = plutToRepr (pmatch t $ \(PDRepCredential t') -> t')
+  reprToPlut t = pcon . PDRepCredential $ reprToPlut t
+
+-- | @since 2.0.0
+instance PCanData PDRepCredential
+
+-- | @since 2.0.0
+instance PValidateData PDRepCredential where
+  pwithValidated = pwithValidated @PCredential
+
+-- | @since 2.0.0
+data PDRep
+  = PDRep (Term (PAsData PDRepCredential))
+  | PDRepAlwaysAbstain
+  | PDRepAlwaysNoConfidence
+
+deriveFor ''PDRep DataPlutus AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.DRep)
+  instance
+    PlutusRepresentable PLA.DRep
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableData PDRep PLA.DRep)
+  instance
+    PLiftable PDRep
+
+-- | @since 2.0.0
+data PDelegatee
+  = PDelegStake (Term (PAsData PPubKeyHash))
+  | PDelegVote (Term (PAsData PDRep))
+  | PDelegStakeVote (Term (PAsData PPubKeyHash)) (Term (PAsData PDRep))
+
+deriveFor ''PDelegatee DataPlutusCompact AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.Delegatee)
+  instance
+    PlutusRepresentable PLA.Delegatee
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableData PDelegatee PLA.Delegatee)
+  instance
+    PLiftable PDelegatee
+
+-- | @since 2.0.0
+data PTxCert
+  = PTxCertRegAccount (Term (PAsData PAccountId)) (Term (PAsData PLovelace))
+  | PTxCertUnRegAccount (Term (PAsData PAccountId)) (Term (PAsData PLovelace))
+  | PTxCertDelegAccount (Term (PAsData PAccountId)) (Term (PAsData PDelegatee))
+  | PTxCertRegAccountDeleg (Term (PAsData PAccountId)) (Term (PAsData PDelegatee)) (Term (PAsData PLovelace))
+  | PTxCertRegDRep (Term (PAsData PDRepCredential)) (Term (PAsData PLovelace))
+  | PTxCertUpdateDRep (Term (PAsData PDRepCredential))
+  | PTxCertUnRegDRep (Term (PAsData PDRepCredential)) (Term (PAsData PLovelace))
+  | PTxCertPoolRegister (Term (PAsData PPubKeyHash)) (Term (PAsData PPubKeyHash))
+  | PTxCertPoolRetire (Term (PAsData PPubKeyHash)) (Term (PAsData PInteger))
+  | PTxCertAuthHotCommittee (Term (PAsData PColdCommitteeCredential)) (Term (PAsData PHotCommitteeCredential))
+  | PTxCertResignColdCommittee (Term (PAsData PColdCommitteeCredential))
+
+deriveFor ''PTxCert DataPlutusCompact AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.TxCert)
+  instance
+    PlutusRepresentable PLA.TxCert
+
+-- | @since 2.0.0
+deriving via
+  (PLiftableData PTxCert PLA.TxCert)
+  instance
+    PLiftable PTxCert

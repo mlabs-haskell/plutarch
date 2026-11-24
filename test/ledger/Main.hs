@@ -55,7 +55,12 @@ main =
       testLedger @PGovernanceAction,
       testLedger @PProposalProcedure,
       testLedger @PAccountBalanceInterval,
-      testLedger @PAccountBalanceIntervals
+      testLedger @PAccountBalanceIntervals,
+      testLedger @PHotCommitteeCredential,
+      testLedger @PDRepCredential,
+      testLedger @PDRep,
+      testLedger @PDelegatee,
+      testLedger @PTxCert
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
