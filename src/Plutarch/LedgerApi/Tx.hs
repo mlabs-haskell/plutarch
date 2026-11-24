@@ -12,6 +12,7 @@ module Plutarch.LedgerApi.Tx
     PDatumHash (..),
     POutputDatum (..),
     PTxOut (..),
+    PRedeemer (..),
   )
 where
 
@@ -138,6 +139,33 @@ instance PCanData PDatum
 --
 -- @since 2.0.0
 instance PValidateData PDatum where
+  pwithValidated = pwithValidated @PData
+
+-- | @since 2.0.0
+newtype PRedeemer = PRedeemer (Term PData)
+
+deriveFor ''PRedeemer Newtype AllInstances
+
+-- | @since 2.0.0
+instance PlutusRepresentable PLA.Redeemer where
+  type AsPlutus PLA.Redeemer = PLA.Data
+  haskToRepr = PTx.fromBuiltin @PTx.BuiltinData . coerce
+  reprToHask = Right . PLA.Redeemer . PTx.toBuiltin
+
+-- | @since 2.0.0
+instance PLiftable PRedeemer where
+  type AsHaskell PRedeemer = PLA.Redeemer
+  plutToRepr t = plutToRepr (pfundamental t)
+  reprToPlut = pcon . PRedeemer . reprToPlut
+
+-- | @since 2.0.0
+instance PCanData PRedeemer
+
+-- | Essentially performs no validation: nothing can be said about a 'PRedeemer' in
+-- general.
+--
+-- @since 2.0.0
+instance PValidateData PRedeemer where
   pwithValidated = pwithValidated @PData
 
 -- | @since 2.0.0

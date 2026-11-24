@@ -1,7 +1,10 @@
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE NoFieldSelectors #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- | @since 2.0.0
@@ -23,16 +26,21 @@ module Plutarch.LedgerApi.Contexts
     PTxCert (..),
     PVoter (..),
     PScriptPurpose (..),
+    PTxInInfo (..),
+    PVote (..),
+    PTxInfo (..),
   )
 where
 
+import Optics.TH (makeFieldLabelsNoPrefix)
 import Plutarch.Backend.Term (Term)
 import Plutarch.LedgerApi.Address (PAccountId)
 import Plutarch.LedgerApi.AssocMap (PMapData)
 import Plutarch.LedgerApi.Credential (PCredential, PPubKeyHash, PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
 import Plutarch.LedgerApi.Ratio (PRationalData)
-import Plutarch.LedgerApi.Tx (PTxId, PTxOutRef)
+import Plutarch.LedgerApi.Time (PPosixTimeRange)
+import Plutarch.LedgerApi.Tx (PDatum, PDatumHash, PRedeemer, PTxId, PTxOut, PTxOutRef)
 import Plutarch.LedgerApi.Value (PCurrencySymbol, PLovelace)
 import Plutarch.Primitive.BuiltinFun (pappendString)
 import Plutarch.Primitive.CanData (PCanData (pfromData))
@@ -50,7 +58,7 @@ import Plutarch.Primitive.Liftable
   )
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Representation (pfundamental, (#))
-import Plutarch.Primitive.Singular (PAsData, PData, PInteger)
+import Plutarch.Primitive.Singular (PAsData, PBValue, PData, PInteger)
 import Plutarch.Primitive.Term (perror)
 import Plutarch.Primitive.Validate (PValidateData (pwithValidated))
 import Plutarch.TH.Strategy
@@ -447,3 +455,84 @@ deriving via
   (PLiftableData PScriptPurpose PLA.ScriptPurpose)
   instance
     PLiftable PScriptPurpose
+
+-- | @since 2.0.0
+data PTxInInfo = PTxInInfo
+  { poutRef :: Term (PAsData PTxOutRef),
+    presolved :: Term (PAsData PTxOut)
+  }
+
+deriveFor ''PTxInInfo DataList AllInstances
+
+makeFieldLabelsNoPrefix ''PTxInInfo
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.TxInInfo)
+  instance
+    PlutusRepresentable PLA.TxInInfo
+
+-- | @ since 2.0.0
+deriving via
+  (PLiftableDataList PTxInInfo PLA.TxInInfo)
+  instance
+    PLiftable PTxInInfo
+
+-- | @since 2.0.0
+data PVote
+  = PVoteNo
+  | PVoteYes
+  | PVoteAbstain
+
+deriveFor ''PVote DataPlutus AllInstances
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.Vote)
+  instance
+    PlutusRepresentable PLA.Vote
+
+-- | @ since 2.0.0
+deriving via
+  (PLiftableData PVote PLA.Vote)
+  instance
+    PLiftable PVote
+
+-- | @since 2.0.0
+data PTxInfo = PTxInfo
+  { pid :: Term (PAsData PTxId),
+    psubTxIx :: Term (PAsData (PMaybeData PInteger)),
+    pinputs :: Term (PAsData (PBList (PAsData PTxInInfo))),
+    preferenceInputs :: Term (PAsData (PBList (PAsData PTxInInfo))),
+    poutputs :: Term (PAsData (PBList (PAsData PTxOut))),
+    pmint :: Term (PAsData PBValue),
+    ptxCerts :: Term (PAsData (PBList (PAsData PTxCert))),
+    pwithdrawals :: Term (PAsData (PMapData PCredential PLovelace)),
+    pdirectDeposits :: Term (PAsData (PMapData PCredential PLovelace)),
+    paccountBalanceIntervals :: Term (PAsData PAccountBalanceIntervals),
+    pvalidRange :: Term (PAsData PPosixTimeRange),
+    pguards :: Term (PAsData (PBList (PAsData PCredential))),
+    prequiredTopLevelGuards :: Term (PAsData (PMapData PCredential (PMaybeData PDatum))),
+    predeemers :: Term (PAsData (PMapData PScriptPurpose PRedeemer)),
+    pdata :: Term (PAsData (PMapData PDatumHash PDatum)),
+    pvotes :: Term (PAsData (PMapData PVoter (PMapData PGovernanceActionId PVote))),
+    pproposalProcedures :: Term (PAsData (PBList (PAsData PProposalProcedure))),
+    pcurrentTreasuryAmount :: Term (PAsData (PMaybeData PLovelace)),
+    ptreasuryDonation :: Term (PAsData PLovelace)
+  }
+
+deriveFor ''PTxInfo DataList AllInstances
+
+makeFieldLabelsNoPrefix ''PTxInfo
+
+-- | @since 2.0.0
+deriving via
+  (PlutusRepresentableData PLA.TxInfo)
+  instance
+    PlutusRepresentable PLA.TxInfo
+
+-- | @ since 2.0.0
+deriving via
+  (PLiftableDataList PTxInfo PLA.TxInfo)
+  instance
+    PLiftable PTxInfo

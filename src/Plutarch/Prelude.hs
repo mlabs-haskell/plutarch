@@ -234,6 +234,10 @@ module Plutarch.Prelude
     Value.PCurrencySymbol (..),
     Contexts.PVoter (..),
     Contexts.PScriptPurpose (..),
+    Contexts.PVote (..),
+    Tx.PRedeemer (..),
+    Contexts.PTxInInfo (..),
+    Contexts.PTxInfo (..),
 
     -- * Optics
     CanData.pencoded,

@@ -134,6 +134,7 @@ library
     , nonempty-vector
     , optics-core
     , optics-plated
+    , optics-th
     , plutus-core          ==1.72.0.0
     , plutus-ledger-api
     , plutus-tx

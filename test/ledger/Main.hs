@@ -63,7 +63,11 @@ main =
       testLedger @PTxCert,
       testLedger @PCurrencySymbol,
       testLedger @PVoter,
-      testLedger @PScriptPurpose
+      testLedger @PScriptPurpose,
+      testLedger @PVote,
+      testLedger @PRedeemer,
+      testLedger @PTxInInfo,
+      testLedger @PTxInfo
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
