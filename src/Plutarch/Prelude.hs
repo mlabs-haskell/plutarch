@@ -216,6 +216,7 @@ module Plutarch.Prelude
     Contexts.PGovernanceAction (..),
     Contexts.PProposalProcedure (..),
     Contexts.PAccountBalanceInterval (..),
+    Contexts.PAccountBalanceIntervals (..),
 
     -- * Optics
     CanData.pencoded,

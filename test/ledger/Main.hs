@@ -54,7 +54,8 @@ main =
       testLedger @PChangedParameters,
       testLedger @PGovernanceAction,
       testLedger @PProposalProcedure,
-      testLedger @PAccountBalanceInterval
+      testLedger @PAccountBalanceInterval,
+      testLedger @PAccountBalanceIntervals
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests

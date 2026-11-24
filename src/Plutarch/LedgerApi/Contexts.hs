@@ -15,10 +15,12 @@ module Plutarch.LedgerApi.Contexts
     PGovernanceAction (..),
     PProposalProcedure (..),
     PAccountBalanceInterval (..),
+    PAccountBalanceIntervals (..),
   )
 where
 
 import Plutarch.Backend.Term (Term)
+import Plutarch.LedgerApi.Address (PAccountId)
 import Plutarch.LedgerApi.AssocMap (PMapData)
 import Plutarch.LedgerApi.Credential (PCredential, PScriptHash)
 import Plutarch.LedgerApi.MaybeData (PMaybeData)
@@ -247,3 +249,30 @@ deriving via
   (PLiftableData PAccountBalanceInterval PLA.AccountBalanceInterval)
   instance
     PLiftable PAccountBalanceInterval
+
+-- | @since 2.0.0
+newtype PAccountBalanceIntervals
+  = PAccountBalanceIntervals (Term (PMapData PAccountId PAccountBalanceInterval))
+
+deriveFor ''PAccountBalanceIntervals Newtype AllInstances
+
+-- | @since 2.0.0
+instance PlutusRepresentable PLA.AccountBalanceIntervals where
+  type AsPlutus PLA.AccountBalanceIntervals = AsPlutus (PLA.Map PLA.AccountId PLA.AccountBalanceInterval)
+  haskToRepr = PTxData.toData
+  reprToHask d = case PTxData.fromData d of
+    Nothing -> Left . UserSpecified $ "Could not decode AccountBalanceIntervals from Data"
+    Just x -> pure x
+
+-- | @since 2.0.0
+instance PLiftable PAccountBalanceIntervals where
+  type AsHaskell PAccountBalanceIntervals = PLA.AccountBalanceIntervals
+  plutToRepr t = plutToRepr (pmatch t $ \(PAccountBalanceIntervals t') -> t')
+  reprToPlut t = pcon . PAccountBalanceIntervals $ reprToPlut t
+
+-- | @since 2.0.0
+instance PCanData PAccountBalanceIntervals
+
+-- | @since 2.0.0
+instance PValidateData PAccountBalanceIntervals where
+  pwithValidated = pwithValidated @(PMapData PAccountId PAccountBalanceInterval)
