@@ -49,7 +49,10 @@ main =
       testLedger @PColdCommitteeCredential,
       testLedger @PRationalData,
       testLedger @(PMapData PInteger PInteger),
-      testLedger @PCommittee
+      testLedger @PCommittee,
+      testLedger @PLovelace,
+      testLedger @PChangedParameters,
+      testLedger @PGovernanceAction
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests

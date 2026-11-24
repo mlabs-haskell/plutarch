@@ -83,6 +83,7 @@ library
     Plutarch.LedgerApi.Ratio
     Plutarch.LedgerApi.Time
     Plutarch.LedgerApi.Tx
+    Plutarch.LedgerApi.Value
     Plutarch.Prelude
     Plutarch.Prelude.List
     Plutarch.Prelude.Maybe

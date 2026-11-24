@@ -248,6 +248,20 @@ instance Arbitrary PlutusTx.BuiltinData where
       shrinkList :: [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
       shrinkList ell = Builtins.mkList <$> shrink ell
 
+instance Arbitrary V4.Data where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = PlutusTx.fromBuiltin @PlutusTx.BuiltinData <$> arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink = fmap (PlutusTx.fromBuiltin @PlutusTx.BuiltinData) . shrink . PlutusTx.toBuiltin
+
+-- Utterly bizarre missing instance
+instance PlutusTx.ToData V4.Data where
+  toBuiltinData = PlutusTx.toBuiltin
+
+-- Same here
+instance PlutusTx.FromData V4.Data where
+  fromBuiltinData = pure . PlutusTx.fromBuiltin @PlutusTx.BuiltinData
+
 instance Arbitrary V4.ChangedParameters where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
