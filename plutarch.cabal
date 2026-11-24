@@ -71,6 +71,7 @@ library
     Plutarch.Prelude
     Plutarch.Prelude.List
     Plutarch.Prelude.Maybe
+    Plutarch.Prelude.Ratio
     Plutarch.Primitive.Additive
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.CanData
@@ -197,6 +198,17 @@ test-suite optics
   build-depends:
     , optics-core
     , optics-th
+    , plutarch
+    , QuickCheck
+    , tasty
+    , tasty-quickcheck
+
+test-suite numeric
+  import:         lang
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  hs-source-dirs: test/numeric
+  build-depends:
     , plutarch
     , QuickCheck
     , tasty
