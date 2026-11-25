@@ -1,0 +1,24 @@
+let bind_ts = (Constr 1 [42] :: Data)
+in case
+     (UnConstrData # bind_ts)
+     [ \us vs ->
+         case vs
+           [ \ws xs ->
+               (\bind_ys ->
+                 (\bind_zs ->
+                   case us
+                     [ case xs [bind_ys, bind_ts]
+                     , (\unused_at -> case xs [bind_ys, bind_ts])
+                       # (UnIData # ws)
+                     , case xs
+                         [ \bt ct ->
+                             (\unused_dt -> case ct [bind_ys, bind_ts])
+                             # (UnIData # bt)
+                         ]
+                     ]
+                 )
+                 # (UnBData # ws)
+               )
+               # (\unused_et unused_ft -> ERROR)
+           ]
+     ]
