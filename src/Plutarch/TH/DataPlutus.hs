@@ -7,7 +7,6 @@ module Plutarch.TH.DataPlutus
 where
 
 import Control.Monad (when)
-import Data.Coerce (coerce)
 import Data.Foldable (foldrM)
 import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
@@ -37,8 +36,7 @@ import Language.Haskell.TH
     newName,
   )
 import Plutarch.Helpers.TH
-  ( PType,
-    PTypeProduct (PTypeProduct),
+  ( PTypeProduct (PTypeProduct),
     PTypeSum (PTypeSum),
     checkAndMark,
     checkAndMarkUnwrapped,
@@ -80,9 +78,6 @@ deriveDataPlutus ::
 deriveDataPlutus tvbs name (PTypeSum typeStructure) deriveEqDebug = case NEVector.unsnoc typeStructure of
   (ps, (nameLast, PTypeProduct fieldsLast)) -> do
     when (Vector.null ps) (fail "Use the DataList strategy for a Data-encoded type with a single constructor.")
-    when
-      (NEVector.all (Vector.null . coerce @_ @(Vector PType) . snd) typeStructure)
-      (fail "Use the Enum strategy for types with no fields in any 'arm.")
     unwrappedFieldsLast <- traverse unwrapField fieldsLast
     unwrappedPS <- traverse (\(name', PTypeProduct fields) -> (name',) <$> traverse unwrapField fields) ps
     let allConFields = NEVector.snocV unwrappedPS (nameLast, unwrappedFieldsLast)

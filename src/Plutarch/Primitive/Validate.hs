@@ -21,10 +21,10 @@ import Plutarch.Primitive.DerivedFun
   )
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Match (pmatch)
-import Plutarch.Primitive.Representation (PlutarchType, (#))
+import Plutarch.Primitive.Representation (PlutarchType, (#), (#$))
 import Plutarch.Primitive.Singular (PAsData, PData)
 import Plutarch.Primitive.Singular qualified as S
-import Plutarch.Primitive.Term (perror, plam', punsafeCase, punsafeCoerce)
+import Plutarch.Primitive.Term (perror, pfix, plam', punsafeCase, punsafeCoerce)
 
 -- | @since 2.0.0
 class (PCanData a) => PValidateData (a :: Type) where
@@ -89,9 +89,25 @@ instance PValidateData S.PByteString where
 instance PValidateData S.PData where
   pwithValidated = const id
 
+-- | Calls a conversion builtin, and continues if successful.
+--
+-- @since 2.0.0
+instance PValidateData S.PBValue where
+  pwithValidated d r = plam' (const r) #$ BF.punValueData # d
+
 -- | @since 2.0.0
 instance PValidateData (C.PBList S.PData) where
   pwithValidated d res = plam' (const res) # (BF.punListData # d)
+
+-- | Very inefficient, as it has to unwrap and decode every element.
+--
+-- @since 2.0.0
+instance (PValidateData a) => PValidateData (C.PBList (S.PAsData a)) where
+  pwithValidated d res = go #$ BF.punListData # d
+    where
+      go = pfix $ \self -> plam' $ \ell -> pmatch ell $ \case
+        C.PBNil -> res
+        C.PBCons x xs -> pwithValidated @a x $ self # xs
 
 -- | @since 2.0.0
 instance PValidateData (C.PBPair S.PData S.PData) where

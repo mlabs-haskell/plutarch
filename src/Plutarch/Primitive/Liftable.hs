@@ -248,7 +248,7 @@ unsafeMkPositive = UnsafePositive
 --
 -- = Laws
 --
--- 1. @'reprToPlut' '.' 'plutToRepr'@ @=@ @'Right'@
+-- 1. @'plutToRepr' '.' 'reprToPlut'@ @=@ @'Right'@
 --
 -- @since 2.0.0
 class

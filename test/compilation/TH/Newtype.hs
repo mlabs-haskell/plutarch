@@ -7,7 +7,7 @@ module TH.Newtype (PIdentity (..), PArrow (..)) where
 
 import Data.Kind (Type)
 import Plutarch.Prelude
-import Plutarch.Unsafe (punsafeCoerce, punsafeSecondary)
+import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PIdentity (a :: Type) = PIdentity (Term a)
 

@@ -138,6 +138,12 @@ instance PDebug S.PByteString where
               rendered
               (rendered #<|> pconstant ", " #<|> (self # bs # lim #$ BF.paddInteger # i # one))
 
+-- | By way of the 'PBValue' @Data@ representation.
+--
+-- @since 2.0.0
+instance PDebug S.PBValue where
+  pdebug t = pdebug (BF.pvalueData # t)
+
 -- | @since 2.0.0
 instance (PDebug a) => PDebug (C.PBList a) where
   pdebug t f = f (formatList (plam' pshow) # t)
