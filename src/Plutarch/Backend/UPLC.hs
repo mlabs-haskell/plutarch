@@ -3,6 +3,7 @@
 -- @since 2.0.0
 module Plutarch.Backend.UPLC
   ( UPLCTerm (..),
+    BindingType (..),
     eraseUPLC,
     fromRawUPLC,
     uplcApply,
@@ -12,8 +13,6 @@ module Plutarch.Backend.UPLC
     uplcLam1,
     uplcLet,
     uplcLetP,
-    uplcLetLazy,
-    uplcLetPLazy,
     uplcForce,
     uplcDelay,
     uplcVar,
@@ -104,35 +103,32 @@ instance Pretty UPLCTerm where
 uplcMCombinator :: UPLC.Name -> UPLCTerm
 uplcMCombinator arg = uplcLam1 arg . uplcApply1 (uplcVar arg) . uplcVar $ arg
 
--- | @'uplcLet' name v f@ produces the equivalent of @(\name -> f) v@.
+-- | @'uplcLet' name v f@ produces the equivalent of @(\name -> f) v@ if the
+-- third argument is 'Strictly'. Otherwise, it produces the equivalent of
+-- @(\name -> f) (delay v)@.
 --
 -- @since 2.0.0
-uplcLet :: UPLC.Name -> UPLCTerm -> UPLCTerm -> UPLCTerm
-uplcLet varName (UPLCTerm v) (UPLCTerm f) =
-  UPLCTerm (UPLC.Apply AsLet (UPLC.LamAbs Plain varName f) v)
+uplcLet :: UPLC.Name -> UPLCTerm -> BindingType -> UPLCTerm -> UPLCTerm
+uplcLet varName (UPLCTerm v) bindTy (UPLCTerm f) = case bindTy of
+  Strictly -> UPLCTerm (UPLC.Apply AsLet (UPLC.LamAbs Plain varName f) v)
+  Lazily -> UPLCTerm (UPLC.Apply AsLet (UPLC.LamAbs Plain varName f) (UPLC.Delay Plain v))
 
--- | As 'uplcLet', but wraps the binding in @delay@.
+-- | \'Parallel\' @let@, as a combination of @constr@ and @case@. Wraps in
+-- @delay@ for any entry of the first argument which is labelled 'Lazily',
+-- similar to 'uplcLet'.
 --
 -- @since 2.0.0
-uplcLetLazy :: UPLC.Name -> UPLCTerm -> UPLCTerm -> UPLCTerm
-uplcLetLazy varName (UPLCTerm v) (UPLCTerm f) =
-  UPLCTerm (UPLC.Apply AsLet (UPLC.LamAbs Plain varName f) (UPLC.Delay Plain v))
-
--- | \'Parallel\' @let@, as a combination of @constr@ and @case@.
---
--- @since 2.0.0
-uplcLetP :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
+uplcLetP :: NonEmptyVector (UPLC.Name, UPLCTerm, BindingType) -> UPLCTerm -> UPLCTerm
 uplcLetP nameBodies f =
-  let scrut = uplcConstr 0 (NEVector.toVector . fmap snd $ nameBodies)
-   in uplcCaseWith AsParallelLet scrut . NEVector.singleton . uplcLam (fmap fst nameBodies) $ f
-
--- | As 'uplcLetP', but wraps all bindings in @delay@.
---
--- @since 2.0.0
-uplcLetPLazy :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
-uplcLetPLazy nameBodies f =
-  let scrut = uplcConstr 0 (NEVector.toVector . fmap (UPLCTerm . UPLC.Delay Plain . coerce . snd) $ nameBodies)
-   in uplcCaseWith AsParallelLet scrut . NEVector.singleton . uplcLam (fmap fst nameBodies) $ f
+  let asConstrFields = fmap toField nameBodies
+      asNames = fmap (\(x, _, _) -> x) nameBodies
+      scrut = uplcConstr 0 . NEVector.toVector $ asConstrFields
+   in uplcCaseWith AsParallelLet scrut . NEVector.singleton . uplcLam asNames $ f
+  where
+    toField :: (UPLC.Name, UPLCTerm, BindingType) -> UPLCTerm
+    toField (_, code, bindTy) = case bindTy of
+      Strictly -> code
+      Lazily -> UPLCTerm . UPLC.Delay Plain . coerce $ code
 
 -- | Arity-1 application.
 --
@@ -302,6 +298,19 @@ optimizeUplc (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm optimizeOpts 
         { UPLC._ooInlineConstants = False,
           UPLC._ooInlineUnconditionalGrowth = 0
         }
+
+-- | Describes whether a @let@-binding should be done strictly, or lazily.
+--
+-- @since 2.0.0
+data BindingType = Strictly | Lazily
+  deriving stock
+    ( -- | @since 2.0.0
+      Show,
+      -- | @since 2.0.0
+      Eq,
+      -- | @since 2.0.0
+      Ord
+    )
 
 -- Helpers
 
