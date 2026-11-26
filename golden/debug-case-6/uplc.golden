@@ -20,49 +20,49 @@
                        # ("(" :: String)
                        # (
                            (\d ->
-                             let bind_wb = <(\mArg_i -> mArg_i # mArg_i)
-                                            # (\e f g ->
-                                                let bind_sb = <(\h ->
-                                                                 case h
-                                                                   [ bind_gb
-                                                                   , bind_hb
-                                                                   , bind_ib
-                                                                   , bind_jb
-                                                                   , bind_kb
-                                                                   , bind_lb
-                                                                   , bind_mb
-                                                                   , bind_nb
-                                                                   , bind_ob
-                                                                   , bind_pb
-                                                                   ]
-                                                               )
-                                                               # g>
-                                                in case
-                                                     ( EqualsInteger
-                                                       # f
-                                                       # (0 :: Integer)
-                                                     )
-                                                     [ AppendString
-                                                       # ( e
-                                                           # e
-                                                           # ( QuotientInteger
-                                                               # f
-                                                               # (10 :: Integer)
-                                                             )
-                                                           # ( RemainderInteger
-                                                               # f
-                                                               # (10 :: Integer)
-                                                             )
-                                                         )
-                                                       # !bind_sb
-                                                     , !bind_sb
-                                                     ]
-                                              )>
+                             let bind_wb = (\mArg_i -> mArg_i # mArg_i)
+                                           # (\e f g ->
+                                               let bind_sb = <(\h ->
+                                                                case h
+                                                                  [ bind_gb
+                                                                  , bind_hb
+                                                                  , bind_ib
+                                                                  , bind_jb
+                                                                  , bind_kb
+                                                                  , bind_lb
+                                                                  , bind_mb
+                                                                  , bind_nb
+                                                                  , bind_ob
+                                                                  , bind_pb
+                                                                  ]
+                                                              )
+                                                              # g>
+                                               in case
+                                                    ( EqualsInteger
+                                                      # f
+                                                      # (0 :: Integer)
+                                                    )
+                                                    [ AppendString
+                                                      # ( e
+                                                          # e
+                                                          # ( QuotientInteger
+                                                              # f
+                                                              # (10 :: Integer)
+                                                            )
+                                                          # ( RemainderInteger
+                                                              # f
+                                                              # (10 :: Integer)
+                                                            )
+                                                        )
+                                                      # !bind_sb
+                                                    , !bind_sb
+                                                    ]
+                                             )
                              in case
                                   (LessThanEqualsInteger # d # (-1 :: Integer))
                                   [ case
                                       (EqualsInteger # d # (0 :: Integer))
-                                      [ !bind_wb
+                                      [ bind_wb
                                         # ( QuotientInteger
                                             # d
                                             # (10 :: Integer)
@@ -84,7 +84,7 @@
                                                # !bind_dc
                                                # (0 :: Integer)
                                              )
-                                             [ !bind_wb
+                                             [ bind_wb
                                                # ( QuotientInteger
                                                    # !bind_dc
                                                    # (10 :: Integer)
@@ -114,43 +114,41 @@
                                 # (
                                     ( (\mArg_j -> mArg_j # mArg_j)
                                       # (\p q r s ->
-                                          let bind_dd = <\t ->
-                                                           case t
-                                                             [ bind_gb
-                                                             , bind_hb
-                                                             , bind_ib
-                                                             , bind_jb
-                                                             , bind_kb
-                                                             , bind_lb
-                                                             , bind_mb
-                                                             , bind_nb
-                                                             , bind_ob
-                                                             , bind_pb
-                                                             , ("A" :: String)
-                                                             , ("B" :: String)
-                                                             , ("C" :: String)
-                                                             , ("D" :: String)
-                                                             , ("E" :: String)
-                                                             , ("F" :: String)
-                                                             ]>
-                                              bind_fd = <IndexByteString
-                                                         # q
-                                                         # s>
+                                          let bind_dd = \t ->
+                                                          case t
+                                                            [ bind_gb
+                                                            , bind_hb
+                                                            , bind_ib
+                                                            , bind_jb
+                                                            , bind_kb
+                                                            , bind_lb
+                                                            , bind_mb
+                                                            , bind_nb
+                                                            , bind_ob
+                                                            , bind_pb
+                                                            , ("A" :: String)
+                                                            , ("B" :: String)
+                                                            , ("C" :: String)
+                                                            , ("D" :: String)
+                                                            , ("E" :: String)
+                                                            , ("F" :: String)
+                                                            ]
+                                              bind_fd = IndexByteString # q # s
                                           in let bind_md = <AppendString
                                                             # ( AppendString
                                                                 # ("0x" :: String)
-                                                                # ( !bind_dd
+                                                                # ( bind_dd
                                                                     # (
                                                                         QuotientInteger
-                                                                        # !bind_fd
+                                                                        # bind_fd
                                                                         # (16 :: Integer)
                                                                       )
                                                                   )
                                                               )
-                                                            # ( !bind_dd
+                                                            # ( bind_dd
                                                                 # (
                                                                     RemainderInteger
-                                                                    # !bind_fd
+                                                                    # bind_fd
                                                                     # (16 :: Integer)
                                                                   )
                                                               )>

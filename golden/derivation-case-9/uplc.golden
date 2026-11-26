@@ -13,20 +13,20 @@ case
   [ \a b ->
       case b
         [ \c d ->
-            let bind_hb = <(", " :: String)>
+            let bind_hb = (", " :: String)
                 bind_kb = <UnIData # c>
-                bind_xb = <("0" :: String)>
-                bind_yb = <("1" :: String)>
-                bind_zb = <("2" :: String)>
-                bind_ac = <("3" :: String)>
-                bind_bc = <("4" :: String)>
-                bind_cc = <("5" :: String)>
-                bind_dc = <("6" :: String)>
-                bind_ec = <("7" :: String)>
-                bind_fc = <("8" :: String)>
-                bind_gc = <("9" :: String)>
-                bind_cd = <("\n" :: String)>
-                bind_fd = <("}" :: String)>
+                bind_xb = ("0" :: String)
+                bind_yb = ("1" :: String)
+                bind_zb = ("2" :: String)
+                bind_ac = ("3" :: String)
+                bind_bc = ("4" :: String)
+                bind_cc = ("5" :: String)
+                bind_dc = ("6" :: String)
+                bind_ec = ("7" :: String)
+                bind_fc = ("8" :: String)
+                bind_gc = ("9" :: String)
+                bind_cd = ("\n" :: String)
+                bind_fd = ("}" :: String)
                 bind_od = <("[" :: String)>
                 bind_ue = <("]" :: String)>
                 bind_we = <("[]" :: String)>
@@ -34,16 +34,16 @@ case
                               # (\e f g ->
                                   let bind_jc = <(\h ->
                                                    case h
-                                                     [ !bind_xb
-                                                     , !bind_yb
-                                                     , !bind_zb
-                                                     , !bind_ac
-                                                     , !bind_bc
-                                                     , !bind_cc
-                                                     , !bind_dc
-                                                     , !bind_ec
-                                                     , !bind_fc
-                                                     , !bind_gc
+                                                     [ bind_xb
+                                                     , bind_yb
+                                                     , bind_zb
+                                                     , bind_ac
+                                                     , bind_bc
+                                                     , bind_cc
+                                                     , bind_dc
+                                                     , bind_ec
+                                                     , bind_fc
+                                                     , bind_gc
                                                      ]
                                                  )
                                                  # g>
@@ -68,16 +68,16 @@ case
                    bind_uc = <SubtractInteger # (0 :: Integer) # !bind_kb>
                    bind_yd = <\s ->
                                 case s
-                                  [ !bind_xb
-                                  , !bind_yb
-                                  , !bind_zb
-                                  , !bind_ac
-                                  , !bind_bc
-                                  , !bind_cc
-                                  , !bind_dc
-                                  , !bind_ec
-                                  , !bind_fc
-                                  , !bind_gc
+                                  [ bind_xb
+                                  , bind_yb
+                                  , bind_zb
+                                  , bind_ac
+                                  , bind_bc
+                                  , bind_cc
+                                  , bind_dc
+                                  , bind_ec
+                                  , bind_fc
+                                  , bind_gc
                                   , ("A" :: String)
                                   , ("B" :: String)
                                   , ("C" :: String)
@@ -86,7 +86,7 @@ case
                                   , ("F" :: String)
                                   ]>
                in let bind_ed = <AppendString
-                                 # !bind_hb
+                                 # bind_hb
                                  # ( AppendString
                                      # (
                                          case
@@ -108,7 +108,7 @@ case
                                                      # !bind_kb
                                                      # (10 :: Integer)
                                                    )
-                                               , !bind_xb
+                                               , bind_xb
                                                ]
                                            , AppendString
                                              # ("-" :: String)
@@ -127,30 +127,30 @@ case
                                                          # !bind_uc
                                                          # (10 :: Integer)
                                                        )
-                                                   , !bind_xb
+                                                   , bind_xb
                                                    ]
                                                )
                                            ]
                                        )
-                                     # !bind_cd
+                                     # bind_cd
                                    )>
                       bind_qe = <(\mArg_j -> mArg_j # mArg_j)
                                  # (\o p q r ->
-                                     let bind_ae = <IndexByteString # p # r>
+                                     let bind_ae = IndexByteString # p # r
                                      in let bind_he = <AppendString
                                                        # ( AppendString
                                                            # ("0x" :: String)
                                                            # ( !bind_yd
                                                                # (
                                                                    QuotientInteger
-                                                                   # !bind_ae
+                                                                   # bind_ae
                                                                    # (16 :: Integer)
                                                                  )
                                                              )
                                                          )
                                                        # ( !bind_yd
                                                            # ( RemainderInteger
-                                                               # !bind_ae
+                                                               # bind_ae
                                                                # (16 :: Integer)
                                                              )
                                                          )>
@@ -159,7 +159,7 @@ case
                                              [ AppendString
                                                # ( AppendString
                                                    # !bind_he
-                                                   # !bind_hb
+                                                   # bind_hb
                                                  )
                                                # ( (o # o)
                                                    # p
@@ -175,12 +175,12 @@ case
                   in case a
                        [ AppendString
                          # ("PThisData {\n" :: String)
-                         # (AppendString # !bind_ed # !bind_fd)
+                         # (AppendString # !bind_ed # bind_fd)
                        , AppendString
                          # ("PThatData {\n" :: String)
                          # ( AppendString
                              # ( AppendString
-                                 # !bind_hb
+                                 # bind_hb
                                  # ( AppendString
                                      # (
                                          let bind_ld = <UnBData # c>
@@ -207,10 +207,10 @@ case
                                                  , !bind_we
                                                  ]
                                        )
-                                     # !bind_cd
+                                     # bind_cd
                                    )
                                )
-                             # !bind_fd
+                             # bind_fd
                            )
                        , AppendString
                          # ("PTheseData {\n" :: String)
@@ -218,7 +218,7 @@ case
                              # !bind_ed
                              # ( AppendString
                                  # ( AppendString
-                                     # !bind_hb
+                                     # bind_hb
                                      # ( AppendString
                                          # (
                                              let bind_gf = <UnBData
@@ -247,10 +247,10 @@ case
                                                      , !bind_we
                                                      ]
                                            )
-                                         # !bind_cd
+                                         # bind_cd
                                        )
                                    )
-                                 # !bind_fd
+                                 # bind_fd
                                )
                            )
                        ]
