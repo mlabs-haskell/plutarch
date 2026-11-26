@@ -1,0 +1,27 @@
+let bind_ev = (Constr 1 [42] :: Data)
+in case
+     (UnConstrData # bind_ev)
+     [ \fv gv ->
+         case gv
+           [ \hv iv ->
+               (\bind_jv ->
+                 (\bind_kv ->
+                   let bind_lv = \unused_qv -> case iv [bind_jv, bind_ev]
+                   in case fv
+                        [ bind_lv # !bind_kv
+                        , bind_lv # (UnIData # hv)
+                        , (\unused_mv ->
+                            case iv
+                              [ \nv ov ->
+                                  (\unused_pv -> case ov [bind_jv, bind_ev])
+                                  # (UnIData # nv)
+                              ]
+                          )
+                          # !bind_kv
+                        ]
+                 )
+                 # <UnBData # hv>
+               )
+               # (\unused_rv unused_sv -> ERROR)
+           ]
+     ]

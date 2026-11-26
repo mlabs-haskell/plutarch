@@ -134,8 +134,8 @@ ANF Binds:
 ANF Annotations:
  #0 := Inlined, required let-binds here: {}
  #1 := Inlined, required let-binds here: {}
- #2 := Let-bound, required let-binds here: {}
- #3 := Let-bound, required let-binds here: {}
+ #2 := Let-bound lazily, required let-binds here: {}
+ #3 := Let-bound lazily, required let-binds here: {}
  #4 := Inlined, required let-binds here: {}
  #5 := Inlined, required let-binds here: {}
  #6 := Inlined, required let-binds here: {}
@@ -159,10 +159,10 @@ ANF Annotations:
  #24 := Inlined, required let-binds here: {}
  #25 := Inlined, required let-binds here: {}
  #26 := Inlined, required let-binds here: {}
- #27 := Let-bound, required let-binds here: {}
+ #27 := Let-bound lazily, required let-binds here: {}
  #28 := Inlined, required let-binds here: {}
  #29 := Inlined, required let-binds here: {}
- #30 := Let-bound, required let-binds here: {}
+ #30 := Let-bound lazily, required let-binds here: {}
  #31 := Inlined, required let-binds here: {}
  #32 := Inlined, required let-binds here: {}
  #33 := Inlined, required let-binds here: {}
@@ -170,7 +170,7 @@ ANF Annotations:
  #35 := Inlined, required let-binds here: {}
  #36 := Inlined, required let-binds here: {}
  #37 := Inlined, required let-binds here: {}
- #38 := Let-bound, required let-binds here: {}
+ #38 := Let-bound lazily, required let-binds here: {}
  #39 := Inlined, required let-binds here: {}
  #40 := Inlined, required let-binds here: {}
  #41 := Inlined, required let-binds here: {}

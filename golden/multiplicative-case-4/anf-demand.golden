@@ -49,7 +49,7 @@ ANF Annotations:
  #7 := Inlined, required let-binds here: {}
  #8 := Inlined, required let-binds here: {}
  #9 := Inlined, required let-binds here: {}
- #10 := Let-bound, required let-binds here: {}
+ #10 := Let-bound lazily, required let-binds here: {}
  #11 := Inlined, required let-binds here: {}
  #12 := Inlined, required let-binds here: {Rank 0 -> {#10}}
  #13 := Inlined, required let-binds here: {}

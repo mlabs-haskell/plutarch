@@ -1,0 +1,50 @@
+case
+  ( UnConstrData
+    # ( ConstrData
+        # 1 :: Integer
+        # (!MkCons # (IData # 42 :: Integer) # [] :: [Data])
+      )
+  )
+  [ \a b ->
+      case b
+        [ \c d ->
+            case a
+              [ (\_ ->
+                  case d
+                    [ \_ _ -> ERROR
+                    , ConstrData
+                      # 1 :: Integer
+                      # (!MkCons # (IData # 42 :: Integer) # [] :: [Data])
+                    ]
+                )
+                # (UnBData # c)
+              , (\_ ->
+                  case d
+                    [ \_ _ -> ERROR
+                    , ConstrData
+                      # 1 :: Integer
+                      # (!MkCons # (IData # 42 :: Integer) # [] :: [Data])
+                    ]
+                )
+                # (UnIData # c)
+              , (\_ ->
+                  case d
+                    [ \e f ->
+                        (\_ ->
+                          case f
+                            [ \_ _ -> ERROR
+                            , ConstrData
+                              # 1 :: Integer
+                              # ( !MkCons
+                                  # (IData # 42 :: Integer)
+                                  # [] :: [Data]
+                                )
+                            ]
+                        )
+                        # (UnIData # e)
+                    ]
+                )
+                # (UnBData # c)
+              ]
+        ]
+  ]

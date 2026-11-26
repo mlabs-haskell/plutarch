@@ -54,6 +54,7 @@ import Plutarch.Backend.ANF
       ),
     Analysis (Analysis),
     BindingStatus (ShouldBind, Shouldn'tBind),
+    BindingType (Lazily, Strictly),
     BoundVar (BoundVar),
     Id (Id),
     Leaf
@@ -86,7 +87,9 @@ import Plutarch.Backend.UPLC
     uplcLam,
     uplcLam1,
     uplcLet,
+    uplcLetLazy,
     uplcLetP,
+    uplcLetPLazy,
     uplcMCombinator,
     uplcPackedApply,
     uplcVar,
@@ -141,7 +144,7 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
       -- Set up our compilation environment with everything we just put
       -- together.
       compileEnv = CompileEnv namedBinds fixpointNameMap compositionNameMap unusedParamName mIdentity
-      compileState = CompileState Map.empty Set.empty
+      compileState = CompileState Map.empty Map.empty
       -- Compile all binds
       compiled = runCompileM compile compileEnv compileState
    in if
@@ -301,7 +304,7 @@ data CompileState = CompileState
   { -- All previously-compiled binds, by id
     csCache :: Map Id UPLCTerm,
     -- Binds that should be `let`-bound that we've compiled so far
-    csToLetBind :: Set Id
+    csToLetBind :: Map Id BindingType
   }
 
 newtype CompileM (a :: Type) = CompileM (RWS CompileEnv () CompileState a)
@@ -344,30 +347,42 @@ compile = do
   binds <- asks (NEVector.map snd . ceBinds)
   NEVector.imapM_ compileWithCache binds
   let topBindIx = NEVector.length binds - 1
-  -- This cannot 'miss', as we have compiled every bind, and the top bind is
-  -- always the last bind.
+  -- This cannot 'miss' as we have compiled every bind, and the top bind is
+  -- always the last bind
   fromJust <$> gets (Map.lookup (Id topBindIx) . csCache)
   where
     compileWithCache :: Int -> ANFBind Analysis -> m ()
     compileWithCache bindIx bind = do
       compiledCode <- compileBind bindIx bind
       let (Analysis shouldBind whatToBind) = getANFBindAnn bind
-      withLetBinds <- foldrM doLetBind compiledCode . Map.toAscList $ whatToBind
+      let toBindAsList = Map.toAscList whatToBind
+      withLetBinds <- case bind of
+        -- If we have any let-binding to do at a `case`, it has to be lazy.
+        ANFCase {} -> foldrM doLazyLetBind compiledCode toBindAsList
+        -- Anywhere else, it has to be strict.
+        _ -> foldrM doStrictLetBind compiledCode toBindAsList
       let ourId = Id bindIx
       modify (cacheCode shouldBind ourId withLetBinds)
     cacheCode :: BindingStatus -> Id -> UPLCTerm -> CompileState -> CompileState
     cacheCode shouldBind i code (CompileState cache whatToLet) =
       let cache' = Map.insert i code cache
        in CompileState cache' $ case shouldBind of
-            ShouldBind -> Set.insert i whatToLet
             Shouldn'tBind -> whatToLet
-    doLetBind :: (Rank, NESet Id) -> UPLCTerm -> m UPLCTerm
-    doLetBind (_, seqBinds) acc = do
+            ShouldBind bindType -> Map.insert i bindType whatToLet
+    doStrictLetBind :: (Rank, NESet Id) -> UPLCTerm -> m UPLCTerm
+    doStrictLetBind (_, seqBinds) acc = do
       withCode <- traverse (\i -> (,) <$> getBindName i <*> getCode i) . NESet.toList $ seqBinds
       pure $
         if NESet.size seqBinds < parallelBindThreshold
           then foldr (uncurry uplcLet) acc withCode
           else uplcLetP (NEVector.fromNonEmpty withCode) acc
+    doLazyLetBind :: (Rank, NESet Id) -> UPLCTerm -> m UPLCTerm
+    doLazyLetBind (_, seqBinds) acc = do
+      withCode <- traverse (\i -> (,) <$> getBindName i <*> getCode i) . NESet.toList $ seqBinds
+      pure $
+        if NESet.size seqBinds < parallelBindThreshold
+          then foldr (uncurry uplcLetLazy) acc withCode
+          else uplcLetPLazy (NEVector.fromNonEmpty withCode) acc
     -- Set on the basis that `n` sequential binds require `n` lambdas and `n`
     -- applications, while `n` parallel binds require 1 case, 1 constr and `n`
     -- lambdas. This gives parity at 2, but may need adjustment later.
@@ -471,30 +486,36 @@ compileBind bindIx = \case
     let compBody = foldl' (\acc i -> uplcApply1 (componentCodes NEVector.! i) acc) asCompArg reverseIxes
     pure . uplcLam1 compArgName $ compBody
   where
+    checkCache :: Ref -> m UPLCTerm
+    checkCache = \case
+      -- Variables always inline, so we don't need to check anything.
+      AVar (Hash h) -> pure . uplcVar . mkName "arg" $ h
+      -- If this identifier is meant to be `let`-bound later, we have to refer
+      -- to it by name, possibly with `force` if the binding is lazy. Otherwise,
+      -- we just inline its code.
+      AnId i@(Id ix) -> do
+        shouldBind <- gets (Map.lookup i . csToLetBind)
+        case shouldBind of
+          -- Inline the code. This cannot 'miss' due to the compilation order
+          -- proceeding from dependencies to dependents.
+          Nothing -> gets (fromJust . Map.lookup i . csCache)
+          -- Get our assigned name, then check what kind of binding this needs.
+          Just bindType -> do
+            assignedName <- asks (\ce -> fst $ ceBinds ce NEVector.! ix)
+            case bindType of
+              -- Strict binds just need to have their assigned name wrapped in a
+              -- variable.
+              Strictly -> pure . uplcVar $ assignedName
+              -- Lazy binds need `force`ing.
+              Lazily -> pure . uplcForce . uplcVar $ assignedName
     selfToName :: BoundVar -> PLC.Name
     selfToName (BoundVar (Hash h) _) = mkName "arg" h
+    isTheIdentity :: Ref -> m Bool
+    isTheIdentity = \case
+      AnId i -> asks ((== Just i) . ceTheIdentity)
+      _ -> pure False
     bvToName :: Maybe BoundVar -> m PLC.Name
     bvToName = \case
       -- Unused argument, use reserved name
       Nothing -> asks ceUnusedParamName
       Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
-    checkCache :: Ref -> m UPLCTerm
-    checkCache = \case
-      -- Variables always inline, so we don't need to check anything for them.
-      AVar (Hash h) -> pure . uplcVar . mkName "arg" $ h
-      -- If this identifier is meant to be let-bound later, we have to refer to
-      -- it by name. Otherwise, we just retrieve its code and inline it.
-      AnId i@(Id ix) -> do
-        shouldBind <- gets (Set.member i . csToLetBind)
-        if shouldBind
-          -- Get its assigned name, wrap it in a variable.
-          then do
-            assignedName <- asks (\ce -> fst $ ceBinds ce NEVector.! ix)
-            pure . uplcVar $ assignedName
-          -- Inline its code. This cannot 'miss' due to the compilation order
-          -- proceeding from dependencies to dependents.
-          else gets (fromJust . Map.lookup i . csCache)
-    isTheIdentity :: Ref -> m Bool
-    isTheIdentity = \case
-      AnId i -> asks ((== Just i) . ceTheIdentity)
-      _ -> pure False

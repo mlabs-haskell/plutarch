@@ -12,6 +12,8 @@ module Plutarch.Backend.UPLC
     uplcLam1,
     uplcLet,
     uplcLetP,
+    uplcLetLazy,
+    uplcLetPLazy,
     uplcForce,
     uplcDelay,
     uplcVar,
@@ -109,12 +111,27 @@ uplcLet :: UPLC.Name -> UPLCTerm -> UPLCTerm -> UPLCTerm
 uplcLet varName (UPLCTerm v) (UPLCTerm f) =
   UPLCTerm (UPLC.Apply AsLet (UPLC.LamAbs Plain varName f) v)
 
+-- | As 'uplcLet', but wraps the binding in @delay@.
+--
+-- @since 2.0.0
+uplcLetLazy :: UPLC.Name -> UPLCTerm -> UPLCTerm -> UPLCTerm
+uplcLetLazy varName (UPLCTerm v) (UPLCTerm f) =
+  UPLCTerm (UPLC.Apply AsLet (UPLC.LamAbs Plain varName f) (UPLC.Delay Plain v))
+
 -- | \'Parallel\' @let@, as a combination of @constr@ and @case@.
 --
 -- @since 2.0.0
 uplcLetP :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
 uplcLetP nameBodies f =
   let scrut = uplcConstr 0 (NEVector.toVector . fmap snd $ nameBodies)
+   in uplcCaseWith AsParallelLet scrut . NEVector.singleton . uplcLam (fmap fst nameBodies) $ f
+
+-- | As 'uplcLetP', but wraps all bindings in @delay@.
+--
+-- @since 2.0.0
+uplcLetPLazy :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
+uplcLetPLazy nameBodies f =
+  let scrut = uplcConstr 0 (NEVector.toVector . fmap (UPLCTerm . UPLC.Delay Plain . coerce . snd) $ nameBodies)
    in uplcCaseWith AsParallelLet scrut . NEVector.singleton . uplcLam (fmap fst nameBodies) $ f
 
 -- | Arity-1 application.
