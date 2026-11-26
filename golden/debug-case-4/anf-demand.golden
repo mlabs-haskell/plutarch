@@ -159,10 +159,10 @@ ANF Annotations:
  #24 := Inlined, required let-binds here: {}
  #25 := Inlined, required let-binds here: {}
  #26 := Inlined, required let-binds here: {}
- #27 := Let-bound lazily, required let-binds here: {}
+ #27 := Let-bound strictly, required let-binds here: {}
  #28 := Inlined, required let-binds here: {}
  #29 := Inlined, required let-binds here: {}
- #30 := Let-bound lazily, required let-binds here: {}
+ #30 := Let-bound strictly, required let-binds here: {}
  #31 := Inlined, required let-binds here: {}
  #32 := Inlined, required let-binds here: {}
  #33 := Inlined, required let-binds here: {}

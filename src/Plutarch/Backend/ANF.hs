@@ -539,7 +539,7 @@ fullPipeline (ANF hashes binds) =
       idealBindSites = Map.mapWithKey (optimizeBindSite onlyDeps) bindSites
       -- Once we know our ideal bind sites, we can determine whether any given
       -- bind should be strictly, or lazily, bound.
-      labelledCandidates = Map.mapWithKey (labelBind binds idealBindSites) candidates
+      labelledCandidates = Map.mapWithKey (labelBind onlyDeps binds idealBindSites) candidates
       -- Reorganize our information to be keyed by _site_, rather than what is
       -- being bound. One site may be the place for multiple bindings.
       bindingsBySite = toBindingsBySite idealBindSites
@@ -574,16 +574,43 @@ fullPipeline (ANF hashes binds) =
 -- whether a given `let`-bind should be performed strictly or lazily.
 labelBind ::
   forall (ann :: Type).
+  NonEmptyVector Dependencies ->
   NonEmptyVector (ANFBind ann) ->
   Map Id Id ->
   Id ->
   NESet Id ->
   BindingType
-labelBind allBinds idealBindSites bind _ = case fromJust (Map.lookup bind idealBindSites) of
+labelBind onlyDeps allBinds idealBindSites bind _ = case fromJust (Map.lookup bind idealBindSites) of
   Id bindSiteIx -> case allBinds NEVector.! bindSiteIx of
-    -- If our bind site is a `case`, we must bind lazy
-    ANFCase {} -> Lazily
+    -- If our bind site is a `case`, we check if all handlers require the bind
+    -- as a dependency. If so, we can bind strictly; otherwise, we bind lazily.
+    ANFCase _ _ handlers -> NEVector.foldr go Strictly handlers
+    -- If our bind site is not a `case`, we can always bind strictly
     _ -> Strictly
+  where
+    go :: Ref -> BindingType -> BindingType
+    go r = \case
+      -- Once we've confirmed that we must lazy-bind, we can't ever change it.
+      Lazily -> Lazily
+      Strictly -> case r of
+        -- Variables can never have any dependencies, so if any handler is a
+        -- variable, we have to bind lazily.
+        AVar _ -> Lazily
+        -- If the bind corresponding to `i` depends on `bind`, we can continue
+        -- to assume we can `let`-bind strictly.
+        AnId (Id ix) ->
+          let Dependencies deps = onlyDeps NEVector.! ix
+           in case deps of
+                -- If this handler doesn't depend on anything, it doesn't depend on
+                -- `bind`, so we have to `let`-bind lazily.
+                Nothing -> Lazily
+                -- Check if `bind` is a dependency of either kind; if it is, we
+                -- maintain strictness, otherwise we have to go lazy.
+                Just (dir, indir) ->
+                  let allDeps = Set.union indir (NESet.toSet dir)
+                   in if Set.member bind allDeps
+                        then Strictly
+                        else Lazily
 
 rankBindings ::
   NonEmptyVector Dependencies ->

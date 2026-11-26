@@ -1,15 +1,15 @@
-let bind_q = <!MkCons>
-    bind_w = <([] :: [Data])>
-in let bind_x = <ConstrData
-                 # (case (False :: Bool) [(0 :: Integer), (1 :: Integer)])
-                 # !bind_w>
-   in let bind_bb = <ListData
-                     # ( !bind_q
-                         # !bind_x
-                         # (!bind_q # !bind_x # (!bind_q # !bind_x # !bind_w))
-                       )>
+let bind_q = !MkCons
+    bind_w = ([] :: [Data])
+in let bind_x = ConstrData
+                # (case (False :: Bool) [(0 :: Integer), (1 :: Integer)])
+                # bind_w
+   in let bind_bb = ListData
+                    # ( bind_q
+                        # bind_x
+                        # (bind_q # bind_x # (bind_q # bind_x # bind_w))
+                      )
       in case
-           (UnListData # !bind_bb)
+           (UnListData # bind_bb)
            [ \a b ->
                case
                  (UnConstrData # a)
@@ -36,11 +36,11 @@ in let bind_x = <ConstrData
                                                                   , case o
                                                                       [ case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
@@ -56,11 +56,11 @@ in let bind_x = <ConstrData
                                                                   , case o
                                                                       [ case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
@@ -88,11 +88,11 @@ in let bind_x = <ConstrData
                                                                   , case o
                                                                       [ case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
@@ -108,11 +108,11 @@ in let bind_x = <ConstrData
                                                                   , case o
                                                                       [ case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
                                                                           [ !bind_gb
-                                                                          , !bind_bb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
