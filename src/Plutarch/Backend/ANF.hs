@@ -557,8 +557,7 @@ fullPipeline (ANF hashes binds) =
       bindingsBySite = toBindingsBySite idealBindSites
       -- If we have multiple bindings at the same site, these may in turn depend
       -- on each other. To ensure that this doesn't break at codegen time, we
-      -- need to rank such bindings, so that we can ensure any bindings that
-      -- depend on future bindings are bound first.
+      -- need to rank such bindings to ensure we bind dependencies first.
       rankedBindings = Map.map (rankBindings onlyDeps) bindingsBySite
    in ANF hashes . NEVector.imap (analyze labelledCandidates rankedBindings) $ binds
   where
@@ -582,6 +581,9 @@ fullPipeline (ANF hashes binds) =
 
 -- Helpers
 
+-- In order to avoid issues such as
+-- https://github.com/mlabs-haskell/plutarch/issues/102, we have to determine
+-- whether a given `let`-bind should be performed strictly or lazily.
 labelBind ::
   forall (ann :: Type).
   NonEmptyVector (ANFBind ann) ->
@@ -644,7 +646,6 @@ toBindingsBySite = Map.foldrWithKey go Map.empty
     go bind site = Map.insertWith NESet.union site (NESet.singleton bind)
 
 -- Construct the final analysis.
-
 analyze ::
   Map Id BindingType ->
   Map Id (NEMap Rank (NESet Id)) ->

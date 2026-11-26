@@ -127,6 +127,8 @@ uplcLetP nameBodies f =
    in uplcCaseWith AsParallelLet scrut . NEVector.singleton . uplcLam (fmap fst nameBodies) $ f
 
 -- | As 'uplcLetP', but wraps all bindings in @delay@.
+--
+-- @since 2.0.0
 uplcLetPLazy :: NonEmptyVector (UPLC.Name, UPLCTerm) -> UPLCTerm -> UPLCTerm
 uplcLetPLazy nameBodies f =
   let scrut = uplcConstr 0 (NEVector.toVector . fmap (UPLCTerm . UPLC.Delay Plain . coerce . snd) $ nameBodies)
