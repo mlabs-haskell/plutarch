@@ -31,6 +31,7 @@ module Plutarch.Backend.ANF
   )
 where
 
+import Control.Monad.Reader (MonadReader (ask, local), asks, runReader)
 import Control.Monad.State.Strict
   ( MonadState,
     State,
@@ -581,9 +582,68 @@ labelBind ::
   BindingType
 labelBind allBinds idealBindSites bind _ = case fromJust (Map.lookup bind idealBindSites) of
   Id bindSiteIx -> case allBinds NEVector.! bindSiteIx of
-    -- If our bind site is a `case`, we must bind lazy
-    ANFCase {} -> Lazily
+    -- If our bind site is a `case`, we check if the bind is a constexpr. If it
+    -- is, we can bind strictly; otherwise, we bind lazily.
+    ANFCase {} ->
+      let asRef = AnId bind
+       in if runReader (isConstexpr allBinds asRef) Set.empty
+            then Strictly
+            else Lazily
+    -- If our bind site is not a `case`, we can always bind strictly
     _ -> Strictly
+
+isConstexpr ::
+  forall (m :: Type -> Type) (ann :: Type).
+  (MonadReader (Set Hash) m) =>
+  NonEmptyVector (ANFBind ann) ->
+  Ref ->
+  m Bool
+isConstexpr allBinds = go
+  where
+    go :: Ref -> m Bool
+    go = \case
+      -- Variables are only constexprs if they are bound inside that constexpr.
+      -- We keep track of such bindings using our @Reader@ environment.
+      AVar h -> asks (Set.member h)
+      AnId (Id ix) -> case allBinds NEVector.! ix of
+        -- Any leaf is a constexpr. This works due to our assumption that any
+        -- `LCompiled` is closed.
+        ANFLeaf _ -> pure True
+        -- Force or delay is a constexpr if its body is.
+        ANFForce _ r -> go r
+        ANFDelay _ r -> go r
+        -- A lambda is a constexpr if the only variables in its body are bound
+        -- either by it, or by a lambda in said body. To aid in this, we track
+        -- the scope of bound variables using our @Reader@ environment.
+        ANFLam _ bvs body -> do
+          env <- ask
+          let newEnv = NEVector.foldl' addBoundVar env bvs
+          local (const newEnv) (go body)
+        -- A fixpoint is a constexpr if the only variables in its body are
+        -- either its @self@ argument, or bound by a lambda in said body. We
+        -- take a similar approach to lambdas.
+        ANFFix _ bv body -> local (Set.insert (bvToHash bv)) (go body)
+        -- An application is a constexpr if both its function, and all its
+        -- arguments, are constexprs.
+        ANFApply _ f xs -> do
+          isConstexprF <- go f
+          isConstexprXs <- traverse go xs
+          pure $ isConstexprF && NEVector.and isConstexprXs
+        -- A @constr@ is a constexpr if all its fields are
+        ANFConstr _ _ fields -> Vector.and <$> traverse go fields
+        -- A @case@ is a constexpr if both the scrutinee and all handlers are
+        -- constexprs.
+        ANFCase _ scrut handlers -> do
+          isConstexprScrut <- go scrut
+          isConstexprHandlers <- traverse go handlers
+          pure $ isConstexprScrut && NEVector.and isConstexprHandlers
+        -- A composition is a constexpr if all the composed functions are
+        -- constexprs.
+        ANFCompose _ components -> NEVector.and <$> traverse go components
+    addBoundVar :: Set Hash -> Maybe BoundVar -> Set Hash
+    addBoundVar acc = \case
+      Nothing -> acc
+      Just bv -> Set.insert (bvToHash bv) acc
 
 rankBindings ::
   NonEmptyVector Dependencies ->
@@ -853,10 +913,11 @@ collectVarDeps binds (Id i) = case binds NEVector.! i of
       AnId j -> collectVarDeps binds j
     combine :: Set Hash -> Ref -> Set Hash
     combine acc = Set.union acc . refToVars
-    bvToHash :: BoundVar -> Hash
-    bvToHash (BoundVar h _) = h
     bvsToHashes :: NonEmptyVector (Maybe BoundVar) -> Set Hash
     bvsToHashes = NEVector.foldl' (\acc -> maybe acc (\bv -> Set.insert (bvToHash bv) acc)) Set.empty
+
+bvToHash :: BoundVar -> Hash
+bvToHash (BoundVar h _) = h
 
 bvWithMultiplicity ::
   forall (a :: Type) (m :: Type -> Type).
