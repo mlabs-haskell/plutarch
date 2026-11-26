@@ -54,7 +54,6 @@ import Plutarch.Backend.ANF
       ),
     Analysis (Analysis),
     BindingStatus (ShouldBind, Shouldn'tBind),
-    BindingType (Lazily, Strictly),
     BoundVar (BoundVar),
     Id (Id),
     Leaf
@@ -71,7 +70,8 @@ import Plutarch.Backend.AST
   ( Hash (Hash),
   )
 import Plutarch.Backend.UPLC
-  ( UPLCTerm,
+  ( BindingType (Lazily, Strictly),
+    UPLCTerm,
     optimizeUplc,
     rewriteUniques,
     substituteVarFor,
@@ -87,9 +87,7 @@ import Plutarch.Backend.UPLC
     uplcLam,
     uplcLam1,
     uplcLet,
-    uplcLetLazy,
     uplcLetP,
-    uplcLetPLazy,
     uplcMCombinator,
     uplcPackedApply,
     uplcVar,
@@ -341,7 +339,7 @@ mkName t = PLC.Name t . PLC.Unique
 
 compile ::
   forall (m :: Type -> Type).
-  (MonadState CompileState m, MonadReader CompileEnv m) =>
+  (MonadState CompileState m, MonadReader CompileEnv m, HasCallStack) =>
   m UPLCTerm
 compile = do
   binds <- asks (NEVector.map snd . ceBinds)
@@ -356,33 +354,33 @@ compile = do
       compiledCode <- compileBind bindIx bind
       let (Analysis shouldBind whatToBind) = getANFBindAnn bind
       let toBindAsList = Map.toAscList whatToBind
-      withLetBinds <- case bind of
-        -- If we have any let-binding to do at a `case`, it has to be lazy.
-        ANFCase {} -> foldrM doLazyLetBind compiledCode toBindAsList
-        -- Anywhere else, it has to be strict.
-        _ -> foldrM doStrictLetBind compiledCode toBindAsList
+      withStrictness <- traverse addBindStrictness toBindAsList
+      withLetBinds <- foldrM doLetBind compiledCode withStrictness
       let ourId = Id bindIx
       modify (cacheCode shouldBind ourId withLetBinds)
+    addBindStrictness :: (Rank, NESet Id) -> m (NESet (Id, BindingType))
+    addBindStrictness (_, seqBinds) = do
+      binds <- asks (NEVector.map snd . ceBinds)
+      pure . NESet.map (addBindingType binds) $ seqBinds
+    addBindingType :: NonEmptyVector (ANFBind Analysis) -> Id -> (Id, BindingType)
+    addBindingType binds i@(Id ix) =
+      let (Analysis status _) = getANFBindAnn $ binds NEVector.! ix
+       in case status of
+            Shouldn'tBind -> error "Let-binding requested for an ANF bind that should be inlined"
+            ShouldBind bindType -> (i, bindType)
     cacheCode :: BindingStatus -> Id -> UPLCTerm -> CompileState -> CompileState
     cacheCode shouldBind i code (CompileState cache whatToLet) =
       let cache' = Map.insert i code cache
        in CompileState cache' $ case shouldBind of
             Shouldn'tBind -> whatToLet
             ShouldBind bindType -> Map.insert i bindType whatToLet
-    doStrictLetBind :: (Rank, NESet Id) -> UPLCTerm -> m UPLCTerm
-    doStrictLetBind (_, seqBinds) acc = do
-      withCode <- traverse (\i -> (,) <$> getBindName i <*> getCode i) . NESet.toList $ seqBinds
+    doLetBind :: NESet (Id, BindingType) -> UPLCTerm -> m UPLCTerm
+    doLetBind seqBinds acc = do
+      withCode <- traverse (\(i, ty) -> (,,) <$> getBindName i <*> getCode i <*> pure ty) . NESet.toList $ seqBinds
       pure $
         if NESet.size seqBinds < parallelBindThreshold
-          then foldr (uncurry uplcLet) acc withCode
+          then foldr (uncurry3 uplcLet) acc withCode
           else uplcLetP (NEVector.fromNonEmpty withCode) acc
-    doLazyLetBind :: (Rank, NESet Id) -> UPLCTerm -> m UPLCTerm
-    doLazyLetBind (_, seqBinds) acc = do
-      withCode <- traverse (\i -> (,) <$> getBindName i <*> getCode i) . NESet.toList $ seqBinds
-      pure $
-        if NESet.size seqBinds < parallelBindThreshold
-          then foldr (uncurry uplcLetLazy) acc withCode
-          else uplcLetPLazy (NEVector.fromNonEmpty withCode) acc
     -- Set on the basis that `n` sequential binds require `n` lambdas and `n`
     -- applications, while `n` parallel binds require 1 case, 1 constr and `n`
     -- lambdas. This gives parity at 2, but may need adjustment later.
@@ -519,3 +517,8 @@ compileBind bindIx = \case
       -- Unused argument, use reserved name
       Nothing -> asks ceUnusedParamName
       Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
+
+uncurry3 ::
+  forall (a :: Type) (b :: Type) (c :: Type) (d :: Type).
+  (a -> b -> c -> d) -> (a, b, c) -> d
+uncurry3 f (x, y, z) = f x y z

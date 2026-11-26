@@ -20,7 +20,6 @@ module Plutarch.Backend.ANF
     ANFBind (..),
     Id (..),
     ANF (..),
-    BindingType (..),
     BindingStatus (..),
     Dependencies (Deps, NoDeps),
     Analysis (..),
@@ -81,7 +80,7 @@ import Plutarch.Backend.AST
     Hash,
   )
 import Plutarch.Backend.AST qualified as AST
-import Plutarch.Backend.UPLC (UPLCTerm)
+import Plutarch.Backend.UPLC (BindingType (Lazily, Strictly), UPLCTerm)
 import Plutarch.Helpers.Pretty (customSet, prettyValueOf, (<:=>))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
@@ -401,17 +400,6 @@ newtype Rank = Rank Word
 instance Pretty Rank where
   {-# INLINEABLE pretty #-}
   pretty = viaShow
-
--- | Describes whether a @let@-binding should be done strictly, or lazily.
---
--- @since 2.0.0
-data BindingType = Strictly | Lazily
-  deriving stock
-    ( -- | @since 2.0.0
-      Show,
-      -- | @since 2.0.0
-      Eq
-    )
 
 -- | Describes whether a given ANF bind will be `let`-bound later or not.
 -- Additionally, if it should be bound, it specifies whether the bind should be
