@@ -1,4 +1,4 @@
-let bind_t = <!HeadList>
+let bind_t = !HeadList
 in case
      ( ConstrData
        # (2 :: Integer)
@@ -9,8 +9,8 @@ in case
               # (bind_i # (IData # (2 :: Integer)) # ([] :: [Data]))
          )
      )
-     [ \a -> UnIData # (!bind_t # a)
-     , \a -> UnIData # (!bind_t # a)
+     [ \a -> UnIData # (bind_t # a)
+     , \a -> UnIData # (bind_t # a)
      , \c ->
-         case c [\d e -> AddInteger # (UnIData # d) # (UnIData # (!bind_t # e))]
+         case c [\d e -> AddInteger # (UnIData # d) # (UnIData # (bind_t # e))]
      ]

@@ -1,22 +1,22 @@
-let bind_q = <!MkCons>
-    bind_w = <([] :: [Data])>
-in let bind_x = <ConstrData
-                 # (case (False :: Bool) [(0 :: Integer), (1 :: Integer)])
-                 # !bind_w>
-   in let bind_bb = <ListData
-                     # ( !bind_q
-                         # !bind_x
-                         # (!bind_q # !bind_x # (!bind_q # !bind_x # !bind_w))
-                       )>
+let bind_q = !MkCons
+    bind_w = ([] :: [Data])
+in let bind_x = ConstrData
+                # (case (False :: Bool) [(0 :: Integer), (1 :: Integer)])
+                # bind_w
+   in let bind_bb = ListData
+                    # ( bind_q
+                        # bind_x
+                        # (bind_q # bind_x # (bind_q # bind_x # bind_w))
+                      )
       in case
-           (UnListData # !bind_bb)
+           (UnListData # bind_bb)
            [ \a b ->
                case
                  (UnConstrData # a)
                  [ \c d ->
-                     let bind_gb = <\unused_e unused_e -> ERROR>
+                     let bind_gb = \unused_e unused_e -> ERROR
                      in case d
-                          [ !bind_gb
+                          [ bind_gb
                           , case c
                               [ case b
                                   [ \g h ->
@@ -24,7 +24,7 @@ in let bind_x = <ConstrData
                                         (UnConstrData # g)
                                         [ \i j ->
                                             case j
-                                              [ !bind_gb
+                                              [ bind_gb
                                               , case i
                                                   [ case h
                                                       [ \m n ->
@@ -32,15 +32,15 @@ in let bind_x = <ConstrData
                                                             (UnConstrData # m)
                                                             [ \o p ->
                                                                 case p
-                                                                  [ !bind_gb
+                                                                  [ bind_gb
                                                                   , case o
                                                                       [ case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
@@ -52,15 +52,15 @@ in let bind_x = <ConstrData
                                                             (UnConstrData # m)
                                                             [ \o p ->
                                                                 case p
-                                                                  [ !bind_gb
+                                                                  [ bind_gb
                                                                   , case o
                                                                       [ case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
@@ -76,7 +76,7 @@ in let bind_x = <ConstrData
                                         (UnConstrData # g)
                                         [ \i j ->
                                             case j
-                                              [ !bind_gb
+                                              [ bind_gb
                                               , case i
                                                   [ case h
                                                       [ \m n ->
@@ -84,15 +84,15 @@ in let bind_x = <ConstrData
                                                             (UnConstrData # m)
                                                             [ \o p ->
                                                                 case p
-                                                                  [ !bind_gb
+                                                                  [ bind_gb
                                                                   , case o
                                                                       [ case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
@@ -104,15 +104,15 @@ in let bind_x = <ConstrData
                                                             (UnConstrData # m)
                                                             [ \o p ->
                                                                 case p
-                                                                  [ !bind_gb
+                                                                  [ bind_gb
                                                                   , case o
                                                                       [ case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       , case n
-                                                                          [ !bind_gb
-                                                                          , !bind_bb
+                                                                          [ bind_gb
+                                                                          , bind_bb
                                                                           ]
                                                                       ]
                                                                   ]
