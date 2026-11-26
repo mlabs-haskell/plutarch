@@ -45,7 +45,7 @@ ANF Binds:
 ANF Annotations:
  #0 := Inlined, required let-binds here: {}
  #1 := Inlined, required let-binds here: {}
- #2 := Let-bound, required let-binds here: {}
+ #2 := Let-bound strictly, required let-binds here: {}
  #3 := Inlined, required let-binds here: {}
  #4 := Inlined, required let-binds here: {}
  #5 := Inlined, required let-binds here: {}

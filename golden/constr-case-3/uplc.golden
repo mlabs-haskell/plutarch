@@ -13,11 +13,11 @@ case
   [ \a b ->
       case b
         [ \c d ->
-            let bind_v = UnIData # c
+            let bind_v = <UnIData # c>
             in case a
-                 [ bind_v
-                 , bind_v
-                 , case d [\e unused_f -> AddInteger # bind_v # (UnIData # e)]
+                 [ !bind_v
+                 , !bind_v
+                 , case d [\e unused_f -> AddInteger # !bind_v # (UnIData # e)]
                  ]
         ]
   ]

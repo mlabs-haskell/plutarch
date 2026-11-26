@@ -20,6 +20,7 @@ module Plutarch.Backend.ANF
     ANFBind (..),
     Id (..),
     ANF (..),
+    BindingType (..),
     BindingStatus (..),
     Dependencies (Deps, NoDeps),
     Analysis (..),
@@ -401,10 +402,23 @@ instance Pretty Rank where
   {-# INLINEABLE pretty #-}
   pretty = viaShow
 
--- | Describes whether a given ANF bind will be `let`-bound later or not.
+-- | Describes whether a @let@-binding should be done strictly, or lazily.
 --
 -- @since 2.0.0
-data BindingStatus = ShouldBind | Shouldn'tBind
+data BindingType = Strictly | Lazily
+  deriving stock
+    ( -- | @since 2.0.0
+      Show,
+      -- | @since 2.0.0
+      Eq
+    )
+
+-- | Describes whether a given ANF bind will be `let`-bound later or not.
+-- Additionally, if it should be bound, it specifies whether the bind should be
+-- lazy or strict.
+--
+-- @since 2.0.0
+data BindingStatus = ShouldBind BindingType | Shouldn'tBind
   deriving stock
     ( -- | @since 2.0.0
       Show,
@@ -415,7 +429,9 @@ data BindingStatus = ShouldBind | Shouldn'tBind
 -- | @since 2.0.0
 instance Pretty BindingStatus where
   pretty = \case
-    ShouldBind -> "Let-bound"
+    ShouldBind x -> case x of
+      Strictly -> "Let-bound strictly"
+      Lazily -> "Let-bound lazily"
     Shouldn'tBind -> "Inlined"
 
 -- | Annotation for ANF binds with two pieces of information:
@@ -533,15 +549,18 @@ fullPipeline (ANF hashes binds) =
       -- `let`-bindings as close to their use sites as possible. For this, we
       -- need to know all dependencies, not just direct ones, for every bind.
       idealBindSites = Map.mapWithKey (optimizeBindSite onlyDeps) bindSites
+      -- Once we know our ideal bind sites, we can determine whether any given
+      -- bind should be strictly, or lazily, bound.
+      labelledCandidates = Map.mapWithKey (labelBind binds idealBindSites) candidates
       -- Reorganize our information to be keyed by _site_, rather than what is
       -- being bound. One site may be the place for multiple bindings.
       bindingsBySite = toBindingsBySite idealBindSites
       -- If we have multiple bindings at the same site, these may in turn depend
       -- on each other. To ensure that this doesn't break at codegen time, we
       -- need to rank such bindings, so that we can ensure any bindings that
-      -- depend on future bindings are bound first
+      -- depend on future bindings are bound first.
       rankedBindings = Map.map (rankBindings onlyDeps) bindingsBySite
-   in ANF hashes . NEVector.imap (analyze (Map.keysSet candidates) rankedBindings) $ binds
+   in ANF hashes . NEVector.imap (analyze labelledCandidates rankedBindings) $ binds
   where
     isCandidate :: Id -> NESet Id -> Bool
     isCandidate (Id bindIx) whereNeeded =
@@ -563,6 +582,19 @@ fullPipeline (ANF hashes binds) =
 
 -- Helpers
 
+labelBind ::
+  forall (ann :: Type).
+  NonEmptyVector (ANFBind ann) ->
+  Map Id Id ->
+  Id ->
+  NESet Id ->
+  BindingType
+labelBind allBinds idealBindSites bind _ = case fromJust (Map.lookup bind idealBindSites) of
+  Id bindSiteIx -> case allBinds NEVector.! bindSiteIx of
+    -- If our bind site is a `case`, we must bind lazy
+    ANFCase {} -> Lazily
+    _ -> Strictly
+
 rankBindings ::
   NonEmptyVector Dependencies ->
   NESet Id ->
@@ -571,8 +603,7 @@ rankBindings onlyDeps bindings = case NESet.deleteFindMin bindings of
   (lowestId, rest) ->
     let forwardMap = NEMap.singleton (Rank 0) . NESet.singleton $ lowestId
         reverseMap = NEMap.singleton lowestId . Rank $ 0
-        (completed, _) = Set.foldl' go (forwardMap, reverseMap) rest
-     in completed
+     in fst . Set.foldl' go (forwardMap, reverseMap) $ rest
   where
     -- We maintain both a 'forward' and 'reverse' accumulator here to make
     -- checking already-ranked `Id`s easy. We can do this because we know that
@@ -610,24 +641,22 @@ toBindingsBySite :: Map Id Id -> Map Id (NESet Id)
 toBindingsBySite = Map.foldrWithKey go Map.empty
   where
     go :: Id -> Id -> Map Id (NESet Id) -> Map Id (NESet Id)
-    go bind site = Map.insertWith NESet.union site . NESet.singleton $ bind
+    go bind site = Map.insertWith NESet.union site (NESet.singleton bind)
 
 -- Construct the final analysis.
+
 analyze ::
-  Set Id ->
+  Map Id BindingType ->
   Map Id (NEMap Rank (NESet Id)) ->
   Int ->
   ANFBind Dependencies ->
   ANFBind Analysis
-analyze candidates rankedBindings bindIx bind = case Map.lookup (Id bindIx) rankedBindings of
+analyze candidatesByType rankedBindings bindIx bind = case Map.lookup (Id bindIx) rankedBindings of
   Nothing -> Analysis status Map.empty <$ bind
   Just toLetBind -> Analysis status (NEMap.toMap toLetBind) <$ bind
   where
     status :: BindingStatus
-    status =
-      if Set.member (Id bindIx) candidates
-        then ShouldBind
-        else Shouldn'tBind
+    status = maybe Shouldn'tBind ShouldBind . Map.lookup (Id bindIx) $ candidatesByType
 
 optimizeBindSite :: (HasCallStack) => NonEmptyVector Dependencies -> Id -> Id -> Id
 optimizeBindSite allDeps target currSite@(Id siteIx) = case allDeps NEVector.! siteIx of

@@ -1,10 +1,10 @@
 \a ->
   a
   # (
-      (\bind_b ->
+      (\cse_b ->
         case
-          (LessThanEqualsInteger # bind_b # (3 :: Integer))
-          [(3 :: Integer), bind_b]
+          (LessThanEqualsInteger # cse_b # (3 :: Integer))
+          [(3 :: Integer), cse_b]
       )
       # (
           case

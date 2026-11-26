@@ -1,24 +1,27 @@
-let bind_ts = (Constr 1 [42] :: Data)
+let bind_ev = (Constr 1 [42] :: Data)
 in case
-     (UnConstrData # bind_ts)
-     [ \us vs ->
-         case vs
-           [ \ws xs ->
-               (\bind_ys ->
-                 (\bind_zs ->
-                   case us
-                     [ case xs [bind_ys, bind_ts]
-                     , (\unused_at -> case xs [bind_ys, bind_ts])
-                       # (UnIData # ws)
-                     , case xs
-                         [ \bt ct ->
-                             (\unused_dt -> case ct [bind_ys, bind_ts])
-                             # (UnIData # bt)
-                         ]
-                     ]
+     (UnConstrData # bind_ev)
+     [ \fv gv ->
+         case gv
+           [ \hv iv ->
+               (\bind_jv ->
+                 (\bind_kv ->
+                   let bind_lv = \unused_qv -> case iv [bind_jv, bind_ev]
+                   in case fv
+                        [ bind_lv # !bind_kv
+                        , bind_lv # (UnIData # hv)
+                        , (\unused_mv ->
+                            case iv
+                              [ \nv ov ->
+                                  (\unused_pv -> case ov [bind_jv, bind_ev])
+                                  # (UnIData # nv)
+                              ]
+                          )
+                          # !bind_kv
+                        ]
                  )
-                 # (UnBData # ws)
+                 # <UnBData # hv>
                )
-               # (\unused_et unused_ft -> ERROR)
+               # (\unused_rv unused_sv -> ERROR)
            ]
      ]

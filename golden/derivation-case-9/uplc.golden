@@ -13,243 +13,244 @@ case
   [ \a b ->
       case b
         [ \c d ->
-            let bind_hb = (", " :: String)
-                bind_kb = UnIData # c
-                bind_xb = ("0" :: String)
-                bind_yb = ("1" :: String)
-                bind_zb = ("2" :: String)
-                bind_ac = ("3" :: String)
-                bind_bc = ("4" :: String)
-                bind_cc = ("5" :: String)
-                bind_dc = ("6" :: String)
-                bind_ec = ("7" :: String)
-                bind_fc = ("8" :: String)
-                bind_gc = ("9" :: String)
-                bind_cd = ("\n" :: String)
-                bind_fd = ("}" :: String)
-                bind_od = ("[" :: String)
-                bind_ue = ("]" :: String)
-                bind_we = ("[]" :: String)
-            in let bind_nc = (\mArg_i -> mArg_i # mArg_i)
-                             # (\e f g ->
-                                 let bind_jc = (\h ->
-                                                 case h
-                                                   [ bind_xb
-                                                   , bind_yb
-                                                   , bind_zb
-                                                   , bind_ac
-                                                   , bind_bc
-                                                   , bind_cc
-                                                   , bind_dc
-                                                   , bind_ec
-                                                   , bind_fc
-                                                   , bind_gc
+            let bind_hb = <(", " :: String)>
+                bind_kb = <UnIData # c>
+                bind_xb = <("0" :: String)>
+                bind_yb = <("1" :: String)>
+                bind_zb = <("2" :: String)>
+                bind_ac = <("3" :: String)>
+                bind_bc = <("4" :: String)>
+                bind_cc = <("5" :: String)>
+                bind_dc = <("6" :: String)>
+                bind_ec = <("7" :: String)>
+                bind_fc = <("8" :: String)>
+                bind_gc = <("9" :: String)>
+                bind_cd = <("\n" :: String)>
+                bind_fd = <("}" :: String)>
+                bind_od = <("[" :: String)>
+                bind_ue = <("]" :: String)>
+                bind_we = <("[]" :: String)>
+            in let bind_nc = <(\mArg_i -> mArg_i # mArg_i)
+                              # (\e f g ->
+                                  let bind_jc = <(\h ->
+                                                   case h
+                                                     [ !bind_xb
+                                                     , !bind_yb
+                                                     , !bind_zb
+                                                     , !bind_ac
+                                                     , !bind_bc
+                                                     , !bind_cc
+                                                     , !bind_dc
+                                                     , !bind_ec
+                                                     , !bind_fc
+                                                     , !bind_gc
+                                                     ]
+                                                 )
+                                                 # g>
+                                  in case
+                                       (EqualsInteger # f # (0 :: Integer))
+                                       [ AppendString
+                                         # ( e
+                                             # e
+                                             # ( QuotientInteger
+                                                 # f
+                                                 # (10 :: Integer)
+                                               )
+                                             # ( RemainderInteger
+                                                 # f
+                                                 # (10 :: Integer)
+                                               )
+                                           )
+                                         # !bind_jc
+                                       , !bind_jc
+                                       ]
+                                )>
+                   bind_uc = <SubtractInteger # (0 :: Integer) # !bind_kb>
+                   bind_yd = <\s ->
+                                case s
+                                  [ !bind_xb
+                                  , !bind_yb
+                                  , !bind_zb
+                                  , !bind_ac
+                                  , !bind_bc
+                                  , !bind_cc
+                                  , !bind_dc
+                                  , !bind_ec
+                                  , !bind_fc
+                                  , !bind_gc
+                                  , ("A" :: String)
+                                  , ("B" :: String)
+                                  , ("C" :: String)
+                                  , ("D" :: String)
+                                  , ("E" :: String)
+                                  , ("F" :: String)
+                                  ]>
+               in let bind_ed = <AppendString
+                                 # !bind_hb
+                                 # ( AppendString
+                                     # (
+                                         case
+                                           ( LessThanEqualsInteger
+                                             # !bind_kb
+                                             # (-1 :: Integer)
+                                           )
+                                           [ case
+                                               ( EqualsInteger
+                                                 # !bind_kb
+                                                 # (0 :: Integer)
+                                               )
+                                               [ !bind_nc
+                                                 # ( QuotientInteger
+                                                     # !bind_kb
+                                                     # (10 :: Integer)
+                                                   )
+                                                 # ( RemainderInteger
+                                                     # !bind_kb
+                                                     # (10 :: Integer)
+                                                   )
+                                               , !bind_xb
+                                               ]
+                                           , AppendString
+                                             # ("-" :: String)
+                                             # (
+                                                 case
+                                                   ( EqualsInteger
+                                                     # !bind_uc
+                                                     # (0 :: Integer)
+                                                   )
+                                                   [ !bind_nc
+                                                     # ( QuotientInteger
+                                                         # !bind_uc
+                                                         # (10 :: Integer)
+                                                       )
+                                                     # ( RemainderInteger
+                                                         # !bind_uc
+                                                         # (10 :: Integer)
+                                                       )
+                                                   , !bind_xb
                                                    ]
                                                )
-                                               # g
-                                 in case
-                                      (EqualsInteger # f # (0 :: Integer))
-                                      [ AppendString
-                                        # ( e
-                                            # e
-                                            # ( QuotientInteger
-                                                # f
-                                                # (10 :: Integer)
-                                              )
-                                            # ( RemainderInteger
-                                                # f
-                                                # (10 :: Integer)
-                                              )
-                                          )
-                                        # bind_jc
-                                      , bind_jc
-                                      ]
-                               )
-                   bind_uc = SubtractInteger # (0 :: Integer) # bind_kb
-                   bind_yd = \s ->
-                               case s
-                                 [ bind_xb
-                                 , bind_yb
-                                 , bind_zb
-                                 , bind_ac
-                                 , bind_bc
-                                 , bind_cc
-                                 , bind_dc
-                                 , bind_ec
-                                 , bind_fc
-                                 , bind_gc
-                                 , ("A" :: String)
-                                 , ("B" :: String)
-                                 , ("C" :: String)
-                                 , ("D" :: String)
-                                 , ("E" :: String)
-                                 , ("F" :: String)
-                                 ]
-               in let bind_ed = AppendString
-                                # bind_hb
-                                # ( AppendString
-                                    # (
-                                        case
-                                          ( LessThanEqualsInteger
-                                            # bind_kb
-                                            # (-1 :: Integer)
-                                          )
-                                          [ case
-                                              ( EqualsInteger
-                                                # bind_kb
-                                                # (0 :: Integer)
-                                              )
-                                              [ bind_nc
-                                                # ( QuotientInteger
-                                                    # bind_kb
-                                                    # (10 :: Integer)
-                                                  )
-                                                # ( RemainderInteger
-                                                    # bind_kb
-                                                    # (10 :: Integer)
-                                                  )
-                                              , bind_xb
-                                              ]
-                                          , AppendString
-                                            # ("-" :: String)
-                                            # (
-                                                case
-                                                  ( EqualsInteger
-                                                    # bind_uc
-                                                    # (0 :: Integer)
-                                                  )
-                                                  [ bind_nc
-                                                    # ( QuotientInteger
-                                                        # bind_uc
-                                                        # (10 :: Integer)
-                                                      )
-                                                    # ( RemainderInteger
-                                                        # bind_uc
-                                                        # (10 :: Integer)
-                                                      )
-                                                  , bind_xb
-                                                  ]
-                                              )
-                                          ]
-                                      )
-                                    # bind_cd
-                                  )
-                      bind_qe = (\mArg_j -> mArg_j # mArg_j)
-                                # (\o p q r ->
-                                    let bind_ae = IndexByteString # p # r
-                                    in let bind_he = AppendString
-                                                     # ( AppendString
-                                                         # ("0x" :: String)
-                                                         # ( bind_yd
-                                                             # ( QuotientInteger
-                                                                 # bind_ae
-                                                                 # (16 :: Integer)
-                                                               )
-                                                           )
-                                                       )
-                                                     # ( bind_yd
-                                                         # ( RemainderInteger
-                                                             # bind_ae
-                                                             # (16 :: Integer)
-                                                           )
-                                                       )
-                                       in case
-                                            (EqualsInteger # q # r)
-                                            [ AppendString
-                                              # ( AppendString
-                                                  # bind_he
-                                                  # bind_hb
-                                                )
-                                              # ( (o # o)
-                                                  # p
-                                                  # q
-                                                  # ( AddInteger
-                                                      # r
-                                                      # (1 :: Integer)
-                                                    )
-                                                )
-                                            , bind_he
-                                            ]
-                                  )
+                                           ]
+                                       )
+                                     # !bind_cd
+                                   )>
+                      bind_qe = <(\mArg_j -> mArg_j # mArg_j)
+                                 # (\o p q r ->
+                                     let bind_ae = <IndexByteString # p # r>
+                                     in let bind_he = <AppendString
+                                                       # ( AppendString
+                                                           # ("0x" :: String)
+                                                           # ( !bind_yd
+                                                               # (
+                                                                   QuotientInteger
+                                                                   # !bind_ae
+                                                                   # (16 :: Integer)
+                                                                 )
+                                                             )
+                                                         )
+                                                       # ( !bind_yd
+                                                           # ( RemainderInteger
+                                                               # !bind_ae
+                                                               # (16 :: Integer)
+                                                             )
+                                                         )>
+                                        in case
+                                             (EqualsInteger # q # r)
+                                             [ AppendString
+                                               # ( AppendString
+                                                   # !bind_he
+                                                   # !bind_hb
+                                                 )
+                                               # ( (o # o)
+                                                   # p
+                                                   # q
+                                                   # ( AddInteger
+                                                       # r
+                                                       # (1 :: Integer)
+                                                     )
+                                                 )
+                                             , !bind_he
+                                             ]
+                                   )>
                   in case a
                        [ AppendString
                          # ("PThisData {\n" :: String)
-                         # (AppendString # bind_ed # bind_fd)
+                         # (AppendString # !bind_ed # !bind_fd)
                        , AppendString
                          # ("PThatData {\n" :: String)
                          # ( AppendString
                              # ( AppendString
-                                 # bind_hb
+                                 # !bind_hb
                                  # ( AppendString
                                      # (
-                                         let bind_ld = UnBData # c
-                                         in let bind_md = LengthOfByteString
-                                                          # bind_ld
+                                         let bind_ld = <UnBData # c>
+                                         in let bind_md = <LengthOfByteString
+                                                           # !bind_ld>
                                             in case
                                                  ( EqualsInteger
-                                                   # bind_md
+                                                   # !bind_md
                                                    # (0 :: Integer)
                                                  )
                                                  [ AppendString
                                                    # ( AppendString
-                                                       # bind_od
-                                                       # ( bind_qe
-                                                           # bind_ld
+                                                       # !bind_od
+                                                       # ( !bind_qe
+                                                           # !bind_ld
                                                            # ( SubtractInteger
-                                                               # bind_md
+                                                               # !bind_md
                                                                # (1 :: Integer)
                                                              )
                                                            # (0 :: Integer)
                                                          )
                                                      )
-                                                   # bind_ue
-                                                 , bind_we
+                                                   # !bind_ue
+                                                 , !bind_we
                                                  ]
                                        )
-                                     # bind_cd
+                                     # !bind_cd
                                    )
                                )
-                             # bind_fd
+                             # !bind_fd
                            )
                        , AppendString
                          # ("PTheseData {\n" :: String)
                          # ( AppendString
-                             # bind_ed
+                             # !bind_ed
                              # ( AppendString
                                  # ( AppendString
-                                     # bind_hb
+                                     # !bind_hb
                                      # ( AppendString
                                          # (
-                                             let bind_gf = UnBData
-                                                           # (!HeadList # d)
-                                             in let bind_hf = LengthOfByteString
-                                                              # bind_gf
+                                             let bind_gf = <UnBData
+                                                            # (!HeadList # d)>
+                                             in let bind_hf = <LengthOfByteString
+                                                               # !bind_gf>
                                                 in case
                                                      ( EqualsInteger
-                                                       # bind_hf
+                                                       # !bind_hf
                                                        # (0 :: Integer)
                                                      )
                                                      [ AppendString
                                                        # ( AppendString
-                                                           # bind_od
-                                                           # ( bind_qe
-                                                               # bind_gf
+                                                           # !bind_od
+                                                           # ( !bind_qe
+                                                               # !bind_gf
                                                                # (
                                                                    SubtractInteger
-                                                                   # bind_hf
+                                                                   # !bind_hf
                                                                    # (1 :: Integer)
                                                                  )
                                                                # (0 :: Integer)
                                                              )
                                                          )
-                                                       # bind_ue
-                                                     , bind_we
+                                                       # !bind_ue
+                                                     , !bind_we
                                                      ]
                                            )
-                                         # bind_cd
+                                         # !bind_cd
                                        )
                                    )
-                                 # bind_fd
+                                 # !bind_fd
                                )
                            )
                        ]
